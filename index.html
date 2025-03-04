@@ -1,0 +1,310 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8">
+  <title>Gestion Entreprise - App Mobile</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <!-- Lien vers le manifest pour la PWA -->
+  <link rel="manifest" href="manifest.json">
+  <style>
+    /* Styles généraux */
+    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
+    header { background: #333; color: #fff; text-align: center; padding: 1em; }
+    .container { max-width: 600px; margin: 1em auto; background: #fff; padding: 1em; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+    nav { display: flex; }
+    nav button { flex: 1; padding: 1em; border: none; background: #555; color: #fff; font-size: 1em; }
+    nav button.active { background: #777; }
+    section { display: none; }
+    section.active { display: block; }
+    form { margin: 1em 0; }
+    form input, form select, form textarea { width: 100%; padding: 0.5em; margin: 0.3em 0; }
+    form button { padding: 0.7em; width: 100%; background: #333; color: #fff; border: none; }
+    table { width: 100%; border-collapse: collapse; margin-top: 0.5em; }
+    table, th, td { border: 1px solid #ccc; }
+    th, td { padding: 0.5em; text-align: left; }
+    h2 { border-bottom: 2px solid #333; padding-bottom: 0.3em; }
+    .section-workers label { display: block; margin: 0.3em 0; }
+    #global-balance { font-size: 1.2em; font-weight: bold; text-align: center; margin-top: 1em; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Gestion Entreprise</h1>
+  </header>
+  <div class="container">
+    <!-- Navigation -->
+    <nav>
+      <button id="tab-ouvriers" class="active">Ouvriers</button>
+      <button id="tab-chantier">Chantiers</button>
+      <button id="tab-finance">Finance</button>
+    </nav>
+
+    <!-- Module Ouvriers -->
+    <section id="section-ouvriers" class="active">
+      <h2>Ouvriers</h2>
+      <form id="form-ouvrier">
+        <input type="text" id="ouvrier-nom" placeholder="Nom de l'ouvrier" required>
+        <input type="number" id="ouvrier-tarif" placeholder="Prix à la journée (€)" step="0.01" required>
+        <input type="number" id="ouvrier-jours" placeholder="Ajouter jours (ex. 1 ou 0.5)" step="0.1" required>
+        <button type="submit">Ajouter / Mettre à jour</button>
+      </form>
+      <table id="table-ouvriers">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Prix/jour</th>
+            <th>Jours total</th>
+            <th>Total</th>
+            <th>Paiement effectué</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- Module Chantiers -->
+    <section id="section-chantier">
+      <h2>Chantiers</h2>
+      <form id="form-chantier">
+        <input type="text" id="chantier-nom" placeholder="Nom du chantier" required>
+        <input type="number" id="chantier-duree" placeholder="Durée (jours)" step="1" required>
+        <textarea id="chantier-etapes" placeholder="Étapes du chantier"></textarea>
+        <input type="number" id="chantier-prix" placeholder="Prix du chantier (€)" step="0.01" required>
+        <input type="number" id="chantier-materiel" placeholder="Coût des matériaux (€)" step="0.01" required>
+        <label><input type="checkbox" id="chantier-mat-payee"> Matériaux payés</label>
+        <div id="chantier-workers" class="section-workers">
+          <p>Sélectionnez les ouvriers affectés :</p>
+          <!-- La liste des ouvriers enregistrés sera générée ici -->
+        </div>
+        <button type="submit">Ajouter chantier</button>
+      </form>
+      <table id="table-chantier">
+        <thead>
+          <tr>
+            <th>Nom</th>
+            <th>Durée (jours)</th>
+            <th>Prix</th>
+            <th>Matériaux</th>
+            <th>Coût ouvriers</th>
+            <th>Bénéf. final</th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </section>
+
+    <!-- Module Finance -->
+    <section id="section-finance">
+      <h2>Finance</h2>
+      <div>
+        <h3>Manuel - Revenus</h3>
+        <form id="form-revenu">
+          <input type="text" id="revenu-description" placeholder="Description du revenu" required>
+          <input type="number" id="revenu-montant" placeholder="Montant (€)" step="0.01" required>
+          <button type="submit">Ajouter revenu</button>
+        </form>
+      </div>
+      <div>
+        <h3>Manuel - Dépenses</h3>
+        <form id="form-depense">
+          <input type="text" id="depense-description" placeholder="Description de la dépense" required>
+          <input type="number" id="depense-montant" placeholder="Montant (€)" step="0.01" required>
+          <button type="submit">Ajouter dépense</button>
+        </form>
+      </div>
+      <div id="finance-summary">
+        <p id="manual-revenus">Revenus manuels : 0 €</p>
+        <p id="manual-depenses">Dépenses manuelles : 0 €</p>
+        <p id="auto-ouvriers">Dépenses ouvriers (non payés) : 0 €</p>
+        <p id="auto-materiel">Dépenses matériaux (non payés) : 0 €</p>
+        <p id="global-balance">Solde global : 0 €</p>
+      </div>
+    </section>
+  </div>
+
+  <script>
+    /* Navigation entre modules */
+    function setActiveTab(tab) {
+      document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
+      document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
+      document.getElementById('tab-' + tab).classList.add('active');
+      document.getElementById('section-' + tab).classList.add('active');
+      if(tab === 'chantier'){
+        populateChantierWorkers();
+      }
+    }
+    document.getElementById('tab-ouvriers').addEventListener('click', () => setActiveTab('ouvriers'));
+    document.getElementById('tab-chantier').addEventListener('click', () => setActiveTab('chantier'));
+    document.getElementById('tab-finance').addEventListener('click', () => setActiveTab('finance'));
+
+    /* Stockage Local */
+    const STORAGE_WORKERS = 'gestion_ouvriers';
+    const STORAGE_CHANTIERS = 'gestion_chantiers';
+    const STORAGE_REVENUS = 'gestion_revenus';
+    const STORAGE_DEPENSES = 'gestion_depenses';
+
+    /* Module Ouvriers */
+    let ouvriers = JSON.parse(localStorage.getItem(STORAGE_WORKERS)) || [];
+    function saveOuvriers() { localStorage.setItem(STORAGE_WORKERS, JSON.stringify(ouvriers)); }
+    function renderOuvriers() {
+      const tbody = document.querySelector('#table-ouvriers tbody');
+      tbody.innerHTML = '';
+      ouvriers.forEach(o => {
+        const total = o.tarif * o.jours;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${o.nom}</td>
+                        <td>${o.tarif.toFixed(2)} €</td>
+                        <td>${o.jours.toFixed(1)}</td>
+                        <td>${total.toFixed(2)} €</td>
+                        <td><input type="checkbox" ${o.paye ? 'checked' : ''} onchange="toggleOuvrierPay('${o.nom}')"></td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    function toggleOuvrierPay(nom) {
+      const index = ouvriers.findIndex(o => o.nom.toLowerCase() === nom.toLowerCase());
+      if(index !== -1){
+        ouvriers[index].paye = !ouvriers[index].paye;
+        saveOuvriers();
+        renderOuvriers();
+        renderFinanceSummary();
+      }
+    }
+    document.getElementById('form-ouvrier').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nom = document.getElementById('ouvrier-nom').value.trim();
+      const tarif = parseFloat(document.getElementById('ouvrier-tarif').value);
+      const jours = parseFloat(document.getElementById('ouvrier-jours').value);
+      if(nom && !isNaN(tarif) && !isNaN(jours)){
+        const index = ouvriers.findIndex(o => o.nom.toLowerCase() === nom.toLowerCase());
+        if(index !== -1){
+          ouvriers[index].jours += jours;
+          ouvriers[index].tarif = tarif;
+        } else {
+          ouvriers.push({ nom, tarif, jours, paye: false });
+        }
+        saveOuvriers();
+        renderOuvriers();
+        this.reset();
+      }
+    });
+    renderOuvriers();
+
+    /* Module Chantiers */
+    let chantiers = JSON.parse(localStorage.getItem(STORAGE_CHANTIERS)) || [];
+    function saveChantiers() { localStorage.setItem(STORAGE_CHANTIERS, JSON.stringify(chantiers)); }
+    function renderChantiers() {
+      const tbody = document.querySelector('#table-chantier tbody');
+      tbody.innerHTML = '';
+      chantiers.forEach(c => {
+        // Calcul du coût des ouvriers assignés pour ce chantier
+        let coutOuvriers = 0;
+        if(c.workerIds && c.duree) {
+          c.workerIds.forEach(id => {
+            const worker = ouvriers.find(o => o.nom === id);
+            if(worker) {
+              coutOuvriers += worker.tarif * c.duree;
+            }
+          });
+        }
+        // Si les matériaux ne sont pas payés, le coût est comptabilisé
+        const coutMateriel = c.matPayee ? 0 : c.materiel;
+        // Bénéfice final = prix - (22% URSSAF) - coût ouvriers - coût matériaux
+        const benef = c.prix - (c.prix * 0.22) - coutOuvriers - coutMateriel;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${c.nom}</td>
+                        <td>${c.duree} j</td>
+                        <td>${c.prix.toFixed(2)} €</td>
+                        <td>${c.materiel.toFixed(2)} €</td>
+                        <td>${coutOuvriers.toFixed(2)} €</td>
+                        <td>${benef.toFixed(2)} €</td>`;
+        tbody.appendChild(tr);
+      });
+    }
+    function populateChantierWorkers() {
+      // Génère la liste des ouvriers disponibles avec checkbox dans le formulaire chantier
+      const container = document.getElementById('chantier-workers');
+      container.innerHTML = '<p>Sélectionnez les ouvriers affectés :</p>';
+      ouvriers.forEach(o => {
+        container.innerHTML += `<label><input type="checkbox" value="${o.nom}"> ${o.nom} (${o.tarif.toFixed(2)} €)</label>`;
+      });
+    }
+    document.getElementById('form-chantier').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const nom = document.getElementById('chantier-nom').value.trim();
+      const duree = parseFloat(document.getElementById('chantier-duree').value);
+      const etapes = document.getElementById('chantier-etapes').value.trim();
+      const prix = parseFloat(document.getElementById('chantier-prix').value);
+      const materiel = parseFloat(document.getElementById('chantier-materiel').value);
+      const matPayee = document.getElementById('chantier-mat-payee').checked;
+      // Récupérer les ouvriers sélectionnés
+      const workerCheckboxes = document.querySelectorAll('#chantier-workers input[type="checkbox"]');
+      let selectedWorkerIds = [];
+      workerCheckboxes.forEach(cb => { if(cb.checked) selectedWorkerIds.push(cb.value); });
+      if(nom && !isNaN(duree) && !isNaN(prix) && !isNaN(materiel)){
+        chantiers.push({ nom, duree, etapes, prix, materiel, matPayee, workerIds: selectedWorkerIds });
+        saveChantiers();
+        renderChantiers();
+        this.reset();
+        populateChantierWorkers();
+      }
+    });
+    renderChantiers();
+
+    /* Module Finance */
+    let revenus = JSON.parse(localStorage.getItem(STORAGE_REVENUS)) || [];
+    let depenses = JSON.parse(localStorage.getItem(STORAGE_DEPENSES)) || [];
+    function saveFinance() {
+      localStorage.setItem(STORAGE_REVENUS, JSON.stringify(revenus));
+      localStorage.setItem(STORAGE_DEPENSES, JSON.stringify(depenses));
+    }
+    function renderFinanceSummary() {
+      // Calcul manuel
+      const totalRevenus = revenus.reduce((sum, r) => sum + r.amount, 0);
+      const totalDepensesManuelles = depenses.reduce((sum, d) => sum + d.amount, 0);
+      // Dépenses automatiques
+      const autoOuvriers = ouvriers.filter(o => !o.paye)
+                          .reduce((sum, o) => sum + (o.tarif * o.jours), 0);
+      const autoMateriel = chantiers.reduce((sum, c) => {
+        return sum + (c.matPayee ? 0 : c.materiel);
+      }, 0);
+      const totalDepenses = totalDepensesManuelles + autoOuvriers + autoMateriel;
+      const net = totalRevenus - totalDepenses;
+      document.getElementById('manual-revenus').innerText = "Revenus manuels : " + totalRevenus.toFixed(2) + " €";
+      document.getElementById('manual-depenses').innerText = "Dépenses manuelles : " + totalDepensesManuelles.toFixed(2) + " €";
+      document.getElementById('auto-ouvriers').innerText = "Dépenses ouvriers non payés : " + autoOuvriers.toFixed(2) + " €";
+      document.getElementById('auto-materiel').innerText = "Dépenses matériaux non payés : " + autoMateriel.toFixed(2) + " €";
+      document.getElementById('global-balance').innerText = "Solde global : " + net.toFixed(2) + " €";
+    }
+    document.getElementById('form-revenu').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const description = document.getElementById('revenu-description').value.trim();
+      const amount = parseFloat(document.getElementById('revenu-montant').value);
+      if(description && !isNaN(amount)){
+        revenus.push({ description, amount });
+        saveFinance();
+        renderFinanceSummary();
+        this.reset();
+      }
+    });
+    document.getElementById('form-depense').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const description = document.getElementById('depense-description').value.trim();
+      const amount = parseFloat(document.getElementById('depense-montant').value);
+      if(description && !isNaN(amount)){
+        depenses.push({ description, amount });
+        saveFinance();
+        renderFinanceSummary();
+        this.reset();
+      }
+    });
+    renderFinanceSummary();
+
+    /* Enregistrement du Service Worker */
+    if ('serviceWorker' in navigator) {
+      navigator.serviceWorker.register('./sw.js')
+        .then(registration => console.log('Service Worker enregistré:', registration))
+        .catch(error => console.error('Erreur Service Worker:', error));
+    }
+  </script>
+</body>
+</html>
