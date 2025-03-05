@@ -76,10 +76,17 @@
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
-    nav {
-      display: flex;
-      margin-bottom: 20px;
-      border-bottom: 2px solid #000;
+   nav {
+  display: flex;
+  flex-wrap: wrap; /* Permet le retour à la ligne si nécessaire */
+  justify-content: center; /* Centre les boutons horizontalement */
+  gap: 8px; /* Espacement entre les boutons */
+  max-width: 100%; /* Empêche le menu de dépasser l’écran */
+  overflow: hidden; /* Évite les débordements */
+  margin-bottom: 20px;
+  border-bottom: 2px solid #000;
+}
+
     }
     nav button {
       flex: 1;
