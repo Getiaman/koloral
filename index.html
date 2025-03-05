@@ -76,17 +76,15 @@
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
-   nav {
-  display: flex;
-  flex-wrap: wrap; /* Permet le retour à la ligne si nécessaire */
-  justify-content: center; /* Centre les boutons horizontalement */
-  gap: 1px; /* Espacement entre les boutons */
-  max-width: 100%; /* Empêche le menu de dépasser l’écran */
-  overflow: hidden; /* Évite les débordements */
-  margin-bottom: 20px;
-  border-bottom: 2px solid #000;
-}
-
+    nav {
+      display: flex;
+      flex-wrap: wrap; /* Permet le retour à la ligne si nécessaire */
+      justify-content: center; /* Centre les boutons horizontalement */
+      gap: 1px; /* Espacement entre les boutons */
+      max-width: 100%; /* Empêche le menu de dépasser l’écran */
+      overflow: hidden; /* Évite les débordements */
+      margin-bottom: 20px;
+      border-bottom: 2px solid #000;
     }
     nav button {
       flex: 1;
@@ -566,17 +564,74 @@
         tbody.appendChild(tr);
       });
     }
-    // Modification des étapes d'un chantier déjà enregistré
+    // Nouvel affichage pour modification des étapes via une fenêtre modale
     function editChantierSteps(idx) {
       const chantier = chantiers[idx];
-      const newEtapes = prompt("Modifier les étapes (séparez par des virgules) :", chantier.etapes.map(e => e.description).join(", "));
-      if (newEtapes !== null) {
-        const etapeArr = newEtapes.split(",").map(s => s.trim()).filter(s => s !== "");
-        chantier.etapes = etapeArr.map(desc => ({ description: desc, done: false }));
+      // Création d'un overlay modal
+      const modal = document.createElement('div');
+      modal.style.position = 'fixed';
+      modal.style.top = 0;
+      modal.style.left = 0;
+      modal.style.width = '100%';
+      modal.style.height = '100%';
+      modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
+      modal.style.display = 'flex';
+      modal.style.alignItems = 'center';
+      modal.style.justifyContent = 'center';
+      modal.style.zIndex = 1000;
+      
+      const modalContent = document.createElement('div');
+      modalContent.style.backgroundColor = '#FFF';
+      modalContent.style.padding = '20px';
+      modalContent.style.borderRadius = '8px';
+      modalContent.style.width = '80%';
+      modalContent.style.maxWidth = '500px';
+      modalContent.style.maxHeight = '80%';
+      modalContent.style.overflowY = 'auto';
+
+      const title = document.createElement('h3');
+      title.innerText = 'Modifier étapes pour ' + chantier.nom;
+      modalContent.appendChild(title);
+
+      chantier.etapes.forEach((etape, i) => {
+        const label = document.createElement('label');
+        label.style.display = 'block';
+        label.style.marginBottom = '8px';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.checked = etape.done;
+        checkbox.onchange = function() {
+          chantier.etapes[i].done = checkbox.checked;
+        };
+        
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(' ' + etape.description));
+        modalContent.appendChild(label);
+      });
+
+      const saveBtn = document.createElement('button');
+      saveBtn.innerText = 'Sauvegarder';
+      saveBtn.style.marginTop = '10px';
+      saveBtn.onclick = function() {
         chantier.progress = updateChantierProgress(chantier.etapes);
         saveChantiers();
         renderChantiers();
-      }
+        document.body.removeChild(modal);
+      };
+      modalContent.appendChild(saveBtn);
+
+      const cancelBtn = document.createElement('button');
+      cancelBtn.innerText = 'Annuler';
+      cancelBtn.style.marginTop = '10px';
+      cancelBtn.style.marginLeft = '10px';
+      cancelBtn.onclick = function() {
+        document.body.removeChild(modal);
+      };
+      modalContent.appendChild(cancelBtn);
+
+      modal.appendChild(modalContent);
+      document.body.appendChild(modal);
     }
     // Pour la création d'un chantier
     let currentEtapes = [];
@@ -870,50 +925,6 @@
       generateReport();
     }
 
-    /* Module Finance */
-    let revenusArr = JSON.parse(localStorage.getItem(STORAGE_REVENUS)) || [];
-    let depensesArr = JSON.parse(localStorage.getItem(STORAGE_DEPENSES)) || [];
-    function saveFinance() {
-      localStorage.setItem(STORAGE_REVENUS, JSON.stringify(revenusArr));
-      localStorage.setItem(STORAGE_DEPENSES, JSON.stringify(depensesArr));
-    }
-    function renderFinanceSummary() {
-      const totalRevenus = revenusArr.reduce((sum, r) => sum + r.amount, 0);
-      const totalDepensesManuelles = depensesArr.reduce((sum, d) => sum + d.amount, 0);
-      const autoOuvriers = ouvriers.filter(o => !o.paye).reduce((sum, o) => sum + (o.tarif * o.jours), 0);
-      const autoMateriel = chantiers.reduce((sum, c) => sum + (c.matPayee ? 0 : c.materiel), 0);
-      const totalDepenses = totalDepensesManuelles + autoOuvriers + autoMateriel;
-      const net = totalRevenus - totalDepenses;
-      document.getElementById('manual-revenus').innerText = "Revenus manuels : " + totalRevenus.toFixed(2) + " €";
-      document.getElementById('manual-depenses').innerText = "Dépenses manuelles : " + totalDepensesManuelles.toFixed(2) + " €";
-      document.getElementById('auto-ouvriers').innerText = "Dépenses ouvriers (non payés) : " + autoOuvriers.toFixed(2) + " €";
-      document.getElementById('auto-materiel').innerText = "Dépenses matériaux (non payés) : " + autoMateriel.toFixed(2) + " €";
-      document.getElementById('global-balance').innerText = "Solde global : " + net.toFixed(2) + " €";
-    }
-    document.getElementById('form-revenu').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const description = document.getElementById('revenu-description').value.trim();
-      const amount = parseFloat(document.getElementById('revenu-montant').value);
-      if (description && !isNaN(amount)) {
-        revenusArr.push({ description, amount });
-        saveFinance();
-        renderFinanceSummary();
-        this.reset();
-      }
-    });
-    document.getElementById('form-depense').addEventListener('submit', function(e) {
-      e.preventDefault();
-      const description = document.getElementById('depense-description').value.trim();
-      const amount = parseFloat(document.getElementById('depense-montant').value);
-      if (description && !isNaN(amount)) {
-        depensesArr.push({ description, amount });
-        saveFinance();
-        renderFinanceSummary();
-        this.reset();
-      }
-    });
-    renderFinanceSummary();
-
     /* Service Worker */
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js')
@@ -959,8 +970,8 @@
     function downloadReportCSV() {
       let csvContent = "data:text/csv;charset=utf-8,";
       csvContent += "Type,Description,Montant\n";
-      revenusArr.forEach(r => { csvContent += `Revenu,${r.description},${r.amount}\n`; });
-      depensesArr.forEach(d => { csvContent += `Dépense,${d.description},${d.amount}\n`; });
+      revenus.forEach(r => { csvContent += `Revenu,${r.description},${r.amount}\n`; });
+      depenses.forEach(d => { csvContent += `Dépense,${d.description},${d.amount}\n`; });
       ouvriers.forEach(o => {
         const total = o.tarif * o.jours;
         csvContent += `Ouvrier,${o.nom} - Tarif: ${o.tarif},Total: ${total.toFixed(2)}\n`;
@@ -982,4 +993,3 @@
   </script>
 </body>
 </html>
-
