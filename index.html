@@ -2,139 +2,164 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Gestion Entreprise - App Mobile</title>
+  <title>Koloral Sheqiri - Gestion d'Entreprise</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Lien vers le manifest pour la PWA -->
+  <!-- Logo & script progressier -->
+  <link rel="manifest" href="https://progressier.app/VcIlgfTcnkCBYCcm7COM/progressier.json"/>
+  <script defer src="https://progressier.app/VcIlgfTcnkCBYCcm7COM/script.js"></script>
+  <!-- Lien vers le manifest de l'application -->
   <link rel="manifest" href="manifest.json">
   <style>
-    /* Couleurs : Bleu Marine (#000080), Cyan adouci (#5BC0EB) et Blanc (#FFFFFF) */
+    /* Palette : Fond crème (#BCA086), Marron foncé (#4B3621) et Blanc (#FFFFFF) avec contours noirs */
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
       padding: 0;
       background-color: #FFFFFF;
-      color: #000080;
+      color: #4B3621;
     }
     header {
-      background-color: #000080;
+      background-color: #4B3621;
       color: #FFFFFF;
       text-align: center;
       padding: 1em;
+      position: relative;
       box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      border-bottom: 2px solid #000;
     }
-    header h1 {
-      margin: 0;
-      font-size: 2em;
+    header h1 { margin: 0; font-size: 1.8em; }
+    /* Bouton personnel en haut à droite */
+    .personal-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      background-color: #FFFFFF;
+      color: #4B3621;
+      border: 1px solid #000;
+      padding: 5px 10px;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+    .personal-menu {
+      position: absolute;
+      top: 45px;
+      right: 10px;
+      background-color: #FFFFFF;
+      border: 1px solid #000;
+      border-radius: 4px;
+      display: none;
+      z-index: 10;
+    }
+    .personal-menu a {
+      display: block;
+      padding: 8px 12px;
+      text-decoration: none;
+      color: #4B3621;
+      border-bottom: 1px solid #000;
+      font-size: 0.9em;
+    }
+    .personal-menu a:last-child { border-bottom: none; }
+    .personal-menu a:hover {
+      background-color: #4B3621;
+      color: #FFFFFF;
     }
     .container {
       max-width: 900px;
       margin: 20px auto;
-      background-color: #FFFFFF;
+      background-color: #BCA086;
       padding: 20px;
       border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+      border: 2px solid #000;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
     nav {
       display: flex;
       margin-bottom: 20px;
-      border-bottom: 2px solid #5BC0EB;
+      border-bottom: 2px solid #000;
     }
     nav button {
       flex: 1;
       padding: 12px;
-      background-color: #5BC0EB;
-      border: none;
-      color: #000080;
+      background-color: #4B3621;
+      border: 1px solid #000;
+      color: #FFFFFF;
       font-weight: bold;
       cursor: pointer;
       transition: background 0.3s;
       font-size: 1em;
     }
-    nav button.active,
-    nav button:hover {
-      background-color: #000080;
-      color: #FFFFFF;
+    nav button:hover,
+    nav button.active {
+      background-color: #000;
     }
     section {
       display: none;
       animation: fadeIn 0.5s;
     }
-    section.active {
-      display: block;
-    }
+    section.active { display: block; }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
-    form {
-      margin: 10px 0;
-    }
+    form { margin: 10px 0; }
     form input, form select, form textarea {
       width: 100%;
       padding: 10px;
       margin: 8px 0;
-      border: 1px solid #000080;
+      border: 1px solid #000;
       border-radius: 4px;
       font-size: 1em;
+      background-color: #FFF;
     }
     form button {
       padding: 12px;
-      background-color: #000080;
-      color: #FFFFFF;
-      border: none;
+      background-color: #4B3621;
+      color: #FFF;
+      border: 1px solid #000;
       border-radius: 4px;
       cursor: pointer;
       font-size: 1em;
       transition: background 0.3s;
       margin-top: 8px;
     }
-    form button:hover {
-      background-color: #5BC0EB;
-      color: #000080;
-    }
+    form button:hover { background-color: #000; }
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 10px;
     }
-    table, th, td {
-      border: 1px solid #000080;
-    }
+    table, th, td { border: 1px solid #000; }
     th, td {
       padding: 10px;
       text-align: left;
       font-size: 0.95em;
+      background-color: #FFF;
     }
-    th {
-      background-color: #5BC0EB;
-      color: #000080;
-    }
+    th { background-color: #4B3621; color: #FFF; }
     .action-btn {
       margin-right: 5px;
       padding: 6px 10px;
-      background-color: #000080;
-      color: #FFFFFF;
-      border: none;
+      background-color: #4B3621;
+      color: #FFF;
+      border: 1px solid #000;
       border-radius: 3px;
       cursor: pointer;
       font-size: 0.9em;
     }
-    .action-btn:hover {
-      background-color: #5BC0EB;
-      color: #000080;
-    }
+    .action-btn:hover { background-color: #000; }
     /* Progress Bar pour les chantiers */
     .progress-container {
       width: 100%;
-      background-color: #E0E0E0;
-      border: 1px solid #000080;
+      background-color: #DDD;
+      border: 1px solid #000;
       border-radius: 4px;
       margin-top: 8px;
       height: 20px;
     }
     .progress-bar {
       height: 100%;
-      background-color: #5BC0EB;
+      background-color: #4B3621;
       width: 0%;
       border-radius: 4px;
       transition: width 0.3s;
@@ -152,14 +177,15 @@
       justify-content: center;
     }
     .report-content {
-      background-color: #FFFFFF;
+      background-color: #FFF;
       padding: 20px;
       border-radius: 8px;
       max-height: 80%;
       overflow-y: auto;
       width: 90%;
       max-width: 800px;
-      color: #000080;
+      color: #000;
+      border: 2px solid #000;
     }
     .close-report {
       float: right;
@@ -169,36 +195,48 @@
     .extra-btn {
       margin: 5px 0;
       padding: 10px;
-      background-color: #000080;
-      color: #FFFFFF;
-      border: none;
+      background-color: #4B3621;
+      color: #FFF;
+      border: 1px solid #000;
       border-radius: 4px;
       cursor: pointer;
       font-size: 1em;
       transition: background 0.3s;
     }
-    .extra-btn:hover {
-      background-color: #5BC0EB;
-      color: #000080;
-    }
+    .extra-btn:hover { background-color: #000; }
     /* Résumé Finance */
     #finance-summary p {
       margin: 5px 0;
       font-weight: bold;
       font-size: 1em;
     }
+    /* Module Projet */
+    #section-projet { padding: 10px 0; }
+    #projet-output {
+      border: 2px solid #000;
+      padding: 10px;
+      border-radius: 4px;
+      background-color: #FFF;
+      margin-top: 10px;
+    }
   </style>
 </head>
 <body>
   <header>
-    <h1>Gestion Entreprise</h1>
+    <h1>Koloral Sheqiri</h1>
+    <button class="personal-btn" id="personal-btn">Menu Perso</button>
+    <div class="personal-menu" id="personal-menu">
+      <a href="https://koloral.fr" target="_blank">Koloral.fr</a>
+      <a href="https://hostinger.com" target="_blank">Hostinger</a>
+    </div>
   </header>
   <div class="container">
-    <!-- Navigation -->
+    <!-- Navigation principale -->
     <nav>
       <button id="tab-ouvriers" class="active">Ouvriers</button>
       <button id="tab-chantier">Chantiers</button>
       <button id="tab-finance">Finance</button>
+      <button id="tab-projet">Projet</button>
     </nav>
 
     <!-- Module Ouvriers -->
@@ -299,6 +337,14 @@
       <button class="extra-btn" onclick="generateReport()">Générer Rapport</button>
       <button class="extra-btn" onclick="downloadReportCSV()">Télécharger Rapport CSV</button>
     </section>
+
+    <!-- Module Projet -->
+    <section id="section-projet">
+      <h2>Projet d'Économie</h2>
+      <p>Analysez vos données pour découvrir des économies potentielles sur vos projets.</p>
+      <button class="extra-btn" onclick="calculateProjectSavings()">Calculer Économies</button>
+      <div id="projet-output"></div>
+    </section>
   </div>
 
   <!-- Modal Rapport -->
@@ -324,6 +370,19 @@
     document.getElementById('tab-ouvriers').addEventListener('click', () => setActiveTab('ouvriers'));
     document.getElementById('tab-chantier').addEventListener('click', () => setActiveTab('chantier'));
     document.getElementById('tab-finance').addEventListener('click', () => setActiveTab('finance'));
+    document.getElementById('tab-projet').addEventListener('click', () => setActiveTab('projet'));
+
+    /* Menu personnel */
+    const personalBtn = document.getElementById('personal-btn');
+    const personalMenu = document.getElementById('personal-menu');
+    personalBtn.addEventListener('click', () => {
+      personalMenu.style.display = personalMenu.style.display === "block" ? "none" : "block";
+    });
+    document.addEventListener('click', function(e) {
+      if(!personalBtn.contains(e.target) && !personalMenu.contains(e.target)) {
+        personalMenu.style.display = "none";
+      }
+    });
 
     /* Stockage Local */
     const STORAGE_WORKERS = 'gestion_ouvriers';
@@ -460,7 +519,7 @@
       const container = document.getElementById('etapes-container');
       container.innerHTML = "";
       currentEtapes.forEach((etape, index) => {
-        container.innerHTML += `<div style="margin-bottom:5px;">
+        container.innerHTML += `<div style="margin-bottom:5px; border:1px solid #000; padding:4px; border-radius:4px;">
           <label>
             <input type="checkbox" onchange="toggleEtape(${index})" ${etape.done ? "checked" : ""}>
             ${etape.description}
@@ -646,12 +705,8 @@
     function downloadReportCSV() {
       let csvContent = "data:text/csv;charset=utf-8,";
       csvContent += "Type,Description,Montant\n";
-      revenus.forEach(r => {
-        csvContent += `Revenu,${r.description},${r.amount}\n`;
-      });
-      depenses.forEach(d => {
-        csvContent += `Dépense,${d.description},${d.amount}\n`;
-      });
+      revenus.forEach(r => { csvContent += `Revenu,${r.description},${r.amount}\n`; });
+      depenses.forEach(d => { csvContent += `Dépense,${d.description},${d.amount}\n`; });
       ouvriers.forEach(o => {
         const total = o.tarif * o.jours;
         csvContent += `Ouvrier,${o.nom} - Tarif: ${o.tarif},Total: ${total.toFixed(2)}\n`;
@@ -667,6 +722,20 @@
       link.click();
       document.body.removeChild(link);
     }
+    /* Module Projet */
+    function calculateProjectSavings() {
+      const totalRevenus = revenus.reduce((sum, r) => sum + r.amount, 0);
+      const totalDepensesManuelles = depenses.reduce((sum, d) => sum + d.amount, 0);
+      const autoOuvriers = ouvriers.filter(o => !o.paye).reduce((sum, o) => sum + (o.tarif * o.jours), 0);
+      const autoMateriel = chantiers.reduce((sum, c) => sum + (c.matPayee ? 0 : c.materiel), 0);
+      const totalDepenses = totalDepensesManuelles + autoOuvriers + autoMateriel;
+      const net = totalRevenus - totalDepenses;
+      let savings = 0;
+      if(net > 0) { savings = net * 0.10; }
+      document.getElementById('projet-output').innerHTML = `<p>Solde global actuel : ${net.toFixed(2)} €</p>
+        <p>Économie potentielle estimée (10%) : ${savings.toFixed(2)} €</p>
+        <p>Ce montant peut être réinvesti pour optimiser vos projets.</p>`;
+    }
     /* Fonctions additionnelles */
     function sortOuvriersByTotal() {
       ouvriers.sort((a, b) => (b.tarif * b.jours) - (a.tarif * a.jours));
@@ -681,7 +750,6 @@
         populateOuvrierSelect();
       }
     }
-
     /* Enregistrement du Service Worker */
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js')
