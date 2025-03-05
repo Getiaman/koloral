@@ -10,7 +10,7 @@
   <!-- Lien vers le manifest de l'application -->
   <link rel="manifest" href="manifest.json">
   <style>
-    /* Palette : Fond crème (#BCA086), Marron foncé (#4B3621) et Blanc (#FFFFFF) avec contours noirs */
+    /* Palette : Fond crème (#BCA086), Marron foncé (#4B3621), Blanc (#FFFFFF) et contours noirs */
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
@@ -24,10 +24,13 @@
       text-align: center;
       padding: 1em;
       position: relative;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
       border-bottom: 2px solid #000;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
-    header h1 { margin: 0; font-size: 1.8em; }
+    header h1 {
+      margin: 0;
+      font-size: 1.8em;
+    }
     /* Bouton personnel en haut à droite */
     .personal-btn {
       position: absolute;
@@ -65,7 +68,7 @@
       color: #FFFFFF;
     }
     .container {
-      max-width: 900px;
+      max-width: 850px;
       margin: 20px auto;
       background-color: #BCA086;
       padding: 20px;
@@ -83,7 +86,7 @@
       padding: 12px;
       background-color: #4B3621;
       border: 1px solid #000;
-      color: #FFFFFF;
+      color: #FFF;
       font-weight: bold;
       cursor: pointer;
       transition: background 0.3s;
@@ -104,7 +107,7 @@
     }
     form { margin: 10px 0; }
     form input, form select, form textarea {
-      width: 100%;
+      width: 90%;
       padding: 10px;
       margin: 8px 0;
       border: 1px solid #000;
@@ -125,20 +128,20 @@
     }
     form button:hover { background-color: #000; }
     table {
-      width: 100%;
+      width: 60%;
       border-collapse: collapse;
       margin-top: 10px;
     }
     table, th, td { border: 1px solid #000; }
     th, td {
-      padding: 10px;
+      padding: 05px;
       text-align: left;
-      font-size: 0.95em;
+      font-size: 0.65em;
       background-color: #FFF;
     }
     th { background-color: #4B3621; color: #FFF; }
     .action-btn {
-      margin-right: 5px;
+      margin-right: 3px;
       padding: 6px 10px;
       background-color: #4B3621;
       color: #FFF;
@@ -167,7 +170,7 @@
     /* Modal Rapport */
     .report-modal {
       position: fixed;
-      top: 0;
+      top:0;
       left: 0;
       width: 100%;
       height: 100%;
@@ -203,21 +206,28 @@
       font-size: 1em;
       transition: background 0.3s;
     }
-    .extra-btn:hover { background-color: #000; }
-    /* Résumé Finance */
-    #finance-summary p {
-      margin: 5px 0;
-      font-weight: bold;
-      font-size: 1em;
-    }
+    .extra-btn:hover { background-color: #FFFFF0; }
     /* Module Projet */
     #section-projet { padding: 10px 0; }
-    #projet-output {
-      border: 2px solid #000;
+    #form-projet {
+      border: 1px solid #FFFFF0;
       padding: 10px;
       border-radius: 4px;
       background-color: #FFF;
+      margin-bottom: 10px;
+    }
+    #form-projet input, #form-projet select {
+      margin-bottom: 8px;
+    }
+    #projet-list table {
+      width: 100%;
+      border-collapse: collapse;
       margin-top: 10px;
+    }
+    #projet-list th, #projet-list td {
+      border: 1px solid #000;
+      padding: 8px;
+      text-align: left;
     }
   </style>
 </head>
@@ -340,10 +350,32 @@
 
     <!-- Module Projet -->
     <section id="section-projet">
-      <h2>Projet d'Économie</h2>
-      <p>Analysez vos données pour découvrir des économies potentielles sur vos projets.</p>
-      <button class="extra-btn" onclick="calculateProjectSavings()">Calculer Économies</button>
-      <div id="projet-output"></div>
+      <h2>Projet</h2>
+      <form id="form-projet">
+        <input type="text" id="projet-nom" placeholder="Nom du projet" required>
+        <input type="number" id="projet-prix" placeholder="Budget total (€)" step="0.01" required>
+        <label>
+          <input type="checkbox" id="projet-ajout-lien" onchange="toggleLienProjet()"> Ajouter un lien
+        </label>
+        <input type="url" id="projet-lien" placeholder="URL du projet" style="display:none;">
+        <input type="number" id="projet-duree" placeholder="Durée souhaitée (mois)" step="1" required>
+        <label>
+          <input type="checkbox" id="projet-mode-inverse"> Mode Inverse (entrer montant mensuel)
+        </label>
+        <input type="number" id="projet-mensuel" placeholder="Budget mensuel (€)" step="0.01">
+        <select id="projet-priorite">
+          <option value="1">Priorité 1 (Haute)</option>
+          <option value="2">Priorité 2</option>
+          <option value="3">Priorité 3 (Normale)</option>
+          <option value="4">Priorité 4</option>
+          <option value="5">Priorité 5 (Basse)</option>
+        </select>
+        <button type="button" onclick="calculateProjet()">Calculer Projet</button>
+      </form>
+      <div id="projet-resultat" style="margin-top:10px; border:1px solid #000; padding:10px; border-radius:4px; background-color:#FFF;"></div>
+      <h3>Suivi Mensuel</h3>
+      <div id="projet-suivi"></div>
+      <button class="extra-btn" onclick="resetProjets()">Réinitialiser Projets</button>
     </section>
   </div>
 
@@ -389,6 +421,7 @@
     const STORAGE_CHANTIERS = 'gestion_chantiers';
     const STORAGE_REVENUS = 'gestion_revenus';
     const STORAGE_DEPENSES = 'gestion_depenses';
+    const STORAGE_PROJETS = 'gestion_projets';
 
     /* Module Ouvriers */
     let ouvriers = JSON.parse(localStorage.getItem(STORAGE_WORKERS)) || [];
@@ -663,7 +696,8 @@
         revenus,
         depenses,
         ouvriers,
-        chantiers
+        chantiers,
+        projets
       };
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
       const dlAnchorElem = document.createElement('a');
@@ -671,7 +705,6 @@
       dlAnchorElem.setAttribute("download", "rapport_finance.json");
       dlAnchorElem.click();
     }
-    /* Génération de rapport et téléchargement CSV */
     function generateReport() {
       let reportHTML = "<h3>Rapport Global</h3>";
       reportHTML += "<h4>Ouvriers</h4><ul>";
@@ -681,6 +714,10 @@
       reportHTML += "</ul><h4>Chantiers</h4><ul>";
       chantiers.forEach(c => {
         reportHTML += `<li>${c.nom} - Durée: ${c.duree} j, Prix: ${c.prix} €, Matériaux: ${c.materiel} €, Avancement: ${c.progress.toFixed(0)} %, Ouvriers: ${c.workerIds.join(", ") || "Aucun"}</li>`;
+      });
+      reportHTML += "</ul><h4>Projets</h4><ul>";
+      projets.forEach(p => {
+        reportHTML += `<li>${p.nom} - Budget: ${p.prix} €, Délai: ${p.duree} mois, Mode: ${p.mode}, Calcul: ${p.calcul}, Priorité: ${p.priorite}</li>`;
       });
       reportHTML += "</ul><h4>Finance</h4>";
       reportHTML += `<p>${document.getElementById('manual-revenus').innerText}</p>`;
@@ -714,6 +751,9 @@
       chantiers.forEach(c => {
         csvContent += `Chantier,${c.nom} - Durée: ${c.duree} j,${c.prix}\n`;
       });
+      projets.forEach(p => {
+        csvContent += `Projet,${p.nom} - Budget: ${p.prix},Délai: ${p.duree} mois\n`;
+      });
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
@@ -723,33 +763,106 @@
       document.body.removeChild(link);
     }
     /* Module Projet */
-    function calculateProjectSavings() {
-      const totalRevenus = revenus.reduce((sum, r) => sum + r.amount, 0);
-      const totalDepensesManuelles = depenses.reduce((sum, d) => sum + d.amount, 0);
-      const autoOuvriers = ouvriers.filter(o => !o.paye).reduce((sum, o) => sum + (o.tarif * o.jours), 0);
-      const autoMateriel = chantiers.reduce((sum, c) => sum + (c.matPayee ? 0 : c.materiel), 0);
-      const totalDepenses = totalDepensesManuelles + autoOuvriers + autoMateriel;
-      const net = totalRevenus - totalDepenses;
-      let savings = 0;
-      if(net > 0) { savings = net * 0.10; }
-      document.getElementById('projet-output').innerHTML = `<p>Solde global actuel : ${net.toFixed(2)} €</p>
-        <p>Économie potentielle estimée (10%) : ${savings.toFixed(2)} €</p>
-        <p>Ce montant peut être réinvesti pour optimiser vos projets.</p>`;
-    }
-    /* Fonctions additionnelles */
-    function sortOuvriersByTotal() {
-      ouvriers.sort((a, b) => (b.tarif * b.jours) - (a.tarif * a.jours));
-      saveOuvriers();
-      renderOuvriers();
-    }
-    function resetOuvriers() {
-      if(confirm("Réinitialiser tous les ouvriers ?")) {
-        ouvriers = [];
-        saveOuvriers();
-        renderOuvriers();
-        populateOuvrierSelect();
+    let projets = JSON.parse(localStorage.getItem(STORAGE_PROJETS)) || [];
+    function saveProjets() { localStorage.setItem(STORAGE_PROJETS, JSON.stringify(projets)); }
+    function renderProjets() {
+      const container = document.getElementById('projet-output');
+      if(projets.length === 0) {
+        container.innerHTML = "<p>Aucun projet enregistré.</p>";
+      } else {
+        let html = "<table id='projet-list'><thead><tr><th>Nom</th><th>Budget (€)</th><th>Lien</th><th>Délai (mois)</th><th>Mode</th><th>Calcul</th><th>Priorité</th><th>Actions</th></tr></thead><tbody>";
+        projets.forEach((p, idx) => {
+          html += `<tr>
+            <td>${p.nom}</td>
+            <td>${p.prix.toFixed(2)}</td>
+            <td>${p.lien ? `<a href="${p.lien}" target="_blank">Lien</a>` : "-"}</td>
+            <td>${p.duree} mois</td>
+            <td>${p.mode}</td>
+            <td>${p.calcul}</td>
+            <td>${p.priorite}</td>
+            <td>
+              <button class="action-btn" onclick="editProjet(${idx})">Modifier</button>
+              <button class="action-btn" onclick="deleteProjet(${idx})">Supprimer</button>
+            </td>
+          </tr>`;
+        });
+        html += "</tbody></table>";
+        container.innerHTML = html;
       }
     }
+    function toggleLienProjet() {
+      const check = document.getElementById('projet-ajout-lien').checked;
+      document.getElementById('projet-lien').style.display = check ? "block" : "none";
+    }
+    function calculateProjet() {
+      const nom = document.getElementById('projet-nom').value.trim();
+      const prix = parseFloat(document.getElementById('projet-prix').value);
+      const duree = parseInt(document.getElementById('projet-duree').value);
+      const mode = document.getElementById('projet-mode-inverse').checked ? "Inverse" : "Direct";
+      const mensuel = parseFloat(document.getElementById('projet-mensuel').value);
+      const priorite = document.getElementById('projet-priorite').value;
+      if(nom && !isNaN(prix) && !isNaN(duree)) {
+        let calcul = "";
+        if(mode === "Direct") {
+          const budgetMensuel = prix / duree;
+          calcul = "Budget mensuel requis : " + budgetMensuel.toFixed(2) + " €";
+        } else {
+          if(!isNaN(mensuel) && mensuel > 0) {
+            const mois = Math.ceil(prix / mensuel);
+            calcul = "Durée estimée : " + mois + " mois";
+          } else {
+            calcul = "Montant mensuel invalide";
+          }
+        }
+        const lien = document.getElementById('projet-lien').value.trim();
+        const projet = {
+          nom,
+          prix,
+          duree,
+          lien: lien || null,
+          mode,
+          calcul,
+          priorite,
+          suivi: [] // Pour suivi mensuel
+        };
+        projets.push(projet);
+        saveProjets();
+        renderProjets();
+        document.getElementById('form-projet').reset();
+        document.getElementById('projet-lien').style.display = "none";
+      } else {
+        alert("Veuillez remplir correctement les champs du projet.");
+      }
+    }
+    function editProjet(idx) {
+      const projet = projets[idx];
+      const newNom = prompt("Modifier le nom du projet:", projet.nom);
+      if(newNom !== null) { projet.nom = newNom.trim() || projet.nom; }
+      const newPrix = prompt("Modifier le budget total (€):", projet.prix);
+      if(newPrix !== null) { projet.prix = parseFloat(newPrix) || projet.prix; }
+      const newDuree = prompt("Modifier le délai souhaité (mois):", projet.duree);
+      if(newDuree !== null) { projet.duree = parseInt(newDuree) || projet.duree; }
+      const newPriorite = prompt("Modifier la priorité (1 à 5):", projet.priorite);
+      if(newPriorite !== null) { projet.priorite = newPriorite || projet.priorite; }
+      saveProjets();
+      renderProjets();
+    }
+    function deleteProjet(idx) {
+      if(confirm("Supprimer le projet " + projets[idx].nom + " ?")) {
+        projets.splice(idx, 1);
+        saveProjets();
+        renderProjets();
+      }
+    }
+    function resetProjets() {
+      if(confirm("Réinitialiser tous les projets ?")) {
+        projets = [];
+        saveProjets();
+        renderProjets();
+      }
+    }
+    renderProjets();
+
     /* Enregistrement du Service Worker */
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('./sw.js')
