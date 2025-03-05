@@ -1,10 +1,10 @@
 {
-  "name": "Gestion Entreprise",
+  "name": "Koloral Sheqiri - Gestion d'Entreprise",
   "short_name": "Gestion",
   "start_url": "./index.html",
   "display": "standalone",
   "background_color": "#FFFFFF",
-  "theme_color": "#000080",
+  "theme_color": "#4B3621",
   "icons": [
     {
       "src": "icon-192.png",
@@ -18,4 +18,3 @@
     }
   ]
 }
-
