@@ -1,32 +1,192 @@
 <!DOCTYPE html>
 <html lang="fr">
 <head>
-  <link rel="manifest"href="https://progressier.app/VcIlgfTcnkCBYCcm7COM/progressier.json"/>
-<script defersrc="https://progressier.app/VcIlgfTcnkCBYCcm7COM/script.js"></script>
   <meta charset="UTF-8">
   <title>Gestion Entreprise - App Mobile</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <!-- Lien vers le manifest pour la PWA -->
   <link rel="manifest" href="manifest.json">
   <style>
-    /* Styles généraux */
-    body { font-family: Arial, sans-serif; margin: 0; padding: 0; background: #f4f4f4; }
-    header { background: #333; color: #fff; text-align: center; padding: 1em; }
-    .container { max-width: 600px; margin: 1em auto; background: #fff; padding: 1em; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
-    nav { display: flex; }
-    nav button { flex: 1; padding: 1em; border: none; background: #555; color: #fff; font-size: 1em; }
-    nav button.active { background: #777; }
-    section { display: none; }
-    section.active { display: block; }
-    form { margin: 1em 0; }
-    form input, form select, form textarea { width: 100%; padding: 0.5em; margin: 0.3em 0; }
-    form button { padding: 0.7em; width: 100%; background: #333; color: #fff; border: none; }
-    table { width: 100%; border-collapse: collapse; margin-top: 0.5em; }
-    table, th, td { border: 1px solid #ccc; }
-    th, td { padding: 0.5em; text-align: left; }
-    h2 { border-bottom: 2px solid #333; padding-bottom: 0.3em; }
-    .section-workers label { display: block; margin: 0.3em 0; }
-    #global-balance { font-size: 1.2em; font-weight: bold; text-align: center; margin-top: 1em; }
+    /* Couleurs : Bleu Marine (#000080), Cyan adouci (#5BC0EB) et Blanc (#FFFFFF) */
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 0;
+      background-color: #FFFFFF;
+      color: #000080;
+    }
+    header {
+      background-color: #000080;
+      color: #FFFFFF;
+      text-align: center;
+      padding: 1em;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+    header h1 {
+      margin: 0;
+      font-size: 2em;
+    }
+    .container {
+      max-width: 900px;
+      margin: 20px auto;
+      background-color: #FFFFFF;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    nav {
+      display: flex;
+      margin-bottom: 20px;
+      border-bottom: 2px solid #5BC0EB;
+    }
+    nav button {
+      flex: 1;
+      padding: 12px;
+      background-color: #5BC0EB;
+      border: none;
+      color: #000080;
+      font-weight: bold;
+      cursor: pointer;
+      transition: background 0.3s;
+      font-size: 1em;
+    }
+    nav button.active,
+    nav button:hover {
+      background-color: #000080;
+      color: #FFFFFF;
+    }
+    section {
+      display: none;
+      animation: fadeIn 0.5s;
+    }
+    section.active {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    form {
+      margin: 10px 0;
+    }
+    form input, form select, form textarea {
+      width: 100%;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #000080;
+      border-radius: 4px;
+      font-size: 1em;
+    }
+    form button {
+      padding: 12px;
+      background-color: #000080;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.3s;
+      margin-top: 8px;
+    }
+    form button:hover {
+      background-color: #5BC0EB;
+      color: #000080;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+    table, th, td {
+      border: 1px solid #000080;
+    }
+    th, td {
+      padding: 10px;
+      text-align: left;
+      font-size: 0.95em;
+    }
+    th {
+      background-color: #5BC0EB;
+      color: #000080;
+    }
+    .action-btn {
+      margin-right: 5px;
+      padding: 6px 10px;
+      background-color: #000080;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 3px;
+      cursor: pointer;
+      font-size: 0.9em;
+    }
+    .action-btn:hover {
+      background-color: #5BC0EB;
+      color: #000080;
+    }
+    /* Progress Bar pour les chantiers */
+    .progress-container {
+      width: 100%;
+      background-color: #E0E0E0;
+      border: 1px solid #000080;
+      border-radius: 4px;
+      margin-top: 8px;
+      height: 20px;
+    }
+    .progress-bar {
+      height: 100%;
+      background-color: #5BC0EB;
+      width: 0%;
+      border-radius: 4px;
+      transition: width 0.3s;
+    }
+    /* Modal Rapport */
+    .report-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+    }
+    .report-content {
+      background-color: #FFFFFF;
+      padding: 20px;
+      border-radius: 8px;
+      max-height: 80%;
+      overflow-y: auto;
+      width: 90%;
+      max-width: 800px;
+      color: #000080;
+    }
+    .close-report {
+      float: right;
+      cursor: pointer;
+      font-size: 1.5em;
+    }
+    .extra-btn {
+      margin: 5px 0;
+      padding: 10px;
+      background-color: #000080;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.3s;
+    }
+    .extra-btn:hover {
+      background-color: #5BC0EB;
+      color: #000080;
+    }
+    /* Résumé Finance */
+    #finance-summary p {
+      margin: 5px 0;
+      font-weight: bold;
+      font-size: 1em;
+    }
   </style>
 </head>
 <body>
@@ -45,10 +205,13 @@
     <section id="section-ouvriers" class="active">
       <h2>Ouvriers</h2>
       <form id="form-ouvrier">
-        <input type="text" id="ouvrier-nom" placeholder="Nom de l'ouvrier" required>
+        <select id="ouvrier-select">
+          <option value="">Sélectionner un ouvrier (facultatif)</option>
+        </select>
+        <input type="text" id="ouvrier-nom" placeholder="Ou saisissez le nom de l'ouvrier">
         <input type="number" id="ouvrier-tarif" placeholder="Prix à la journée (€)" step="0.01" required>
         <input type="number" id="ouvrier-jours" placeholder="Ajouter jours (ex. 1 ou 0.5)" step="0.1" required>
-        <button type="submit">Ajouter / Mettre à jour</button>
+        <button type="submit">Enregistrer / Mettre à jour</button>
       </form>
       <table id="table-ouvriers">
         <thead>
@@ -57,11 +220,14 @@
             <th>Prix/jour</th>
             <th>Jours total</th>
             <th>Total</th>
-            <th>Paiement effectué</th>
+            <th>Paiement</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
+      <button class="extra-btn" onclick="sortOuvriersByTotal()">Trier par Total</button>
+      <button class="extra-btn" onclick="resetOuvriers()">Réinitialiser Ouvriers</button>
     </section>
 
     <!-- Module Chantiers -->
@@ -69,37 +235,44 @@
       <h2>Chantiers</h2>
       <form id="form-chantier">
         <input type="text" id="chantier-nom" placeholder="Nom du chantier" required>
-        <input type="number" id="chantier-duree" placeholder="Durée (jours)" step="1" required>
-        <textarea id="chantier-etapes" placeholder="Étapes du chantier"></textarea>
+        <input type="number" id="chantier-duree" placeholder="Durée (en jours)" step="1" required>
         <input type="number" id="chantier-prix" placeholder="Prix du chantier (€)" step="0.01" required>
         <input type="number" id="chantier-materiel" placeholder="Coût des matériaux (€)" step="0.01" required>
         <label><input type="checkbox" id="chantier-mat-payee"> Matériaux payés</label>
-        <div id="chantier-workers" class="section-workers">
-          <p>Sélectionnez les ouvriers affectés :</p>
-          <!-- La liste des ouvriers enregistrés sera générée ici -->
+        <h3>Étapes du Chantier</h3>
+        <div id="etapes-container"></div>
+        <div style="display:flex; gap:5px; margin-top:8px;">
+          <input type="text" id="etape-input" placeholder="Description de l'étape">
+          <button type="button" onclick="addEtape()">Ajouter étape</button>
         </div>
-        <button type="submit">Ajouter chantier</button>
+        <div class="progress-container" id="progress-container">
+          <div class="progress-bar" id="progress-bar"></div>
+        </div>
+        <button type="submit">Enregistrer chantier</button>
       </form>
       <table id="table-chantier">
         <thead>
           <tr>
             <th>Nom</th>
-            <th>Durée (jours)</th>
+            <th>Durée</th>
             <th>Prix</th>
             <th>Matériaux</th>
+            <th>Avancement</th>
             <th>Coût ouvriers</th>
             <th>Bénéf. final</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody></tbody>
       </table>
+      <button class="extra-btn" onclick="resetChantiers()">Réinitialiser Chantiers</button>
     </section>
 
     <!-- Module Finance -->
     <section id="section-finance">
       <h2>Finance</h2>
       <div>
-        <h3>Manuel - Revenus</h3>
+        <h3>Revenus Manuels</h3>
         <form id="form-revenu">
           <input type="text" id="revenu-description" placeholder="Description du revenu" required>
           <input type="number" id="revenu-montant" placeholder="Montant (€)" step="0.01" required>
@@ -107,7 +280,7 @@
         </form>
       </div>
       <div>
-        <h3>Manuel - Dépenses</h3>
+        <h3>Dépenses Manuelles</h3>
         <form id="form-depense">
           <input type="text" id="depense-description" placeholder="Description de la dépense" required>
           <input type="number" id="depense-montant" placeholder="Montant (€)" step="0.01" required>
@@ -121,7 +294,21 @@
         <p id="auto-materiel">Dépenses matériaux (non payés) : 0 €</p>
         <p id="global-balance">Solde global : 0 €</p>
       </div>
+      <button class="extra-btn" onclick="resetFinance()">Réinitialiser Finance</button>
+      <button class="extra-btn" onclick="exportFinanceJSON()">Exporter Finance JSON</button>
+      <button class="extra-btn" onclick="generateReport()">Générer Rapport</button>
+      <button class="extra-btn" onclick="downloadReportCSV()">Télécharger Rapport CSV</button>
     </section>
+  </div>
+
+  <!-- Modal Rapport -->
+  <div id="report-modal" class="report-modal">
+    <div class="report-content">
+      <span class="close-report" onclick="closeReport()">&times;</span>
+      <h2>Rapport Global</h2>
+      <div id="report-data"></div>
+      <button class="extra-btn" onclick="printReport()">Imprimer Rapport</button>
+    </div>
   </div>
 
   <script>
@@ -131,9 +318,8 @@
       document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
       document.getElementById('tab-' + tab).classList.add('active');
       document.getElementById('section-' + tab).classList.add('active');
-      if(tab === 'chantier'){
-        populateChantierWorkers();
-      }
+      if(tab === 'chantier') { populateChantierWorkers(); }
+      if(tab === 'ouvriers') { populateOuvrierSelect(); }
     }
     document.getElementById('tab-ouvriers').addEventListener('click', () => setActiveTab('ouvriers'));
     document.getElementById('tab-chantier').addEventListener('click', () => setActiveTab('chantier'));
@@ -158,27 +344,56 @@
                         <td>${o.tarif.toFixed(2)} €</td>
                         <td>${o.jours.toFixed(1)}</td>
                         <td>${total.toFixed(2)} €</td>
-                        <td><input type="checkbox" ${o.paye ? 'checked' : ''} onchange="toggleOuvrierPay('${o.nom}')"></td>`;
+                        <td><input type="checkbox" ${o.paye ? 'checked' : ''} onchange="toggleOuvrierPay('${o.nom}')"></td>
+                        <td>
+                          <button class="action-btn" onclick="editOuvrier('${o.nom}')">Modifier</button>
+                          <button class="action-btn" onclick="deleteOuvrier('${o.nom}')">Supprimer</button>
+                        </td>`;
         tbody.appendChild(tr);
       });
     }
     function toggleOuvrierPay(nom) {
       const index = ouvriers.findIndex(o => o.nom.toLowerCase() === nom.toLowerCase());
-      if(index !== -1){
+      if(index !== -1) {
         ouvriers[index].paye = !ouvriers[index].paye;
         saveOuvriers();
         renderOuvriers();
         renderFinanceSummary();
       }
     }
+    function deleteOuvrier(nom) {
+      if(confirm("Supprimer l'ouvrier " + nom + " ?")) {
+        ouvriers = ouvriers.filter(o => o.nom.toLowerCase() !== nom.toLowerCase());
+        saveOuvriers();
+        renderOuvriers();
+        populateOuvrierSelect();
+        renderFinanceSummary();
+      }
+    }
+    function editOuvrier(nom) {
+      const index = ouvriers.findIndex(o => o.nom.toLowerCase() === nom.toLowerCase());
+      if(index !== -1) {
+        const newTarif = prompt("Modifier le tarif journalier pour " + nom + " :", ouvriers[index].tarif);
+        const newJours = prompt("Modifier le nombre de jours pour " + nom + " :", ouvriers[index].jours);
+        if(newTarif !== null && newJours !== null) {
+          ouvriers[index].tarif = parseFloat(newTarif) || ouvriers[index].tarif;
+          ouvriers[index].jours = parseFloat(newJours) || ouvriers[index].jours;
+          saveOuvriers();
+          renderOuvriers();
+          renderFinanceSummary();
+        }
+      }
+    }
     document.getElementById('form-ouvrier').addEventListener('submit', function(e) {
       e.preventDefault();
-      const nom = document.getElementById('ouvrier-nom').value.trim();
+      let nom = document.getElementById('ouvrier-nom').value.trim();
+      const select = document.getElementById('ouvrier-select');
+      if(select.value && !nom) { nom = select.value; }
       const tarif = parseFloat(document.getElementById('ouvrier-tarif').value);
       const jours = parseFloat(document.getElementById('ouvrier-jours').value);
-      if(nom && !isNaN(tarif) && !isNaN(jours)){
+      if(nom && !isNaN(tarif) && !isNaN(jours)) {
         const index = ouvriers.findIndex(o => o.nom.toLowerCase() === nom.toLowerCase());
-        if(index !== -1){
+        if(index !== -1) {
           ouvriers[index].jours += jours;
           ouvriers[index].tarif = tarif;
         } else {
@@ -186,10 +401,19 @@
         }
         saveOuvriers();
         renderOuvriers();
+        populateOuvrierSelect();
         this.reset();
       }
     });
     renderOuvriers();
+    function populateOuvrierSelect() {
+      const select = document.getElementById('ouvrier-select');
+      select.innerHTML = '<option value="">Sélectionner un ouvrier (facultatif)</option>';
+      ouvriers.forEach(o => {
+        select.innerHTML += `<option value="${o.nom}">${o.nom}</option>`;
+      });
+    }
+    populateOuvrierSelect();
 
     /* Module Chantiers */
     let chantiers = JSON.parse(localStorage.getItem(STORAGE_CHANTIERS)) || [];
@@ -197,59 +421,131 @@
     function renderChantiers() {
       const tbody = document.querySelector('#table-chantier tbody');
       tbody.innerHTML = '';
-      chantiers.forEach(c => {
-        // Calcul du coût des ouvriers assignés pour ce chantier
+      chantiers.forEach((c, idx) => {
         let coutOuvriers = 0;
         if(c.workerIds && c.duree) {
-          c.workerIds.forEach(id => {
-            const worker = ouvriers.find(o => o.nom === id);
-            if(worker) {
-              coutOuvriers += worker.tarif * c.duree;
-            }
+          c.workerIds.forEach(name => {
+            const worker = ouvriers.find(o => o.nom === name);
+            if(worker) { coutOuvriers += worker.tarif * c.duree; }
           });
         }
-        // Si les matériaux ne sont pas payés, le coût est comptabilisé
         const coutMateriel = c.matPayee ? 0 : c.materiel;
-        // Bénéfice final = prix - (22% URSSAF) - coût ouvriers - coût matériaux
         const benef = c.prix - (c.prix * 0.22) - coutOuvriers - coutMateriel;
         const tr = document.createElement('tr');
         tr.innerHTML = `<td>${c.nom}</td>
                         <td>${c.duree} j</td>
                         <td>${c.prix.toFixed(2)} €</td>
                         <td>${c.materiel.toFixed(2)} €</td>
+                        <td>${c.progress.toFixed(0)} %</td>
                         <td>${coutOuvriers.toFixed(2)} €</td>
-                        <td>${benef.toFixed(2)} €</td>`;
+                        <td>${benef.toFixed(2)} €</td>
+                        <td>
+                          <button class="action-btn" onclick="editChantier(${idx})">Modifier</button>
+                          <button class="action-btn" onclick="deleteChantier(${idx})">Supprimer</button>
+                        </td>`;
         tbody.appendChild(tr);
       });
     }
-    function populateChantierWorkers() {
-      // Génère la liste des ouvriers disponibles avec checkbox dans le formulaire chantier
-      const container = document.getElementById('chantier-workers');
-      container.innerHTML = '<p>Sélectionnez les ouvriers affectés :</p>';
-      ouvriers.forEach(o => {
-        container.innerHTML += `<label><input type="checkbox" value="${o.nom}"> ${o.nom} (${o.tarif.toFixed(2)} €)</label>`;
+    // Gestion des étapes pour les chantiers
+    let currentEtapes = [];
+    function addEtape() {
+      const etapeInput = document.getElementById('etape-input');
+      const desc = etapeInput.value.trim();
+      if(desc === "") return;
+      currentEtapes.push({ description: desc, done: false });
+      etapeInput.value = "";
+      renderEtapes();
+    }
+    function renderEtapes() {
+      const container = document.getElementById('etapes-container');
+      container.innerHTML = "";
+      currentEtapes.forEach((etape, index) => {
+        container.innerHTML += `<div style="margin-bottom:5px;">
+          <label>
+            <input type="checkbox" onchange="toggleEtape(${index})" ${etape.done ? "checked" : ""}>
+            ${etape.description}
+          </label>
+        </div>`;
       });
+      const progress = updateChantierProgress(currentEtapes);
+      document.getElementById('progress-bar').style.width = progress + "%";
+    }
+    function toggleEtape(index) {
+      currentEtapes[index].done = !currentEtapes[index].done;
+      renderEtapes();
+    }
+    function updateChantierProgress(etapes) {
+      if(!etapes || etapes.length === 0) return 0;
+      const completed = etapes.filter(e => e.done).length;
+      return (completed / etapes.length) * 100;
     }
     document.getElementById('form-chantier').addEventListener('submit', function(e) {
       e.preventDefault();
       const nom = document.getElementById('chantier-nom').value.trim();
       const duree = parseFloat(document.getElementById('chantier-duree').value);
-      const etapes = document.getElementById('chantier-etapes').value.trim();
       const prix = parseFloat(document.getElementById('chantier-prix').value);
       const materiel = parseFloat(document.getElementById('chantier-materiel').value);
       const matPayee = document.getElementById('chantier-mat-payee').checked;
-      // Récupérer les ouvriers sélectionnés
       const workerCheckboxes = document.querySelectorAll('#chantier-workers input[type="checkbox"]');
       let selectedWorkerIds = [];
       workerCheckboxes.forEach(cb => { if(cb.checked) selectedWorkerIds.push(cb.value); });
       if(nom && !isNaN(duree) && !isNaN(prix) && !isNaN(materiel)){
-        chantiers.push({ nom, duree, etapes, prix, materiel, matPayee, workerIds: selectedWorkerIds });
+        const chantier = {
+          nom,
+          duree,
+          prix,
+          materiel,
+          matPayee,
+          workerIds: selectedWorkerIds,
+          etapes: currentEtapes.slice(),
+          progress: updateChantierProgress(currentEtapes)
+        };
+        chantiers.push(chantier);
         saveChantiers();
         renderChantiers();
         this.reset();
+        currentEtapes = [];
+        renderEtapes();
         populateChantierWorkers();
       }
     });
+    function editChantier(index) {
+      const chantier = chantiers[index];
+      const newNom = prompt("Modifier le nom du chantier:", chantier.nom);
+      if(newNom !== null) { chantier.nom = newNom.trim() || chantier.nom; }
+      const newDuree = prompt("Modifier la durée (jours):", chantier.duree);
+      if(newDuree !== null) { chantier.duree = parseFloat(newDuree) || chantier.duree; }
+      const newPrix = prompt("Modifier le prix du chantier (€):", chantier.prix);
+      if(newPrix !== null) { chantier.prix = parseFloat(newPrix) || chantier.prix; }
+      const newMateriel = prompt("Modifier le coût des matériaux (€):", chantier.materiel);
+      if(newMateriel !== null) { chantier.materiel = parseFloat(newMateriel) || chantier.materiel; }
+      chantier.progress = updateChantierProgress(chantier.etapes);
+      saveChantiers();
+      renderChantiers();
+    }
+    function deleteChantier(index) {
+      if(confirm("Supprimer le chantier " + chantiers[index].nom + " ?")){
+        chantiers.splice(index, 1);
+        saveChantiers();
+        renderChantiers();
+      }
+    }
+    function resetChantiers() {
+      if(confirm("Réinitialiser tous les chantiers ?")) {
+        chantiers = [];
+        saveChantiers();
+        renderChantiers();
+      }
+    }
+    function populateChantierWorkers() {
+      const container = document.getElementById('chantier-workers');
+      container.innerHTML = '<p>Sélectionnez les ouvriers affectés :</p>';
+      ouvriers.forEach(o => {
+        container.innerHTML += `<label style="margin-right:10px;">
+                                  <input type="checkbox" value="${o.nom}"> ${o.nom}
+                                </label>`;
+      });
+    }
     renderChantiers();
 
     /* Module Finance */
@@ -260,21 +556,16 @@
       localStorage.setItem(STORAGE_DEPENSES, JSON.stringify(depenses));
     }
     function renderFinanceSummary() {
-      // Calcul manuel
       const totalRevenus = revenus.reduce((sum, r) => sum + r.amount, 0);
       const totalDepensesManuelles = depenses.reduce((sum, d) => sum + d.amount, 0);
-      // Dépenses automatiques
-      const autoOuvriers = ouvriers.filter(o => !o.paye)
-                          .reduce((sum, o) => sum + (o.tarif * o.jours), 0);
-      const autoMateriel = chantiers.reduce((sum, c) => {
-        return sum + (c.matPayee ? 0 : c.materiel);
-      }, 0);
+      const autoOuvriers = ouvriers.filter(o => !o.paye).reduce((sum, o) => sum + (o.tarif * o.jours), 0);
+      const autoMateriel = chantiers.reduce((sum, c) => sum + (c.matPayee ? 0 : c.materiel), 0);
       const totalDepenses = totalDepensesManuelles + autoOuvriers + autoMateriel;
       const net = totalRevenus - totalDepenses;
       document.getElementById('manual-revenus').innerText = "Revenus manuels : " + totalRevenus.toFixed(2) + " €";
       document.getElementById('manual-depenses').innerText = "Dépenses manuelles : " + totalDepensesManuelles.toFixed(2) + " €";
-      document.getElementById('auto-ouvriers').innerText = "Dépenses ouvriers non payés : " + autoOuvriers.toFixed(2) + " €";
-      document.getElementById('auto-materiel').innerText = "Dépenses matériaux non payés : " + autoMateriel.toFixed(2) + " €";
+      document.getElementById('auto-ouvriers').innerText = "Dépenses ouvriers (non payés) : " + autoOuvriers.toFixed(2) + " €";
+      document.getElementById('auto-materiel').innerText = "Dépenses matériaux (non payés) : " + autoMateriel.toFixed(2) + " €";
       document.getElementById('global-balance').innerText = "Solde global : " + net.toFixed(2) + " €";
     }
     document.getElementById('form-revenu').addEventListener('submit', function(e) {
@@ -300,6 +591,96 @@
       }
     });
     renderFinanceSummary();
+    function resetFinance() {
+      if(confirm("Réinitialiser les finances manuelles ?")) {
+        revenus = [];
+        depenses = [];
+        saveFinance();
+        renderFinanceSummary();
+      }
+    }
+    function exportFinanceJSON() {
+      const data = {
+        revenus,
+        depenses,
+        ouvriers,
+        chantiers
+      };
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(data, null, 2));
+      const dlAnchorElem = document.createElement('a');
+      dlAnchorElem.setAttribute("href", dataStr);
+      dlAnchorElem.setAttribute("download", "rapport_finance.json");
+      dlAnchorElem.click();
+    }
+    /* Génération de rapport et téléchargement CSV */
+    function generateReport() {
+      let reportHTML = "<h3>Rapport Global</h3>";
+      reportHTML += "<h4>Ouvriers</h4><ul>";
+      ouvriers.forEach(o => {
+        reportHTML += `<li>${o.nom} - Tarif: ${o.tarif} €, Jours: ${o.jours}, Total: ${(o.tarif * o.jours).toFixed(2)} €, Paiement: ${o.paye ? "Payé" : "Non payé"}</li>`;
+      });
+      reportHTML += "</ul><h4>Chantiers</h4><ul>";
+      chantiers.forEach(c => {
+        reportHTML += `<li>${c.nom} - Durée: ${c.duree} j, Prix: ${c.prix} €, Matériaux: ${c.materiel} €, Avancement: ${c.progress.toFixed(0)} %, Ouvriers: ${c.workerIds.join(", ") || "Aucun"}</li>`;
+      });
+      reportHTML += "</ul><h4>Finance</h4>";
+      reportHTML += `<p>${document.getElementById('manual-revenus').innerText}</p>`;
+      reportHTML += `<p>${document.getElementById('manual-depenses').innerText}</p>`;
+      reportHTML += `<p>${document.getElementById('auto-ouvriers').innerText}</p>`;
+      reportHTML += `<p>${document.getElementById('auto-materiel').innerText}</p>`;
+      reportHTML += `<p>${document.getElementById('global-balance').innerText}</p>`;
+      document.getElementById('report-data').innerHTML = reportHTML;
+      document.getElementById('report-modal').style.display = "flex";
+    }
+    function closeReport() {
+      document.getElementById('report-modal').style.display = "none";
+    }
+    function printReport() {
+      const printContent = document.getElementById('report-data').innerHTML;
+      const originalContent = document.body.innerHTML;
+      document.body.innerHTML = printContent;
+      window.print();
+      document.body.innerHTML = originalContent;
+      location.reload();
+    }
+    function downloadReportCSV() {
+      let csvContent = "data:text/csv;charset=utf-8,";
+      csvContent += "Type,Description,Montant\n";
+      revenus.forEach(r => {
+        csvContent += `Revenu,${r.description},${r.amount}\n`;
+      });
+      depenses.forEach(d => {
+        csvContent += `Dépense,${d.description},${d.amount}\n`;
+      });
+      ouvriers.forEach(o => {
+        const total = o.tarif * o.jours;
+        csvContent += `Ouvrier,${o.nom} - Tarif: ${o.tarif},Total: ${total.toFixed(2)}\n`;
+      });
+      chantiers.forEach(c => {
+        csvContent += `Chantier,${c.nom} - Durée: ${c.duree} j,${c.prix}\n`;
+      });
+      const encodedUri = encodeURI(csvContent);
+      const link = document.createElement("a");
+      link.setAttribute("href", encodedUri);
+      link.setAttribute("download", "rapport_global.csv");
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+    }
+    /* Fonctions additionnelles */
+    function sortOuvriersByTotal() {
+      ouvriers.sort((a, b) => (b.tarif * b.jours) - (a.tarif * a.jours));
+      saveOuvriers();
+      renderOuvriers();
+    }
+    function resetOuvriers() {
+      if(confirm("Réinitialiser tous les ouvriers ?")) {
+        ouvriers = [];
+        saveOuvriers();
+        renderOuvriers();
+        populateOuvrierSelect();
+      }
+    }
 
     /* Enregistrement du Service Worker */
     if ('serviceWorker' in navigator) {
