@@ -2,7 +2,7 @@ const CACHE_NAME = 'gestion-entreprise-v1';
 const urlsToCache = [
   './index.html',
   './manifest.json'
-  // Ajoutez ici d'autres ressources (CSS, images, etc.) si nécessaire.
+  // Vous pouvez ajouter ici d'autres ressources (CSS, images, etc.)
 ];
 
 self.addEventListener('install', event => {
