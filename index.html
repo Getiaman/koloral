@@ -78,11 +78,11 @@
     }
     nav {
       display: flex;
-      flex-wrap: wrap; /* Permet le retour à la ligne si nécessaire */
-      justify-content: center; /* Centre les boutons horizontalement */
-      gap: 1px; /* Espacement entre les boutons */
-      max-width: 100%; /* Empêche le menu de dépasser l’écran */
-      overflow: hidden; /* Évite les débordements */
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 1px;
+      max-width: 100%;
+      overflow: hidden;
       margin-bottom: 20px;
       border-bottom: 2px solid #000;
     }
@@ -132,7 +132,6 @@
       margin-top: 6px;
     }
     form button:hover { background-color: #ADD8E6; color: #000; }
-    /* Pour les tableaux, on les encapsule dans un conteneur défilant */
     .table-container {
       overflow-x: auto;
     }
@@ -160,7 +159,6 @@
       font-size: 0.85em;
     }
     .action-btn:hover { background-color: #ADD8E6; color: #000; }
-    /* Progress Bar pour les chantiers */
     .progress-container {
       width: 100%;
       background-color: #DDD;
@@ -176,7 +174,6 @@
       border-radius: 4px;
       transition: width 0.3s;
     }
-    /* Modal Rapport */
     .report-modal {
       position: fixed;
       top: 0;
@@ -348,6 +345,16 @@
           <input type="text" id="depense-description" placeholder="Description de la dépense" required>
           <input type="number" id="depense-montant" placeholder="Montant (€)" step="0.01" required>
           <button type="submit">Ajouter dépense</button>
+        </form>
+      </div>
+      <!-- Nouveau formulaire pour ajouter un chantier enregistré aux revenus -->
+      <div>
+        <h3>Ajouter Chantier aux Revenus</h3>
+        <form id="form-chantier-finance">
+          <select id="chantier-select-finance">
+            <option value="">Sélectionner un chantier</option>
+          </select>
+          <button type="button" onclick="ajouterChantierFinance()">Ajouter Chantier</button>
         </form>
       </div>
       <div id="finance-summary">
@@ -553,7 +560,12 @@
                         <td>${c.duree} j</td>
                         <td>${c.prix.toFixed(2)} €</td>
                         <td>${c.materiel.toFixed(2)} €</td>
-                        <td>${c.progress.toFixed(0)} %</td>
+                        <td>
+                          <div class="progress-container" style="height:10px; margin-bottom:4px;">
+                            <div class="progress-bar" style="width: ${c.progress}%;"></div>
+                          </div>
+                          <span>${c.progress.toFixed(0)} %</span>
+                        </td>
                         <td>${coutOuvriers.toFixed(2)} €</td>
                         <td>${benef.toFixed(2)} €</td>
                         <td>
@@ -563,11 +575,12 @@
                         </td>`;
         tbody.appendChild(tr);
       });
+      // Mise à jour du sélecteur des chantiers dans Finance
+      populateChantierFinanceSelect();
     }
-    // Nouvel affichage pour modification des étapes via une fenêtre modale
+    // Modification des étapes via modal (post-enregistrement)
     function editChantierSteps(idx) {
       const chantier = chantiers[idx];
-      // Création d'un overlay modal
       const modal = document.createElement('div');
       modal.style.position = 'fixed';
       modal.style.top = 0;
@@ -633,7 +646,7 @@
       modal.appendChild(modalContent);
       document.body.appendChild(modal);
     }
-    // Pour la création d'un chantier
+    // Création d'un chantier
     let currentEtapes = [];
     function addEtape() {
       const etapeInput = document.getElementById('etape-input');
@@ -726,12 +739,14 @@
     }
     function populateChantierWorkers() {
       const container = document.getElementById('chantier-workers');
-      container.innerHTML = '<p>Sélectionnez les ouvriers affectés :</p>';
-      ouvriers.forEach(o => {
-        container.innerHTML += `<label style="margin-right:10px;">
-                                  <input type="checkbox" value="${o.nom}"> ${o.nom}
-                                </label>`;
-      });
+      if (container) {
+        container.innerHTML = '<p>Sélectionnez les ouvriers affectés :</p>';
+        ouvriers.forEach(o => {
+          container.innerHTML += `<label style="margin-right:10px;">
+                                    <input type="checkbox" value="${o.nom}"> ${o.nom}
+                                  </label>`;
+        });
+      }
     }
     renderChantiers();
 
@@ -778,6 +793,50 @@
       }
     });
     renderFinanceSummary();
+
+    // Fonction pour réinitialiser Finance
+    function resetFinance() {
+      if (confirm("Réinitialiser les données Finance ?")) {
+        revenus = [];
+        depenses = [];
+        saveFinance();
+        renderFinanceSummary();
+      }
+    }
+    // Export Finance JSON (seulement finance)
+    function exportFinanceJSON() {
+      const financeData = { revenus, depenses };
+      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(financeData, null, 2));
+      const dlAnchorElem = document.createElement('a');
+      dlAnchorElem.setAttribute("href", dataStr);
+      dlAnchorElem.setAttribute("download", "finance_entreprise.json");
+      dlAnchorElem.click();
+    }
+    // Ajout d'un chantier aux revenus depuis Finance
+    function populateChantierFinanceSelect() {
+      const select = document.getElementById('chantier-select-finance');
+      if (select) {
+        select.innerHTML = '<option value="">Sélectionner un chantier</option>';
+        chantiers.forEach((c, index) => {
+          select.innerHTML += `<option value="${index}">${c.nom}</option>`;
+        });
+      }
+    }
+    function ajouterChantierFinance() {
+      const select = document.getElementById('chantier-select-finance');
+      const idx = select.value;
+      if (idx === "" || idx === null) {
+        alert("Veuillez sélectionner un chantier.");
+        return;
+      }
+      const chantier = chantiers[idx];
+      if (chantier) {
+        revenus.push({ description: "Chantier: " + chantier.nom, amount: chantier.prix });
+        saveFinance();
+        renderFinanceSummary();
+        alert("Chantier ajouté aux revenus !");
+      }
+    }
 
     /* Module Projet */
     let projets = JSON.parse(localStorage.getItem(STORAGE_PROJETS)) || [];
@@ -840,7 +899,7 @@
           mode,
           calcul,
           priorite,
-          suivi: [] // Suivi mensuel (fonctionnalité à étendre)
+          suivi: []
         };
         projets.push(projet);
         saveProjets();
@@ -905,6 +964,7 @@
           if (importedData.depenses) { depenses = importedData.depenses; }
           if (importedData.projets) { projets = importedData.projets; saveProjets(); renderProjets(); }
           renderFinanceSummary();
+          populateChantierFinanceSelect();
           alert("Importation réussie !");
         } catch (error) {
           alert("Erreur lors de l'importation des données.");
@@ -932,7 +992,7 @@
         .catch(error => console.error('Erreur Service Worker:', error));
     }
     
-    // Fonction de génération de rapport synthétique (affichage dans modal)
+    // Génération du rapport global (affiché dans une modal)
     function generateReport() {
       let reportHTML = "<h3>Rapport Global</h3>";
       reportHTML += "<h4>Ouvriers</h4><ul>";
