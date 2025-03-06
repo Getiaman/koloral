@@ -4,13 +4,10 @@
   <meta charset="UTF-8">
   <title>Koloral Sheqiri - Gestion d'Entreprise</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Logo & script progressier (pour affichage de logo par exemple) -->
-  <link rel="manifest" href="https://progressier.app/VcIlgfTcnkCBYCcm7COM/progressier.json"/>
-  <script defer src="https://progressier.app/VcIlgfTcnkCBYCcm7COM/script.js"></script>
   <!-- Manifest de l'application -->
   <link rel="manifest" href="manifest.json">
   <style>
-    /* Palette : Bleu clair (#ADD8E6), Blanc, Noir */
+    /* Palette d'origine : Bleu clair (#ADD8E6), Blanc, Noir */
     body {
       font-family: 'Segoe UI', sans-serif;
       margin: 0;
@@ -31,7 +28,7 @@
       margin: 0;
       font-size: 1.8em;
     }
-    /* Bouton personnel */
+    /* Bouton pour le menu dans l'en-tête */
     .personal-btn {
       position: absolute;
       top: 10px;
@@ -43,7 +40,9 @@
       border-radius: 4px;
       cursor: pointer;
       font-size: 0.9em;
+      margin-left: 5px;
     }
+    /* Menus déroulants */
     .personal-menu {
       position: absolute;
       top: 45px;
@@ -67,6 +66,7 @@
       background-color: #000;
       color: #FFF;
     }
+    /* Conteneur principal */
     .container {
       max-width: 700px;
       margin: 20px auto;
@@ -76,18 +76,17 @@
       border-radius: 8px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.15);
     }
+    /* Navigation avec défilement horizontal */
     nav {
       display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      gap: 1px;
-      max-width: 100%;
-      overflow: hidden;
+      overflow-x: auto;
+      white-space: nowrap;
       margin-bottom: 20px;
       border-bottom: 2px solid #000;
     }
     nav button {
       flex: 1;
+      min-width: 120px;
       padding: 12px;
       background-color: #FFF;
       border: 1px solid #000;
@@ -102,7 +101,10 @@
       background-color: #000;
       color: #FFF;
     }
-    section { display: none; animation: fadeIn 0.5s; }
+    section { 
+      display: none; 
+      animation: fadeIn 0.5s; 
+    }
     section.active { display: block; }
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(10px); }
@@ -159,6 +161,19 @@
       font-size: 0.85em;
     }
     .action-btn:hover { background-color: #ADD8E6; color: #000; }
+    .extra-btn {
+      margin: 5px 0;
+      padding: 10px;
+      background-color: #000;
+      color: #FFF;
+      border: 1px solid #000;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.3s;
+    }
+    .extra-btn:hover { background-color: #ADD8E6; color: #000; }
+    /* Barre de progression */
     .progress-container {
       width: 100%;
       background-color: #DDD;
@@ -174,6 +189,7 @@
       border-radius: 4px;
       transition: width 0.3s;
     }
+    /* Modal Rapport */
     .report-modal {
       position: fixed;
       top: 0;
@@ -201,62 +217,47 @@
       cursor: pointer;
       font-size: 1.5em;
     }
-    .extra-btn {
-      margin: 5px 0;
-      padding: 10px;
-      background-color: #000;
-      color: #FFF;
-      border: 1px solid #000;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1em;
-      transition: background 0.3s;
-    }
-    .extra-btn:hover { background-color: #ADD8E6; color: #000; }
-    /* Module Projet */
-    #section-projet { padding: 10px 0; }
-    #form-projet {
-      border: 1px solid #000;
-      padding: 10px;
-      border-radius: 4px;
-      background-color: #FFF;
-      margin-bottom: 10px;
-    }
-    #form-projet input, #form-projet select {
-      margin-bottom: 8px;
-    }
-    #projet-list table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    #projet-list th, #projet-list td {
-      border: 1px solid #000;
-      padding: 8px;
-      text-align: left;
-    }
   </style>
 </head>
 <body>
+  <!-- En-tête avec menus : le bouton Site Web a été déplacé dans la navigation ci‑dessous -->
   <header>
     <h1>Koloral Sheqiri</h1>
-    <button class="personal-btn" id="personal-btn">Menu Perso</button>
+    <div>
+      <button class="personal-btn" id="personal-btn">Site Web</button>
+      <button class="personal-btn" id="daily-expense-btn">€ Dépenses</button>
+    </div>
+    <!-- Menu Site Web (liens vers koloral.fr et hostinger.com) -->
     <div class="personal-menu" id="personal-menu">
       <a href="https://koloral.fr" target="_blank">Koloral.fr</a>
       <a href="https://hostinger.com" target="_blank">Hostinger</a>
     </div>
+    <!-- Menu Dépenses quotidiennes -->
+    <div class="personal-menu" id="daily-expense-menu">
+      <button onclick="ajusterDepense(-10)">-10 €</button>
+      <button onclick="ajusterDepense(-25)">-25 €</button>
+      <button onclick="ajusterDepense(-50)">-50 €</button>
+      <button onclick="ajusterDepense(-100)">-100 €</button>
+      <button onclick="ajusterDepense(50)">+50 €</button>
+      <button onclick="ajusterDepense(100)">+100 €</button>
+    </div>
   </header>
-  <div class="container">
-    <!-- Navigation principale -->
-    <nav>
-      <button id="tab-ouvriers" class="active">Ouvriers</button>
-      <button id="tab-chantier">Chantiers</button>
-      <button id="tab-finance">Finance</button>
-      <button id="tab-projet">Projet</button>
-      <button id="tab-utilitaires">Utilitaires</button>
-    </nav>
 
-    <!-- Module Ouvriers -->
+  <!-- Navigation principale avec défilement horizontal -->
+  <nav>
+    <button id="tab-ouvriers" class="active">Ouvriers</button>
+    <button id="tab-baseouvriers">Base des ouvriers</button>
+    <button id="tab-chantier">Chantiers</button>
+    <button id="tab-finance">Finance</button>
+    <button id="tab-projet">Projet</button>
+    <button id="tab-surprises">Surprises</button>
+    <button id="tab-siteweb">Site Web</button>
+    <button id="tab-utilitaires">Utilitaires</button>
+  </nav>
+
+  <!-- Conteneur principal -->
+  <div class="container">
+    <!-- Module Ouvriers (Actifs) -->
     <section id="section-ouvriers" class="active">
       <h2>Ouvriers</h2>
       <form id="form-ouvrier">
@@ -274,9 +275,9 @@
             <tr>
               <th>Nom</th>
               <th>Prix/jour</th>
-              <th>Jours total</th>
+              <th>Jours</th>
               <th>Total</th>
-              <th>Paiement</th>
+              <th>Payé</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -285,6 +286,26 @@
       </div>
       <button class="extra-btn" onclick="sortOuvriersByTotal()">Trier par Total</button>
       <button class="extra-btn" onclick="resetOuvriers()">Réinitialiser Ouvriers</button>
+    </section>
+
+    <!-- Module Base des ouvriers (Historique persistant) -->
+    <section id="section-baseouvriers">
+      <h2>Base des ouvriers</h2>
+      <p>Les ouvriers restent enregistrés ici même s'ils sont retirés du module actif.</p>
+      <div class="table-container">
+        <table id="table-baseouvriers">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Jours Totaux</th>
+              <th>Montant Total (€)</th>
+              <th>Montant Payé (€)</th>
+              <th>Montant Dû (€)</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
     </section>
 
     <!-- Module Chantiers -->
@@ -316,8 +337,8 @@
               <th>Prix</th>
               <th>Matériaux</th>
               <th>Avancement</th>
-              <th>Coût ouvriers</th>
-              <th>Bénéf. final</th>
+              <th>Coût Ouvriers</th>
+              <th>Bénéfice Final</th>
               <th>Actions</th>
             </tr>
           </thead>
@@ -325,12 +346,13 @@
         </table>
       </div>
       <button class="extra-btn" onclick="resetChantiers()">Réinitialiser Chantiers</button>
-      <button class="extra-btn" onclick="editChantierSteps()">Modifier étapes (post-enregistrement)</button>
+      <button class="extra-btn" onclick="editChantierSteps()">Modifier étapes</button>
     </section>
 
     <!-- Module Finance -->
     <section id="section-finance">
       <h2>Finance</h2>
+      <!-- Revenus manuels -->
       <div>
         <h3>Revenus Manuels</h3>
         <form id="form-revenu">
@@ -339,6 +361,16 @@
           <button type="submit">Ajouter revenu</button>
         </form>
       </div>
+      <!-- Revenus en attente -->
+      <div>
+        <h3>Revenus en Attente</h3>
+        <form id="form-revenu-attente">
+          <input type="text" id="revenu-attente-description" placeholder="Description du revenu en attente" required>
+          <input type="number" id="revenu-attente-montant" placeholder="Montant (€)" step="0.01" required>
+          <button type="submit">Ajouter revenu en attente</button>
+        </form>
+      </div>
+      <!-- Dépenses manuelles -->
       <div>
         <h3>Dépenses Manuelles</h3>
         <form id="form-depense">
@@ -347,7 +379,16 @@
           <button type="submit">Ajouter dépense</button>
         </form>
       </div>
-      <!-- Nouveau formulaire pour ajouter un chantier enregistré aux revenus -->
+      <!-- Dépenses prévues -->
+      <div>
+        <h3>Dépenses Prévues</h3>
+        <form id="form-depense-prevue">
+          <input type="text" id="depense-prevue-description" placeholder="Description de la dépense prévue" required>
+          <input type="number" id="depense-prevue-montant" placeholder="Montant prévu (€)" step="0.01" required>
+          <button type="submit">Ajouter dépense prévue</button>
+        </form>
+      </div>
+      <!-- Ajout d'un chantier aux revenus -->
       <div>
         <h3>Ajouter Chantier aux Revenus</h3>
         <form id="form-chantier-finance">
@@ -357,9 +398,12 @@
           <button type="button" onclick="ajouterChantierFinance()">Ajouter Chantier</button>
         </form>
       </div>
+      <!-- Récapitulatif Finance -->
       <div id="finance-summary">
         <p id="manual-revenus">Revenus manuels : 0 €</p>
+        <p id="revenus-attente">Revenus en attente : 0 €</p>
         <p id="manual-depenses">Dépenses manuelles : 0 €</p>
+        <p id="depenses-prevues">Dépenses prévues : 0 €</p>
         <p id="auto-ouvriers">Dépenses ouvriers (non payés) : 0 €</p>
         <p id="auto-materiel">Dépenses matériaux (non payés) : 0 €</p>
         <p id="global-balance">Solde global : 0 €</p>
@@ -382,9 +426,11 @@
         <input type="url" id="projet-lien" placeholder="URL du projet" style="display:none;">
         <input type="number" id="projet-duree" placeholder="Durée souhaitée (mois)" step="1" required>
         <label>
-          <input type="checkbox" id="projet-mode-inverse"> Mode Inverse (entrer montant mensuel)
+          <input type="checkbox" id="projet-mode-inverse"> Mode Inverse (budget mensuel)
         </label>
         <input type="number" id="projet-mensuel" placeholder="Budget mensuel (€)" step="0.01">
+        <!-- Pour calculer les économies mensuelles -->
+        <input type="number" id="projet-mois-objectif" placeholder="Mois jusqu'à l'objectif" step="1">
         <select id="projet-priorite">
           <option value="1">Priorité 1 (Haute)</option>
           <option value="2">Priorité 2</option>
@@ -394,10 +440,61 @@
         </select>
         <button type="button" onclick="calculateProjet()">Calculer Projet</button>
       </form>
+      <!-- Gestion de la liste d'achats -->
+      <div id="projet-achats">
+        <h3>Liste d'Achats</h3>
+        <form id="form-achat">
+          <input type="text" id="achat-nom" placeholder="Nom de l'article">
+          <input type="number" id="achat-prix" placeholder="Prix (€)" step="0.01">
+          <input type="number" id="achat-priorite" placeholder="Priorité (1,2,3...)" step="1">
+          <button type="button" onclick="ajouterAchat()">Ajouter à la liste</button>
+        </form>
+        <div class="table-container">
+          <table id="table-achats">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Prix</th>
+                <th>Priorité</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody></tbody>
+          </table>
+        </div>
+      </div>
       <div id="projet-resultat" style="margin-top:10px; border:1px solid #000; padding:10px; border-radius:4px; background-color:#FFF;"></div>
-      <h3>Suivi Mensuel</h3>
-      <div id="projet-suivi"></div>
-      <button class="extra-btn" onclick="resetProjets()">Réinitialiser Projets</button>
+      <div id="projet-suivi">
+        <button class="extra-btn" onclick="resetProjets()">Réinitialiser Projets</button>
+      </div>
+    </section>
+
+    <!-- Module Surprises (10 fonctions utiles) -->
+    <section id="section-surprises">
+      <h2>Surprises</h2>
+      <div>
+        <button class="extra-btn" onclick="calculerMargeBeneficiaire()">Calculer Marge Bénéficiaire</button>
+        <button class="extra-btn" onclick="previsionTresorerie()">Prévision de Trésorerie</button>
+        <button class="extra-btn" onclick="analyserRentabiliteProjet()">Analyser Rentabilité Projet</button>
+        <button class="extra-btn" onclick="genererEcheancier()">Générer Échéancier</button>
+        <button class="extra-btn" onclick="comparerCouts()">Comparer Coûts</button>
+        <button class="extra-btn" onclick="planifierTaches()">Planifier Tâches</button>
+        <button class="extra-btn" onclick="simulerInvestissement()">Simuler Investissement</button>
+        <button class="extra-btn" onclick="calculerTVAAvance()">Calcul TVA Avancé</button>
+        <button class="extra-btn" onclick="genererRapportPersonnalise()">Rapport Personnalisé</button>
+        <button class="extra-btn" onclick="analyserPerformanceOuvriers()">Analyser Performance Ouvriers</button>
+      </div>
+      <div id="surprises-output" style="margin-top:1rem; padding:1rem; border:1px solid #000; border-radius:4px;"></div>
+    </section>
+
+    <!-- Module Site Web -->
+    <section id="section-siteweb">
+      <h2>Site Web</h2>
+      <p>Accédez aux sites partenaires :</p>
+      <ul>
+        <li><a href="https://koloral.fr" target="_blank">Koloral.fr</a></li>
+        <li><a href="https://hostinger.com" target="_blank">Hostinger</a></li>
+      </ul>
     </section>
 
     <!-- Module Utilitaires -->
@@ -413,7 +510,7 @@
   </div>
 
   <!-- Modal Rapport -->
-  <div id="report-modal" class="report-modal">
+  <div class="report-modal" id="report-modal">
     <div class="report-content">
       <span class="close-report" onclick="closeReport()">&times;</span>
       <h2>Rapport Global</h2>
@@ -423,7 +520,20 @@
   </div>
 
   <script>
-    // Navigation entre modules
+    /* =======================
+       Variables de stockage
+       ======================= */
+    const STORAGE_WORKERS = 'gestion_ouvriers';
+    const STORAGE_BASEWORKERS = 'base_ouvriers';
+    const STORAGE_CHANTIERS = 'gestion_chantiers';
+    const STORAGE_REVENUS = 'gestion_revenus';
+    const STORAGE_DEPENSES = 'gestion_depenses';
+    const STORAGE_PROJETS = 'gestion_projets';
+    const STORAGE_DEPENSES_PREVUES = 'gestion_depenses_prevues';
+
+    /* =======================
+       Navigation & Menus
+       ======================= */
     function setActiveTab(tab) {
       document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
       document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
@@ -431,48 +541,54 @@
       document.getElementById('section-' + tab).classList.add('active');
       if(tab === 'chantier') { populateChantierWorkers(); }
       if(tab === 'ouvriers') { populateOuvrierSelect(); }
+      if(tab === 'baseouvriers') { renderBaseOuvriers(); }
+      if(tab === 'finance') { renderFinanceSummary(); populateChantierFinanceSelect(); }
+      if(tab === 'projet') { renderProjets(); renderAchats(); }
     }
-    ['ouvriers', 'chantier', 'finance', 'projet', 'utilitaires'].forEach(t => {
+    ['ouvriers','baseouvriers','chantier','finance','projet','surprises','siteweb','utilitaires'].forEach(t => {
       document.getElementById('tab-' + t).addEventListener('click', () => setActiveTab(t));
     });
-
-    // Menu personnel
+    // Menus déroulants
     const personalBtn = document.getElementById('personal-btn');
     const personalMenu = document.getElementById('personal-menu');
-    personalBtn.addEventListener('click', () => {
+    personalBtn.addEventListener('click', (e) => {
       personalMenu.style.display = (personalMenu.style.display === "block") ? "none" : "block";
+      e.stopPropagation();
     });
-    document.addEventListener('click', function(e) {
-      if (!personalBtn.contains(e.target) && !personalMenu.contains(e.target)) {
-        personalMenu.style.display = "none";
-      }
+    const dailyExpenseBtn = document.getElementById('daily-expense-btn');
+    const dailyExpenseMenu = document.getElementById('daily-expense-menu');
+    dailyExpenseBtn.addEventListener('click', (e) => {
+      dailyExpenseMenu.style.display = (dailyExpenseMenu.style.display === "block") ? "none" : "block";
+      e.stopPropagation();
+    });
+    document.addEventListener('click', () => {
+      personalMenu.style.display = "none";
+      dailyExpenseMenu.style.display = "none";
     });
 
-    // Stockage Local
-    const STORAGE_WORKERS = 'gestion_ouvriers';
-    const STORAGE_CHANTIERS = 'gestion_chantiers';
-    const STORAGE_REVENUS = 'gestion_revenus';
-    const STORAGE_DEPENSES = 'gestion_depenses';
-    const STORAGE_PROJETS = 'gestion_projets';
-
-    /* Module Ouvriers */
+    /* =======================
+       Module Ouvriers & Base des ouvriers
+       ======================= */
     let ouvriers = JSON.parse(localStorage.getItem(STORAGE_WORKERS)) || [];
+    let baseOuvriers = JSON.parse(localStorage.getItem(STORAGE_BASEWORKERS)) || [];
     function saveOuvriers() { localStorage.setItem(STORAGE_WORKERS, JSON.stringify(ouvriers)); }
+    function saveBaseOuvriers() { localStorage.setItem(STORAGE_BASEWORKERS, JSON.stringify(baseOuvriers)); }
     function renderOuvriers() {
       const tbody = document.querySelector('#table-ouvriers tbody');
       tbody.innerHTML = '';
       ouvriers.forEach(o => {
         const total = o.tarif * o.jours;
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${o.nom}</td>
-                        <td>${o.tarif.toFixed(2)} €</td>
-                        <td>${o.jours.toFixed(1)}</td>
-                        <td>${total.toFixed(2)} €</td>
-                        <td><input type="checkbox" ${o.paye ? 'checked' : ''} onchange="toggleOuvrierPay('${o.nom}')"></td>
-                        <td>
-                          <button class="action-btn" onclick="editOuvrier('${o.nom}')">Modifier</button>
-                          <button class="action-btn" onclick="deleteOuvrier('${o.nom}')">Supprimer</button>
-                        </td>`;
+        tr.innerHTML = `
+          <td>${o.nom}</td>
+          <td>${o.tarif.toFixed(2)} €</td>
+          <td>${o.jours.toFixed(1)}</td>
+          <td>${total.toFixed(2)} €</td>
+          <td><input type="checkbox" ${o.paye ? 'checked' : ''} onchange="toggleOuvrierPay('${o.nom}')"></td>
+          <td>
+            <button class="action-btn" onclick="editOuvrier('${o.nom}')">Modifier</button>
+            <button class="action-btn" onclick="deleteOuvrier('${o.nom}')">Supprimer</button>
+          </td>`;
         tbody.appendChild(tr);
       });
     }
@@ -522,6 +638,10 @@
           ouvriers[index].tarif = tarif;
         } else {
           ouvriers.push({ nom, tarif, jours, paye: false });
+          if (!baseOuvriers.find(b => b.nom.toLowerCase() === nom.toLowerCase())) {
+            baseOuvriers.push({ nom, jours: jours, tarif, paye: false, payeTotal: 0 });
+            saveBaseOuvriers();
+          }
         }
         saveOuvriers();
         renderOuvriers();
@@ -529,7 +649,6 @@
         this.reset();
       }
     });
-    renderOuvriers();
     function populateOuvrierSelect() {
       const select = document.getElementById('ouvrier-select');
       select.innerHTML = '<option value="">Sélectionner un ouvrier (facultatif)</option>';
@@ -537,9 +656,30 @@
         select.innerHTML += `<option value="${o.nom}">${o.nom}</option>`;
       });
     }
+    renderOuvriers();
     populateOuvrierSelect();
+    function renderBaseOuvriers() {
+      const tbody = document.querySelector('#table-baseouvriers tbody');
+      tbody.innerHTML = '';
+      baseOuvriers.forEach(o => {
+        const total = o.tarif * o.jours;
+        const payeTotal = o.payeTotal || 0;
+        const due = total - payeTotal;
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${o.nom}</td>
+          <td>${o.jours.toFixed(1)}</td>
+          <td>${total.toFixed(2)}</td>
+          <td>${payeTotal.toFixed(2)}</td>
+          <td>${due.toFixed(2)}</td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
 
-    /* Module Chantiers */
+    /* =======================
+       Module Chantiers
+       ======================= */
     let chantiers = JSON.parse(localStorage.getItem(STORAGE_CHANTIERS)) || [];
     function saveChantiers() { localStorage.setItem(STORAGE_CHANTIERS, JSON.stringify(chantiers)); }
     function renderChantiers() {
@@ -556,97 +696,28 @@
         const coutMateriel = c.matPayee ? 0 : c.materiel;
         const benef = c.prix - (c.prix * 0.22) - coutOuvriers - coutMateriel;
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${c.nom}</td>
-                        <td>${c.duree} j</td>
-                        <td>${c.prix.toFixed(2)} €</td>
-                        <td>${c.materiel.toFixed(2)} €</td>
-                        <td>
-                          <div class="progress-container" style="height:10px; margin-bottom:4px;">
-                            <div class="progress-bar" style="width: ${c.progress}%;"></div>
-                          </div>
-                          <span>${c.progress.toFixed(0)} %</span>
-                        </td>
-                        <td>${coutOuvriers.toFixed(2)} €</td>
-                        <td>${benef.toFixed(2)} €</td>
-                        <td>
-                          <button class="action-btn" onclick="editChantier(${idx})">Modifier</button>
-                          <button class="action-btn" onclick="deleteChantier(${idx})">Supprimer</button>
-                          <button class="action-btn" onclick="editChantierSteps(${idx})">Modifier étapes</button>
-                        </td>`;
+        tr.innerHTML = `
+          <td>${c.nom}</td>
+          <td>${c.duree} j</td>
+          <td>${c.prix.toFixed(2)} €</td>
+          <td>${c.materiel.toFixed(2)} €</td>
+          <td>
+            <div class="progress-container">
+              <div class="progress-bar" style="width: ${c.progress}%;"></div>
+            </div>
+            ${c.progress.toFixed(0)} %
+          </td>
+          <td>${coutOuvriers.toFixed(2)} €</td>
+          <td>${benef.toFixed(2)} €</td>
+          <td>
+            <button class="action-btn" onclick="editChantier(${idx})">Modifier</button>
+            <button class="action-btn" onclick="deleteChantier(${idx})">Supprimer</button>
+            <button class="action-btn" onclick="editChantierSteps(${idx})">Modifier étapes</button>
+          </td>`;
         tbody.appendChild(tr);
       });
-      // Mise à jour du sélecteur des chantiers dans Finance
       populateChantierFinanceSelect();
     }
-    // Modification des étapes via modal (post-enregistrement)
-    function editChantierSteps(idx) {
-      const chantier = chantiers[idx];
-      const modal = document.createElement('div');
-      modal.style.position = 'fixed';
-      modal.style.top = 0;
-      modal.style.left = 0;
-      modal.style.width = '100%';
-      modal.style.height = '100%';
-      modal.style.backgroundColor = 'rgba(0,0,0,0.5)';
-      modal.style.display = 'flex';
-      modal.style.alignItems = 'center';
-      modal.style.justifyContent = 'center';
-      modal.style.zIndex = 1000;
-      
-      const modalContent = document.createElement('div');
-      modalContent.style.backgroundColor = '#FFF';
-      modalContent.style.padding = '20px';
-      modalContent.style.borderRadius = '8px';
-      modalContent.style.width = '80%';
-      modalContent.style.maxWidth = '500px';
-      modalContent.style.maxHeight = '80%';
-      modalContent.style.overflowY = 'auto';
-
-      const title = document.createElement('h3');
-      title.innerText = 'Modifier étapes pour ' + chantier.nom;
-      modalContent.appendChild(title);
-
-      chantier.etapes.forEach((etape, i) => {
-        const label = document.createElement('label');
-        label.style.display = 'block';
-        label.style.marginBottom = '8px';
-
-        const checkbox = document.createElement('input');
-        checkbox.type = 'checkbox';
-        checkbox.checked = etape.done;
-        checkbox.onchange = function() {
-          chantier.etapes[i].done = checkbox.checked;
-        };
-        
-        label.appendChild(checkbox);
-        label.appendChild(document.createTextNode(' ' + etape.description));
-        modalContent.appendChild(label);
-      });
-
-      const saveBtn = document.createElement('button');
-      saveBtn.innerText = 'Sauvegarder';
-      saveBtn.style.marginTop = '10px';
-      saveBtn.onclick = function() {
-        chantier.progress = updateChantierProgress(chantier.etapes);
-        saveChantiers();
-        renderChantiers();
-        document.body.removeChild(modal);
-      };
-      modalContent.appendChild(saveBtn);
-
-      const cancelBtn = document.createElement('button');
-      cancelBtn.innerText = 'Annuler';
-      cancelBtn.style.marginTop = '10px';
-      cancelBtn.style.marginLeft = '10px';
-      cancelBtn.onclick = function() {
-        document.body.removeChild(modal);
-      };
-      modalContent.appendChild(cancelBtn);
-
-      modal.appendChild(modalContent);
-      document.body.appendChild(modal);
-    }
-    // Création d'un chantier
     let currentEtapes = [];
     function addEtape() {
       const etapeInput = document.getElementById('etape-input');
@@ -660,12 +731,13 @@
       const container = document.getElementById('etapes-container');
       container.innerHTML = "";
       currentEtapes.forEach((etape, index) => {
-        container.innerHTML += `<div style="margin-bottom:5px; border:1px solid #000; padding:4px; border-radius:4px;">
-          <label>
-            <input type="checkbox" onchange="toggleEtape(${index})" ${etape.done ? "checked" : ""}>
-            ${etape.description}
-          </label>
-        </div>`;
+        container.innerHTML += `
+          <div style="margin-bottom:5px; border:1px solid #000; padding:4px; border-radius:4px;">
+            <label>
+              <input type="checkbox" onchange="toggleEtape(${index})" ${etape.done ? "checked" : ""}>
+              ${etape.description}
+            </label>
+          </div>`;
       });
       const progress = updateChantierProgress(currentEtapes);
       document.getElementById('progress-bar').style.width = progress + "%";
@@ -743,29 +815,37 @@
         container.innerHTML = '<p>Sélectionnez les ouvriers affectés :</p>';
         ouvriers.forEach(o => {
           container.innerHTML += `<label style="margin-right:10px;">
-                                    <input type="checkbox" value="${o.nom}"> ${o.nom}
-                                  </label>`;
+                                      <input type="checkbox" value="${o.nom}"> ${o.nom}
+                                    </label>`;
         });
       }
     }
     renderChantiers();
 
-    /* Module Finance */
+    /* =======================
+       Module Finance
+       ======================= */
     let revenus = JSON.parse(localStorage.getItem(STORAGE_REVENUS)) || [];
+    let revenusAttente = []; // non persistés pour simplifier
     let depenses = JSON.parse(localStorage.getItem(STORAGE_DEPENSES)) || [];
+    let depensesPrevues = JSON.parse(localStorage.getItem(STORAGE_DEPENSES_PREVUES)) || [];
     function saveFinance() {
       localStorage.setItem(STORAGE_REVENUS, JSON.stringify(revenus));
       localStorage.setItem(STORAGE_DEPENSES, JSON.stringify(depenses));
+      localStorage.setItem(STORAGE_DEPENSES_PREVUES, JSON.stringify(depensesPrevues));
     }
     function renderFinanceSummary() {
       const totalRevenus = revenus.reduce((sum, r) => sum + r.amount, 0);
+      const totalRevenusAttente = revenusAttente.reduce((sum, r) => sum + r.amount, 0);
       const totalDepensesManuelles = depenses.reduce((sum, d) => sum + d.amount, 0);
+      const totalDepensesPrevues = depensesPrevues.reduce((sum, d) => sum + d.amount, 0);
       const autoOuvriers = ouvriers.filter(o => !o.paye).reduce((sum, o) => sum + (o.tarif * o.jours), 0);
       const autoMateriel = chantiers.reduce((sum, c) => sum + (c.matPayee ? 0 : c.materiel), 0);
-      const totalDepenses = totalDepensesManuelles + autoOuvriers + autoMateriel;
-      const net = totalRevenus - totalDepenses;
+      const net = totalRevenus + totalRevenusAttente - totalDepensesManuelles - autoOuvriers - autoMateriel;
       document.getElementById('manual-revenus').innerText = "Revenus manuels : " + totalRevenus.toFixed(2) + " €";
+      document.getElementById('revenus-attente').innerText = "Revenus en attente : " + totalRevenusAttente.toFixed(2) + " €";
       document.getElementById('manual-depenses').innerText = "Dépenses manuelles : " + totalDepensesManuelles.toFixed(2) + " €";
+      document.getElementById('depenses-prevues').innerText = "Dépenses prévues : " + totalDepensesPrevues.toFixed(2) + " €";
       document.getElementById('auto-ouvriers').innerText = "Dépenses ouvriers (non payés) : " + autoOuvriers.toFixed(2) + " €";
       document.getElementById('auto-materiel').innerText = "Dépenses matériaux (non payés) : " + autoMateriel.toFixed(2) + " €";
       document.getElementById('global-balance').innerText = "Solde global : " + net.toFixed(2) + " €";
@@ -781,6 +861,16 @@
         this.reset();
       }
     });
+    document.getElementById('form-revenu-attente').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const description = document.getElementById('revenu-attente-description').value.trim();
+      const amount = parseFloat(document.getElementById('revenu-attente-montant').value);
+      if (description && !isNaN(amount)) {
+        revenusAttente.push({ description, amount });
+        renderFinanceSummary();
+        this.reset();
+      }
+    });
     document.getElementById('form-depense').addEventListener('submit', function(e) {
       e.preventDefault();
       const description = document.getElementById('depense-description').value.trim();
@@ -792,27 +882,35 @@
         this.reset();
       }
     });
-    renderFinanceSummary();
-
-    // Fonction pour réinitialiser Finance
+    document.getElementById('form-depense-prevue').addEventListener('submit', function(e) {
+      e.preventDefault();
+      const description = document.getElementById('depense-prevue-description').value.trim();
+      const amount = parseFloat(document.getElementById('depense-prevue-montant').value);
+      if (description && !isNaN(amount)) {
+        depensesPrevues.push({ description, amount });
+        saveFinance();
+        renderFinanceSummary();
+        this.reset();
+      }
+    });
     function resetFinance() {
       if (confirm("Réinitialiser les données Finance ?")) {
         revenus = [];
+        revenusAttente = [];
         depenses = [];
+        depensesPrevues = [];
         saveFinance();
         renderFinanceSummary();
       }
     }
-    // Export Finance JSON (seulement finance)
     function exportFinanceJSON() {
-      const financeData = { revenus, depenses };
+      const financeData = { revenus, revenusAttente, depenses, depensesPrevues };
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(financeData, null, 2));
       const dlAnchorElem = document.createElement('a');
       dlAnchorElem.setAttribute("href", dataStr);
       dlAnchorElem.setAttribute("download", "finance_entreprise.json");
       dlAnchorElem.click();
     }
-    // Ajout d'un chantier aux revenus depuis Finance
     function populateChantierFinanceSelect() {
       const select = document.getElementById('chantier-select-finance');
       if (select) {
@@ -837,8 +935,16 @@
         alert("Chantier ajouté aux revenus !");
       }
     }
+    function ajusterDepense(valeur) {
+      depenses.push({ description: "Dépense quotidienne (" + valeur + "€)", amount: Math.abs(valeur) });
+      saveFinance();
+      renderFinanceSummary();
+      alert("Dépense de " + valeur + "€ enregistrée.");
+    }
 
-    /* Module Projet */
+    /* =======================
+       Module Projet
+       ======================= */
     let projets = JSON.parse(localStorage.getItem(STORAGE_PROJETS)) || [];
     function saveProjets() { localStorage.setItem(STORAGE_PROJETS, JSON.stringify(projets)); }
     function renderProjets() {
@@ -846,7 +952,20 @@
       if (projets.length === 0) {
         container.innerHTML = "<p>Aucun projet enregistré.</p>";
       } else {
-        let html = "<table id='projet-list'><thead><tr><th>Nom</th><th>Budget (€)</th><th>Lien</th><th>Délai (mois)</th><th>Mode</th><th>Calcul</th><th>Priorité</th><th>Actions</th></tr></thead><tbody>";
+        let html = `<table id="projet-list">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Budget (€)</th>
+              <th>Lien</th>
+              <th>Délai (mois)</th>
+              <th>Mode</th>
+              <th>Calcul</th>
+              <th>Priorité</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>`;
         projets.forEach((p, idx) => {
           html += `<tr>
             <td>${p.nom}</td>
@@ -877,6 +996,7 @@
       const mode = document.getElementById('projet-mode-inverse').checked ? "Inverse" : "Direct";
       const mensuel = parseFloat(document.getElementById('projet-mensuel').value);
       const priorite = document.getElementById('projet-priorite').value;
+      const moisObjectif = parseInt(document.getElementById('projet-mois-objectif').value);
       if (nom && !isNaN(prix) && !isNaN(duree)) {
         let calcul = "";
         if (mode === "Direct") {
@@ -884,11 +1004,15 @@
           calcul = "Budget mensuel requis : " + budgetMensuel.toFixed(2) + " €";
         } else {
           if (!isNaN(mensuel) && mensuel > 0) {
-            const mois = Math.ceil(prix / mensuel);
-            calcul = "Durée estimée : " + mois + " mois";
+            const moisEstime = Math.ceil(prix / mensuel);
+            calcul = "Durée estimée : " + moisEstime + " mois";
           } else {
             calcul = "Montant mensuel invalide";
           }
+        }
+        let economieMensuelle = "";
+        if (!isNaN(moisObjectif) && moisObjectif > 0) {
+          economieMensuelle = " Pour atteindre l'objectif en " + moisObjectif + " mois, économisez " + (prix / moisObjectif).toFixed(2) + " € par mois.";
         }
         const lien = document.getElementById('projet-lien').value.trim();
         const projet = {
@@ -897,7 +1021,7 @@
           duree,
           lien: lien || null,
           mode,
-          calcul,
+          calcul: calcul + economieMensuelle,
           priorite,
           suivi: []
         };
@@ -937,11 +1061,175 @@
         renderProjets();
       }
     }
-    renderProjets();
+    let achats = [];
+    function ajouterAchat() {
+      const nom = document.getElementById('achat-nom').value.trim();
+      const prix = parseFloat(document.getElementById('achat-prix').value);
+      const priorite = parseInt(document.getElementById('achat-priorite').value);
+      if (nom && !isNaN(prix) && !isNaN(priorite)) {
+        achats.push({ nom, prix, priorite });
+        renderAchats();
+        document.getElementById('form-achat').reset();
+      }
+    }
+    function renderAchats() {
+      const tbody = document.querySelector('#table-achats tbody');
+      tbody.innerHTML = '';
+      achats.sort((a,b) => a.priorite - b.priorite);
+      achats.forEach((a, index) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${a.nom}</td>
+          <td>${a.prix.toFixed(2)} €</td>
+          <td>${a.priorite}</td>
+          <td><button class="action-btn" onclick="acheterArticle(${index})">Acheter</button></td>
+        `;
+        tbody.appendChild(tr);
+      });
+    }
+    function acheterArticle(index) {
+      const article = achats[index];
+      depenses.push({ description: "Achat: " + article.nom, amount: article.prix });
+      saveFinance();
+      renderFinanceSummary();
+      achats.splice(index, 1);
+      renderAchats();
+      alert("Achat de " + article.nom + " enregistré !");
+    }
 
-    /* Module Utilitaires */
+    /* =======================
+       Module Surprises (fonctions utiles)
+       ======================= */
+    // 1. Calcul de la marge bénéficiaire pour un chantier
+    function calculerMargeBeneficiaire() {
+      const idx = prompt("Entrez l'indice du chantier (0 pour le premier, etc.) pour calculer la marge :");
+      if (idx === null) return;
+      const chantier = chantiers[idx];
+      if (!chantier) { alert("Chantier non trouvé."); return; }
+      let coutOuvriers = 0;
+      if (chantier.workerIds && chantier.duree) {
+        chantier.workerIds.forEach(name => {
+          const worker = ouvriers.find(o => o.nom === name);
+          if (worker) { coutOuvriers += worker.tarif * chantier.duree; }
+        });
+      }
+      const coutMateriel = chantier.matPayee ? 0 : chantier.materiel;
+      const coutTotal = (chantier.prix * 0.22) + coutOuvriers + coutMateriel;
+      const marge = ((chantier.prix - coutTotal) / chantier.prix) * 100;
+      document.getElementById('surprises-output').innerText = "Marge bénéficiaire du chantier '" + chantier.nom + "' : " + marge.toFixed(2) + " %";
+    }
+    // 2. Prévision de trésorerie
+    function previsionTresorerie() {
+      const mois = parseInt(prompt("Sur combien de mois souhaitez-vous projeter la trésorerie ?"));
+      if (isNaN(mois) || mois <= 0) { alert("Valeur invalide."); return; }
+      // Utilisation du solde global actuel
+      const soldeText = document.getElementById('global-balance').innerText;
+      const solde = parseFloat(soldeText.replace(/[^\d.-]/g, ""));
+      const projection = solde * mois;
+      document.getElementById('surprises-output').innerText = "Projection de trésorerie sur " + mois + " mois : " + projection.toFixed(2) + " € (sans tenir compte d'intérêts ou de variations).";
+    }
+    // 3. Analyse de rentabilité d'un projet
+    function analyserRentabiliteProjet() {
+      const idx = prompt("Entrez l'indice du projet à analyser :");
+      if (idx === null) return;
+      const projet = projets[idx];
+      if (!projet) { alert("Projet non trouvé."); return; }
+      const revenuEstime = parseFloat(prompt("Entrez le revenu estimé pour ce projet (€) :"));
+      if (isNaN(revenuEstime)) { alert("Valeur invalide."); return; }
+      const roi = ((revenuEstime - projet.prix) / projet.prix) * 100;
+      document.getElementById('surprises-output').innerText = "ROI estimé pour le projet '" + projet.nom + "' : " + roi.toFixed(2) + " %";
+    }
+    // 4. Générateur d'échéancier de paiements
+    function genererEcheancier() {
+      const montantTotal = parseFloat(prompt("Entrez le montant total (€) :"));
+      const mois = parseInt(prompt("Sur combien de mois répartir ce montant ?"));
+      if (isNaN(montantTotal) || isNaN(mois) || mois <= 0) { alert("Valeurs invalides."); return; }
+      const montantMensuel = montantTotal / mois;
+      let echeancier = "Échéancier de paiements :\n";
+      let date = new Date();
+      for (let i = 1; i <= mois; i++) {
+        date.setMonth(date.getMonth() + 1);
+        echeancier += "Mois " + i + " (" + date.toLocaleDateString() + ") : " + montantMensuel.toFixed(2) + " €\n";
+      }
+      document.getElementById('surprises-output').innerText = echeancier;
+    }
+    // 5. Comparateur de coûts entre deux chantiers
+    function comparerCouts() {
+      const idx1 = prompt("Entrez l'indice du premier chantier :");
+      const idx2 = prompt("Entrez l'indice du deuxième chantier :");
+      const chantier1 = chantiers[idx1];
+      const chantier2 = chantiers[idx2];
+      if (!chantier1 || !chantier2) { alert("Un des chantiers n'a pas été trouvé."); return; }
+      const cout1 = chantier1.prix + chantier1.materiel;
+      const cout2 = chantier2.prix + chantier2.materiel;
+      let message = "Comparaison des coûts :\n";
+      message += chantier1.nom + " : " + cout1.toFixed(2) + " €\n";
+      message += chantier2.nom + " : " + cout2.toFixed(2) + " €\n";
+      message += (cout1 < cout2) ? chantier1.nom + " est moins cher." : (cout2 < cout1) ? chantier2.nom + " est moins cher." : "Les deux chantiers ont le même coût.";
+      document.getElementById('surprises-output').innerText = message;
+    }
+    // 6. Planificateur de tâches
+    function planifierTaches() {
+      const nb = parseInt(prompt("Combien de tâches souhaitez-vous planifier ?"));
+      if (isNaN(nb) || nb <= 0) { alert("Nombre invalide."); return; }
+      let taches = [];
+      for (let i = 0; i < nb; i++) {
+        const tache = prompt("Entrez la description de la tâche " + (i+1) + " :");
+        const dateLimite = prompt("Entrez la date limite (AAAA-MM-JJ) pour la tâche " + (i+1) + " :");
+        if (tache && dateLimite) {
+          taches.push({ tache, dateLimite });
+        }
+      }
+      taches.sort((a, b) => new Date(a.dateLimite) - new Date(b.dateLimite));
+      let message = "Tâches planifiées par ordre croissant de date limite :\n";
+      taches.forEach((t, i) => { message += (i+1) + ". " + t.tache + " (à faire avant " + t.dateLimite + ")\n"; });
+      document.getElementById('surprises-output').innerText = message;
+    }
+    // 7. Simulation d'investissement
+    function simulerInvestissement() {
+      const principal = parseFloat(prompt("Entrez le montant investi initialement (€) :"));
+      const taux = parseFloat(prompt("Entrez le taux d'intérêt annuel (en %) :"));
+      const annees = parseInt(prompt("Entrez la durée de l'investissement (années) :"));
+      if (isNaN(principal) || isNaN(taux) || isNaN(annees)) { alert("Valeurs invalides."); return; }
+      const montantFinal = principal * Math.pow((1 + taux/100), annees);
+      document.getElementById('surprises-output').innerText = "Après " + annees + " ans, un investissement de " + principal.toFixed(2) + " € à " + taux + "% générera " + montantFinal.toFixed(2) + " €.";
+    }
+    // 8. Calculateur TVA avancé
+    function calculerTVAAvance() {
+      const montant = parseFloat(prompt("Entrez le montant hors taxe (€) :"));
+      const taux = parseFloat(prompt("Entrez le taux de TVA (%) :"));
+      if (isNaN(montant) || isNaN(taux)) { alert("Valeurs invalides."); return; }
+      const tva = montant * (taux/100);
+      document.getElementById('surprises-output').innerText = "TVA à " + taux + "% sur " + montant.toFixed(2) + " € = " + tva.toFixed(2) + " € (Total TTC = " + (montant+tva).toFixed(2) + " €)";
+    }
+    // 9. Générateur de rapport personnalisé (simulation)
+    function genererRapportPersonnalise() {
+      const dateDebut = prompt("Entrez la date de début (AAAA-MM-JJ) :");
+      const dateFin = prompt("Entrez la date de fin (AAAA-MM-JJ) :");
+      if (!dateDebut || !dateFin) { alert("Dates invalides."); return; }
+      document.getElementById('surprises-output').innerText = "Rapport personnalisé généré pour la période du " + dateDebut + " au " + dateFin + ". (Voir exportation JSON pour détails complets.)";
+    }
+    // 10. Analyse de performance des ouvriers
+    function analyserPerformanceOuvriers() {
+      if (ouvriers.length === 0) { alert("Aucun ouvrier enregistré."); return; }
+      let totalCout = 0, totalJours = 0;
+      let details = "";
+      ouvriers.forEach(o => {
+        const total = o.tarif * o.jours;
+        totalCout += total;
+        totalJours += o.jours;
+        details += o.nom + " : Coût/jour = " + o.tarif.toFixed(2) + " €, Total = " + total.toFixed(2) + " €\n";
+      });
+      const moyenne = totalJours > 0 ? (totalCout / totalJours) : 0;
+      details += "\nPerformance globale moyenne : " + moyenne.toFixed(2) + " € par jour.";
+      document.getElementById('surprises-output').innerText = details;
+    }
+
+    /* =======================
+       Module Utilitaires
+       ======================= */
     function exportAllData() {
-      const allData = { ouvriers, chantiers, revenus, depenses, projets };
+      const allData = { ouvriers, baseOuvriers, chantiers, revenus, revenusAttente, depenses, depensesPrevues, projets, achats };
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allData, null, 2));
       const dlAnchorElem = document.createElement('a');
       dlAnchorElem.setAttribute("href", dataStr);
@@ -959,6 +1247,7 @@
         try {
           const importedData = JSON.parse(e.target.result);
           if (importedData.ouvriers) { ouvriers = importedData.ouvriers; saveOuvriers(); renderOuvriers(); populateOuvrierSelect(); }
+          if (importedData.baseOuvriers) { baseOuvriers = importedData.baseOuvriers; saveBaseOuvriers(); renderBaseOuvriers(); }
           if (importedData.chantiers) { chantiers = importedData.chantiers; saveChantiers(); renderChantiers(); }
           if (importedData.revenus) { revenus = importedData.revenus; }
           if (importedData.depenses) { depenses = importedData.depenses; }
@@ -979,20 +1268,13 @@
       }
     }
     function showHelp() {
-      alert("Utilitaires :\n1. Exporter données : Exportez vos données en JSON.\n2. Importer données : Importez un fichier JSON.\n3. Tout réinitialiser : Effacez toutes vos données.\n4. Afficher Synthèse : Affichez le rapport global.\n5. Mode Synthétique : Affichez un résumé rapide.");
+      alert("Utilitaires :\n1. Exporter données\n2. Importer données\n3. Réinitialiser toutes les données\n4. Afficher Synthèse\n5. Fonctions Surprises utiles\n...");
     }
-    function viewSummary() {
-      generateReport();
-    }
+    function viewSummary() { generateReport(); }
 
-    /* Service Worker */
-    if ('serviceWorker' in navigator) {
-      navigator.serviceWorker.register('./sw.js')
-        .then(registration => console.log('Service Worker enregistré:', registration))
-        .catch(error => console.error('Erreur Service Worker:', error));
-    }
-    
-    // Génération du rapport global (affiché dans une modal)
+    /* =======================
+       Rapport Global (Modal)
+       ======================= */
     function generateReport() {
       let reportHTML = "<h3>Rapport Global</h3>";
       reportHTML += "<h4>Ouvriers</h4><ul>";
@@ -1009,16 +1291,16 @@
       });
       reportHTML += "</ul><h4>Finance</h4>";
       reportHTML += `<p>${document.getElementById('manual-revenus').innerText}</p>`;
+      reportHTML += `<p>${document.getElementById('revenus-attente').innerText}</p>`;
       reportHTML += `<p>${document.getElementById('manual-depenses').innerText}</p>`;
+      reportHTML += `<p>${document.getElementById('depenses-prevues').innerText}</p>`;
       reportHTML += `<p>${document.getElementById('auto-ouvriers').innerText}</p>`;
       reportHTML += `<p>${document.getElementById('auto-materiel').innerText}</p>`;
       reportHTML += `<p>${document.getElementById('global-balance').innerText}</p>`;
       document.getElementById('report-data').innerHTML = reportHTML;
       document.getElementById('report-modal').style.display = "flex";
     }
-    function closeReport() {
-      document.getElementById('report-modal').style.display = "none";
-    }
+    function closeReport() { document.getElementById('report-modal').style.display = "none"; }
     function printReport() {
       const printContent = document.getElementById('report-data').innerHTML;
       const originalContent = document.body.innerHTML;
@@ -1031,7 +1313,9 @@
       let csvContent = "data:text/csv;charset=utf-8,";
       csvContent += "Type,Description,Montant\n";
       revenus.forEach(r => { csvContent += `Revenu,${r.description},${r.amount}\n`; });
+      revenusAttente.forEach(r => { csvContent += `Revenu en attente,${r.description},${r.amount}\n`; });
       depenses.forEach(d => { csvContent += `Dépense,${d.description},${d.amount}\n`; });
+      depensesPrevues.forEach(d => { csvContent += `Dépense prévue,${d.description},${d.amount}\n`; });
       ouvriers.forEach(o => {
         const total = o.tarif * o.jours;
         csvContent += `Ouvrier,${o.nom} - Tarif: ${o.tarif},Total: ${total.toFixed(2)}\n`;
