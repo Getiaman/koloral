@@ -2,263 +2,244 @@
 <html lang="fr">
 <head>
   <meta charset="UTF-8">
-  <title>Koloral Sheqiri - Gestion d'Entreprise</title>
+  <title>Koloral Sheqiri – Gestion d'Entreprise</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Manifest de l'application -->
+  <!-- Manifest (assurez-vous que le fichier manifest.json existe) -->
   <link rel="manifest" href="manifest.json">
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    /* Palette d'origine : Bleu clair (#ADD8E6), Blanc, Noir */
+    /* Styles généraux */
     body {
-      font-family: 'Segoe UI', sans-serif;
+      font-family: 'Roboto', sans-serif;
       margin: 0;
       padding: 0;
-      background-color: #FFFFFF;
-      color: #000;
+      background: #f7f7f7;
+      color: #333;
+      overflow-x: hidden;
     }
     header {
-      background-color: #000;
-      color: #FFF;
+      background: linear-gradient(135deg, #005f73, #0a9396);
+      color: #fff;
       text-align: center;
-      padding: 1em;
-      position: relative;
-      border-bottom: 2px solid #000;
-      box-shadow: 0 2px 4px rgba(0,0,0,0.3);
+      padding: 1rem;
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      z-index: 1000;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
-    header h1 {
-      margin: 0;
-      font-size: 1.8em;
+    header h1 { margin: 0; font-size: 1.8em; }
+    /* Navigation via liste déroulante (au-dessous de l'en‑tête) */
+    #nav-dropdown {
+      margin-top: 70px;
+      font-size: 1em;
+      padding: 8px 12px;
+      border: none;
+      border-radius: 4px;
+      outline: none;
+      display: block;
+      width: 90%;
+      max-width: 400px;
+      margin-left: auto;
+      margin-right: auto;
     }
-    /* Bouton pour le menu dans l'en-tête */
-    .personal-btn {
-      position: absolute;
+    /* Menu déroulant pour ajustements rapides (achat/dépense) */
+    .quick-menu {
+      position: fixed;
       top: 10px;
       right: 10px;
-      background-color: #FFF;
-      color: #000;
-      border: 1px solid #000;
-      padding: 5px 10px;
+      background: #fff;
+      color: #005f73;
+      border: 1px solid #005f73;
+      padding: 6px 10px;
       border-radius: 4px;
       cursor: pointer;
       font-size: 0.9em;
-      margin-left: 5px;
     }
-    /* Menus déroulants */
-    .personal-menu {
-      position: absolute;
-      top: 45px;
+    .quick-menu-container {
+      position: fixed;
+      top: 50px;
       right: 10px;
-      background-color: #FFF;
-      border: 1px solid #000;
+      background: #fff;
+      border: 1px solid #005f73;
       border-radius: 4px;
       display: none;
-      z-index: 10;
+      z-index: 1001;
     }
-    .personal-menu a {
+    .quick-menu-container button {
       display: block;
       padding: 8px 12px;
-      text-decoration: none;
-      color: #000;
-      border-bottom: 1px solid #000;
+      border: none;
+      border-bottom: 1px solid #005f73;
+      background: #fff;
+      color: #005f73;
       font-size: 0.9em;
-    }
-    .personal-menu a:last-child { border-bottom: none; }
-    .personal-menu a:hover {
-      background-color: #000;
-      color: #FFF;
-    }
-    /* Conteneur principal */
-    .container {
-      max-width: 700px;
-      margin: 20px auto;
-      background-color: #ADD8E6;
-      padding: 20px;
-      border: 2px solid #000;
-      border-radius: 8px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.15);
-    }
-    /* Navigation avec défilement horizontal */
-    nav {
-      display: flex;
-      overflow-x: auto;
-      white-space: nowrap;
-      margin-bottom: 20px;
-      border-bottom: 2px solid #000;
-    }
-    nav button {
-      flex: 1;
-      min-width: 120px;
-      padding: 12px;
-      background-color: #FFF;
-      border: 1px solid #000;
-      color: #000;
-      font-weight: bold;
       cursor: pointer;
-      transition: background 0.3s;
-      font-size: 1em;
+      text-align: left;
     }
-    nav button.active,
-    nav button:hover {
-      background-color: #000;
-      color: #FFF;
+    .quick-menu-container button:last-child { border-bottom: none; }
+    .quick-menu-container button:hover {
+      background: #005f73;
+      color: #fff;
     }
-    section { 
-      display: none; 
-      animation: fadeIn 0.5s; 
+    /* Conteneur principal (espace sous header et dropdown) */
+    #main-content {
+      padding-top: 140px;
+      min-height: calc(100vh - 140px);
     }
-    section.active { display: block; }
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    /* Chaque section représente une “page” */
+    .section {
+      display: none;
+      padding: 20px;
+      background: #fff;
+      border-radius: 8px;
+      margin: 10px auto;
+      max-width: 800px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
-    form {
-      margin: 10px 0;
-    }
-    form input, form select, form textarea {
+    .section.active { display: block; }
+    /* Formulaires, tables et boutons (extraits de vos styles précédents) */
+    form input, form select, form button {
       width: 100%;
-      padding: 8px;
-      margin: 6px 0;
-      border: 1px solid #000;
+      padding: 10px;
+      margin: 8px 0;
+      border: 1px solid #ccc;
       border-radius: 4px;
-      font-size: 0.95em;
-      background-color: #FFF;
+      font-size: 1em;
     }
     form button {
-      padding: 10px;
-      background-color: #000;
-      color: #FFF;
-      border: 1px solid #000;
-      border-radius: 4px;
+      background: #005f73;
+      color: #fff;
+      border: none;
       cursor: pointer;
-      font-size: 1em;
       transition: background 0.3s;
-      margin-top: 6px;
     }
-    form button:hover { background-color: #ADD8E6; color: #000; }
+    form button:hover { background: #0a9396; }
     .table-container {
       overflow-x: auto;
+      margin-top: 1rem;
     }
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 10px;
     }
-    table, th, td { border: 1px solid #000; }
+    table, th, td { border: 1px solid #ddd; }
     th, td {
-      padding: 8px;
+      padding: 10px;
       text-align: left;
-      font-size: 0.9em;
-      background-color: #FFF;
+      font-size: 0.95em;
     }
-    th { background-color: #000; color: #FFF; }
+    th { background: #005f73; color: #fff; }
     .action-btn {
-      margin-right: 5px;
       padding: 6px 8px;
-      background-color: #000;
-      color: #FFF;
-      border: 1px solid #000;
+      background: #005f73;
+      color: #fff;
+      border: none;
       border-radius: 3px;
       cursor: pointer;
+      margin-right: 5px;
       font-size: 0.85em;
-    }
-    .action-btn:hover { background-color: #ADD8E6; color: #000; }
-    .extra-btn {
-      margin: 5px 0;
-      padding: 10px;
-      background-color: #000;
-      color: #FFF;
-      border: 1px solid #000;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1em;
       transition: background 0.3s;
     }
-    .extra-btn:hover { background-color: #ADD8E6; color: #000; }
+    .action-btn:hover { background: #0a9396; }
     /* Barre de progression */
     .progress-container {
       width: 100%;
-      background-color: #DDD;
-      border: 1px solid #000;
+      background: #eee;
+      border: 1px solid #ccc;
       border-radius: 4px;
       margin-top: 8px;
       height: 18px;
     }
     .progress-bar {
       height: 100%;
-      background-color: #000;
+      background: #005f73;
       width: 0%;
       border-radius: 4px;
       transition: width 0.3s;
     }
-    /* Modal Rapport */
-    .report-modal {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      align-items: center;
-      justify-content: center;
+    /* Options supplémentaires avec icônes */
+    .options-list {
+      list-style: none;
+      padding: 0;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
     }
-    .report-content {
-      background-color: #FFF;
-      padding: 20px;
-      border-radius: 8px;
-      max-height: 80%;
-      overflow-y: auto;
-      width: 90%;
-      max-width: 800px;
-      color: #000;
-      border: 2px solid #000;
-    }
-    .close-report {
-      float: right;
+    .options-list li {
+      flex: 1 1 calc(50% - 10px);
+      background: #005f73;
+      color: #fff;
+      padding: 8px;
+      border-radius: 4px;
       cursor: pointer;
-      font-size: 1.5em;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.85em;
+      font-weight: bold;
+    }
+    .options-list li:hover { background: #0a9396; }
+    .option-icon { font-size: 1.2em; }
+    /* Footer fixe */
+    footer {
+      text-align: center;
+      padding: 1rem;
+      background: #005f73;
+      color: #fff;
+      position: fixed;
+      width: 100%;
+      bottom: 0;
+      left: 0;
+      z-index: 1000;
+    }
+    /* Adaptation smartphone */
+    @media (max-width: 600px) {
+      header h1 { font-size: 1.5em; }
+      #nav-dropdown { width: 95%; }
+      .section { margin: 10px; padding: 10px; }
+      .options-list li { flex: 1 1 100%; }
     }
   </style>
 </head>
 <body>
-  <!-- En-tête avec menus : le bouton Site Web a été déplacé dans la navigation ci‑dessous -->
+  <!-- En-tête fixe -->
   <header>
     <h1>Koloral Sheqiri</h1>
-    <div>
-      <button class="personal-btn" id="personal-btn">Site Web</button>
-      <button class="personal-btn" id="daily-expense-btn">€ Dépenses</button>
-    </div>
-    <!-- Menu Site Web (liens vers koloral.fr et hostinger.com) -->
-    <div class="personal-menu" id="personal-menu">
-      <a href="https://koloral.fr" target="_blank">Koloral.fr</a>
-      <a href="https://hostinger.com" target="_blank">Hostinger</a>
-    </div>
-    <!-- Menu Dépenses quotidiennes -->
-    <div class="personal-menu" id="daily-expense-menu">
-      <button onclick="ajusterDepense(-10)">-10 €</button>
-      <button onclick="ajusterDepense(-25)">-25 €</button>
+    <!-- Bouton d'accès au menu rapide pour ajustements d'achat/dépense -->
+    <div class="quick-menu" id="quick-menu-btn">€ Dépenses</div>
+    <!-- Menu déroulant pour les ajustements rapides -->
+    <div class="quick-menu-container" id="quick-menu">
+      <button onclick="ajusterDepense(-20)">-20 €</button>
       <button onclick="ajusterDepense(-50)">-50 €</button>
       <button onclick="ajusterDepense(-100)">-100 €</button>
       <button onclick="ajusterDepense(50)">+50 €</button>
       <button onclick="ajusterDepense(100)">+100 €</button>
     </div>
   </header>
-
-  <!-- Navigation principale avec défilement horizontal -->
-  <nav>
-    <button id="tab-ouvriers" class="active">Ouvriers</button>
-    <button id="tab-baseouvriers">Base des ouvriers</button>
-    <button id="tab-chantier">Chantiers</button>
-    <button id="tab-finance">Finance</button>
-    <button id="tab-projet">Projet</button>
-    <button id="tab-surprises">Surprises</button>
-    <button id="tab-siteweb">Site Web</button>
-    <button id="tab-utilitaires">Utilitaires</button>
-  </nav>
-
-  <!-- Conteneur principal -->
-  <div class="container">
-    <!-- Module Ouvriers (Actifs) -->
-    <section id="section-ouvriers" class="active">
+  
+  <!-- Navigation principale via liste déroulante -->
+  <div style="margin-top: 70px; text-align: center;">
+    <select id="nav-dropdown" onchange="showSection(this.value)">
+      <option value="ouvriers">Ouvriers</option>
+      <option value="baseouvriers">Base Ouvriers</option>
+      <option value="chantier">Chantiers</option>
+      <option value="basechantier">Base Chantiers</option>
+      <option value="finance">Finance</option>
+      <option value="projet">Projet</option>
+      <option value="plusoptions">Plus d’Options</option>
+      <option value="siteweb">Site Web</option>
+      <option value="utilitaires">Utilitaires</option>
+    </select>
+  </div>
+  
+  <!-- Contenu principal -->
+  <div id="main-content">
+    <!-- Section Ouvriers -->
+    <section id="ouvriers" class="section active">
       <h2>Ouvriers</h2>
       <form id="form-ouvrier">
         <select id="ouvrier-select">
@@ -284,14 +265,12 @@
           <tbody></tbody>
         </table>
       </div>
-      <button class="extra-btn" onclick="sortOuvriersByTotal()">Trier par Total</button>
-      <button class="extra-btn" onclick="resetOuvriers()">Réinitialiser Ouvriers</button>
     </section>
 
-    <!-- Module Base des ouvriers (Historique persistant) -->
-    <section id="section-baseouvriers">
-      <h2>Base des ouvriers</h2>
-      <p>Les ouvriers restent enregistrés ici même s'ils sont retirés du module actif.</p>
+    <!-- Section Base Ouvriers -->
+    <section id="baseouvriers" class="section">
+      <h2>Base Ouvriers</h2>
+      <p>Liste des ouvriers enregistrés.</p>
       <div class="table-container">
         <table id="table-baseouvriers">
           <thead>
@@ -308,8 +287,8 @@
       </div>
     </section>
 
-    <!-- Module Chantiers -->
-    <section id="section-chantier">
+    <!-- Section Chantiers -->
+    <section id="chantier" class="section">
       <h2>Chantiers</h2>
       <form id="form-chantier">
         <input type="text" id="chantier-nom" placeholder="Nom du chantier" required>
@@ -319,7 +298,7 @@
         <label><input type="checkbox" id="chantier-mat-payee"> Matériaux payés</label>
         <h3>Étapes du Chantier</h3>
         <div id="etapes-container"></div>
-        <div style="display:flex; gap:5px; margin-top:8px;">
+        <div style="display: flex; gap: 5px; margin-top: 8px;">
           <input type="text" id="etape-input" placeholder="Description de l'étape">
           <button type="button" onclick="addEtape()">Ajouter étape</button>
         </div>
@@ -328,6 +307,7 @@
         </div>
         <button type="submit">Enregistrer chantier</button>
       </form>
+      <div id="chantier-workers"></div>
       <div class="table-container">
         <table id="table-chantier">
           <thead>
@@ -337,22 +317,51 @@
               <th>Prix</th>
               <th>Matériaux</th>
               <th>Avancement</th>
-              <th>Coût Ouvriers</th>
-              <th>Bénéfice Final</th>
               <th>Actions</th>
             </tr>
           </thead>
           <tbody></tbody>
         </table>
       </div>
-      <button class="extra-btn" onclick="resetChantiers()">Réinitialiser Chantiers</button>
-      <button class="extra-btn" onclick="editChantierSteps()">Modifier étapes</button>
     </section>
 
-    <!-- Module Finance -->
-    <section id="section-finance">
+    <!-- Section Base Chantiers -->
+    <section id="basechantier" class="section">
+      <h2>Base Chantiers</h2>
+      <p>Affichage des chantiers actifs et des travaux terminés.</p>
+      <h3>Chantiers Actifs</h3>
+      <div class="table-container">
+        <table id="table-base-chantier-actif">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Durée</th>
+              <th>Prix</th>
+              <th>Avancement</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+      <h3>Travaux Terminés</h3>
+      <div class="table-container">
+        <table id="table-base-chantier-fini">
+          <thead>
+            <tr>
+              <th>Nom</th>
+              <th>Durée</th>
+              <th>Prix</th>
+            </tr>
+          </thead>
+          <tbody></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Section Finance -->
+    <section id="finance" class="section">
       <h2>Finance</h2>
-      <!-- Revenus manuels -->
+      <!-- Revenus Manuels -->
       <div>
         <h3>Revenus Manuels</h3>
         <form id="form-revenu">
@@ -360,8 +369,9 @@
           <input type="number" id="revenu-montant" placeholder="Montant (€)" step="0.01" required>
           <button type="submit">Ajouter revenu</button>
         </form>
+        <div id="revenus-list"></div>
       </div>
-      <!-- Revenus en attente -->
+      <!-- Revenus en Attente -->
       <div>
         <h3>Revenus en Attente</h3>
         <form id="form-revenu-attente">
@@ -369,8 +379,9 @@
           <input type="number" id="revenu-attente-montant" placeholder="Montant (€)" step="0.01" required>
           <button type="submit">Ajouter revenu en attente</button>
         </form>
+        <div id="revenus-attente-list"></div>
       </div>
-      <!-- Dépenses manuelles -->
+      <!-- Dépenses Manuelles -->
       <div>
         <h3>Dépenses Manuelles</h3>
         <form id="form-depense">
@@ -378,8 +389,9 @@
           <input type="number" id="depense-montant" placeholder="Montant (€)" step="0.01" required>
           <button type="submit">Ajouter dépense</button>
         </form>
+        <div id="depenses-list"></div>
       </div>
-      <!-- Dépenses prévues -->
+      <!-- Dépenses Prévues -->
       <div>
         <h3>Dépenses Prévues</h3>
         <form id="form-depense-prevue">
@@ -387,16 +399,7 @@
           <input type="number" id="depense-prevue-montant" placeholder="Montant prévu (€)" step="0.01" required>
           <button type="submit">Ajouter dépense prévue</button>
         </form>
-      </div>
-      <!-- Ajout d'un chantier aux revenus -->
-      <div>
-        <h3>Ajouter Chantier aux Revenus</h3>
-        <form id="form-chantier-finance">
-          <select id="chantier-select-finance">
-            <option value="">Sélectionner un chantier</option>
-          </select>
-          <button type="button" onclick="ajouterChantierFinance()">Ajouter Chantier</button>
-        </form>
+        <div id="depenses-prevues-list"></div>
       </div>
       <!-- Récapitulatif Finance -->
       <div id="finance-summary">
@@ -404,18 +407,12 @@
         <p id="revenus-attente">Revenus en attente : 0 €</p>
         <p id="manual-depenses">Dépenses manuelles : 0 €</p>
         <p id="depenses-prevues">Dépenses prévues : 0 €</p>
-        <p id="auto-ouvriers">Dépenses ouvriers (non payés) : 0 €</p>
-        <p id="auto-materiel">Dépenses matériaux (non payés) : 0 €</p>
         <p id="global-balance">Solde global : 0 €</p>
       </div>
-      <button class="extra-btn" onclick="resetFinance()">Réinitialiser Finance</button>
-      <button class="extra-btn" onclick="exportFinanceJSON()">Exporter Finance JSON</button>
-      <button class="extra-btn" onclick="generateReport()">Générer Rapport</button>
-      <button class="extra-btn" onclick="downloadReportCSV()">Télécharger Rapport CSV</button>
     </section>
 
-    <!-- Module Projet -->
-    <section id="section-projet">
+    <!-- Section Projet -->
+    <section id="projet" class="section">
       <h2>Projet</h2>
       <form id="form-projet">
         <input type="text" id="projet-nom" placeholder="Nom du projet" required>
@@ -429,7 +426,6 @@
           <input type="checkbox" id="projet-mode-inverse"> Mode Inverse (budget mensuel)
         </label>
         <input type="number" id="projet-mensuel" placeholder="Budget mensuel (€)" step="0.01">
-        <!-- Pour calculer les économies mensuelles -->
         <input type="number" id="projet-mois-objectif" placeholder="Mois jusqu'à l'objectif" step="1">
         <select id="projet-priorite">
           <option value="1">Priorité 1 (Haute)</option>
@@ -440,7 +436,6 @@
         </select>
         <button type="button" onclick="calculateProjet()">Calculer Projet</button>
       </form>
-      <!-- Gestion de la liste d'achats -->
       <div id="projet-achats">
         <h3>Liste d'Achats</h3>
         <form id="form-achat">
@@ -463,32 +458,32 @@
           </table>
         </div>
       </div>
-      <div id="projet-resultat" style="margin-top:10px; border:1px solid #000; padding:10px; border-radius:4px; background-color:#FFF;"></div>
-      <div id="projet-suivi">
-        <button class="extra-btn" onclick="resetProjets()">Réinitialiser Projets</button>
-      </div>
+      <div id="projet-resultat"></div>
     </section>
 
-    <!-- Module Surprises (10 fonctions utiles) -->
-    <section id="section-surprises">
-      <h2>Surprises</h2>
-      <div>
-        <button class="extra-btn" onclick="calculerMargeBeneficiaire()">Calculer Marge Bénéficiaire</button>
-        <button class="extra-btn" onclick="previsionTresorerie()">Prévision de Trésorerie</button>
-        <button class="extra-btn" onclick="analyserRentabiliteProjet()">Analyser Rentabilité Projet</button>
-        <button class="extra-btn" onclick="genererEcheancier()">Générer Échéancier</button>
-        <button class="extra-btn" onclick="comparerCouts()">Comparer Coûts</button>
-        <button class="extra-btn" onclick="planifierTaches()">Planifier Tâches</button>
-        <button class="extra-btn" onclick="simulerInvestissement()">Simuler Investissement</button>
-        <button class="extra-btn" onclick="calculerTVAAvance()">Calcul TVA Avancé</button>
-        <button class="extra-btn" onclick="genererRapportPersonnalise()">Rapport Personnalisé</button>
-        <button class="extra-btn" onclick="analyserPerformanceOuvriers()">Analyser Performance Ouvriers</button>
-      </div>
-      <div id="surprises-output" style="margin-top:1rem; padding:1rem; border:1px solid #000; border-radius:4px;"></div>
+    <!-- Section Plus d'Options -->
+    <section id="plusoptions" class="section">
+      <h2>Plus d'Options</h2>
+      <ul class="options-list">
+        <li onclick="calculerMargeBeneficiaire()"><span class="option-icon">📊</span><span class="option-label">Marge Bénéf.</span></li>
+        <li onclick="previsionTresorerie()"><span class="option-icon">💰</span><span class="option-label">Trésorerie</span></li>
+        <li onclick="analyserRentabiliteProjet()"><span class="option-icon">📈</span><span class="option-label">ROI Projet</span></li>
+        <li onclick="genererEcheancier()"><span class="option-icon">🗓️</span><span class="option-label">Échéancier</span></li>
+        <li onclick="comparerCouts()"><span class="option-icon">⚖️</span><span class="option-label">Comparer Coûts</span></li>
+        <li onclick="planifierTaches()"><span class="option-icon">📝</span><span class="option-label">Planifier Tâches</span></li>
+        <li onclick="simulerInvestissement()"><span class="option-icon">💹</span><span class="option-label">Investissement</span></li>
+        <li onclick="calculerTVAAvance()"><span class="option-icon">🧾</span><span class="option-label">Calcul TVA</span></li>
+        <li onclick="genererRapportPersonnalise()"><span class="option-icon">📰</span><span class="option-label">Rapport Perso</span></li>
+        <li onclick="analyserPerformanceOuvriers()"><span class="option-icon">🏭</span><span class="option-label">Perf. Ouvriers</span></li>
+        <li onclick="calculerChiffreAffaires()"><span class="option-icon">💵</span><span class="option-label">Chiffre d'Aff.</span></li>
+        <li onclick="afficherHistoriqueTravaux()"><span class="option-icon">📚</span><span class="option-label">Hist. Travaux</span></li>
+        <li onclick="analyserAvancee()"><span class="option-icon">🔍</span><span class="option-label">Analyse Avancée</span></li>
+      </ul>
+      <div id="plusoptions-output"></div>
     </section>
 
-    <!-- Module Site Web -->
-    <section id="section-siteweb">
+    <!-- Section Site Web -->
+    <section id="siteweb" class="section">
       <h2>Site Web</h2>
       <p>Accédez aux sites partenaires :</p>
       <ul>
@@ -497,8 +492,8 @@
       </ul>
     </section>
 
-    <!-- Module Utilitaires -->
-    <section id="section-utilitaires">
+    <!-- Section Utilitaires -->
+    <section id="utilitaires" class="section">
       <h2>Utilitaires</h2>
       <button class="extra-btn" onclick="exportAllData()">Exporter données (JSON)</button>
       <button class="extra-btn" onclick="importAllData()">Importer données (JSON)</button>
@@ -509,70 +504,43 @@
     </section>
   </div>
 
-  <!-- Modal Rapport -->
-  <div class="report-modal" id="report-modal">
-    <div class="report-content">
-      <span class="close-report" onclick="closeReport()">&times;</span>
-      <h2>Rapport Global</h2>
-      <div id="report-data"></div>
-      <button class="extra-btn" onclick="printReport()">Imprimer Rapport</button>
-    </div>
-  </div>
+  <!-- Footer fixe -->
+  <footer>
+    <p>&copy; 2025 Koloral Sheqiri</p>
+  </footer>
 
+  <!-- Script JavaScript regroupant toutes les fonctions -->
   <script>
-    /* =======================
-       Variables de stockage
-       ======================= */
-    const STORAGE_WORKERS = 'gestion_ouvriers';
-    const STORAGE_BASEWORKERS = 'base_ouvriers';
-    const STORAGE_CHANTIERS = 'gestion_chantiers';
-    const STORAGE_REVENUS = 'gestion_revenus';
-    const STORAGE_DEPENSES = 'gestion_depenses';
-    const STORAGE_PROJETS = 'gestion_projets';
-    const STORAGE_DEPENSES_PREVUES = 'gestion_depenses_prevues';
-
-    /* =======================
-       Navigation & Menus
-       ======================= */
-    function setActiveTab(tab) {
-      document.querySelectorAll('nav button').forEach(btn => btn.classList.remove('active'));
-      document.querySelectorAll('section').forEach(sec => sec.classList.remove('active'));
-      document.getElementById('tab-' + tab).classList.add('active');
-      document.getElementById('section-' + tab).classList.add('active');
-      if(tab === 'chantier') { populateChantierWorkers(); }
-      if(tab === 'ouvriers') { populateOuvrierSelect(); }
-      if(tab === 'baseouvriers') { renderBaseOuvriers(); }
-      if(tab === 'finance') { renderFinanceSummary(); populateChantierFinanceSelect(); }
-      if(tab === 'projet') { renderProjets(); renderAchats(); }
+    /* --- Navigation par sections via le dropdown --- */
+    function showSection(sectionId) {
+      const sections = document.querySelectorAll('.section');
+      sections.forEach(sec => sec.classList.remove('active'));
+      document.getElementById(sectionId).classList.add('active');
+      window.scrollTo(0, 0);
     }
-    ['ouvriers','baseouvriers','chantier','finance','projet','surprises','siteweb','utilitaires'].forEach(t => {
-      document.getElementById('tab-' + t).addEventListener('click', () => setActiveTab(t));
-    });
-    // Menus déroulants
-    const personalBtn = document.getElementById('personal-btn');
-    const personalMenu = document.getElementById('personal-menu');
-    personalBtn.addEventListener('click', (e) => {
-      personalMenu.style.display = (personalMenu.style.display === "block") ? "none" : "block";
-      e.stopPropagation();
-    });
-    const dailyExpenseBtn = document.getElementById('daily-expense-btn');
-    const dailyExpenseMenu = document.getElementById('daily-expense-menu');
-    dailyExpenseBtn.addEventListener('click', (e) => {
-      dailyExpenseMenu.style.display = (dailyExpenseMenu.style.display === "block") ? "none" : "block";
+    
+    /* --- Quick Menu pour ajustements rapides d'achat/dépense --- */
+    const quickBtn = document.getElementById('quick-menu-btn');
+    const quickMenu = document.getElementById('quick-menu');
+    quickBtn.addEventListener('click', (e) => {
+      quickMenu.style.display = (quickMenu.style.display === "block") ? "none" : "block";
       e.stopPropagation();
     });
     document.addEventListener('click', () => {
-      personalMenu.style.display = "none";
-      dailyExpenseMenu.style.display = "none";
+      quickMenu.style.display = "none";
     });
-
-    /* =======================
-       Module Ouvriers & Base des ouvriers
-       ======================= */
-    let ouvriers = JSON.parse(localStorage.getItem(STORAGE_WORKERS)) || [];
-    let baseOuvriers = JSON.parse(localStorage.getItem(STORAGE_BASEWORKERS)) || [];
-    function saveOuvriers() { localStorage.setItem(STORAGE_WORKERS, JSON.stringify(ouvriers)); }
-    function saveBaseOuvriers() { localStorage.setItem(STORAGE_BASEWORKERS, JSON.stringify(baseOuvriers)); }
+    function ajusterDepense(valeur) {
+      // Pour cet exemple, on ajoute simplement une dépense dans la section Finance
+      depenses.push({ description: "Dépense rapide (" + valeur + "€)", amount: Math.abs(valeur) });
+      saveFinance();
+      renderFinanceSummary();
+      renderDepenses();
+      alert("Dépense de " + valeur + "€ enregistrée.");
+    }
+    
+    /* --- Ouvriers --- */
+    let ouvriers = JSON.parse(localStorage.getItem('gestion_ouvriers')) || [];
+    function saveOuvriers() { localStorage.setItem('gestion_ouvriers', JSON.stringify(ouvriers)); }
     function renderOuvriers() {
       const tbody = document.querySelector('#table-ouvriers tbody');
       tbody.innerHTML = '';
@@ -594,33 +562,29 @@
     }
     function toggleOuvrierPay(nom) {
       const index = ouvriers.findIndex(o => o.nom.toLowerCase() === nom.toLowerCase());
-      if (index !== -1) {
+      if(index !== -1) {
         ouvriers[index].paye = !ouvriers[index].paye;
         saveOuvriers();
         renderOuvriers();
-        renderFinanceSummary();
       }
     }
     function deleteOuvrier(nom) {
-      if (confirm("Supprimer l'ouvrier " + nom + " ?")) {
+      if(confirm("Supprimer l'ouvrier " + nom + " ?")) {
         ouvriers = ouvriers.filter(o => o.nom.toLowerCase() !== nom.toLowerCase());
         saveOuvriers();
         renderOuvriers();
-        populateOuvrierSelect();
-        renderFinanceSummary();
       }
     }
     function editOuvrier(nom) {
       const index = ouvriers.findIndex(o => o.nom.toLowerCase() === nom.toLowerCase());
-      if (index !== -1) {
-        const newTarif = prompt("Modifier le tarif journalier pour " + nom + " :", ouvriers[index].tarif);
+      if(index !== -1) {
+        const newTarif = prompt("Modifier le tarif pour " + nom + " :", ouvriers[index].tarif);
         const newJours = prompt("Modifier le nombre de jours pour " + nom + " :", ouvriers[index].jours);
-        if (newTarif !== null && newJours !== null) {
+        if(newTarif !== null && newJours !== null) {
           ouvriers[index].tarif = parseFloat(newTarif) || ouvriers[index].tarif;
           ouvriers[index].jours = parseFloat(newJours) || ouvriers[index].jours;
           saveOuvriers();
           renderOuvriers();
-          renderFinanceSummary();
         }
       }
     }
@@ -628,24 +592,19 @@
       e.preventDefault();
       let nom = document.getElementById('ouvrier-nom').value.trim();
       const select = document.getElementById('ouvrier-select');
-      if (select.value && !nom) { nom = select.value; }
+      if(select.value && !nom) { nom = select.value; }
       const tarif = parseFloat(document.getElementById('ouvrier-tarif').value);
       const jours = parseFloat(document.getElementById('ouvrier-jours').value);
-      if (nom && !isNaN(tarif) && !isNaN(jours)) {
+      if(nom && !isNaN(tarif) && !isNaN(jours)) {
         const index = ouvriers.findIndex(o => o.nom.toLowerCase() === nom.toLowerCase());
-        if (index !== -1) {
+        if(index !== -1) {
           ouvriers[index].jours += jours;
           ouvriers[index].tarif = tarif;
         } else {
           ouvriers.push({ nom, tarif, jours, paye: false });
-          if (!baseOuvriers.find(b => b.nom.toLowerCase() === nom.toLowerCase())) {
-            baseOuvriers.push({ nom, jours: jours, tarif, paye: false, payeTotal: 0 });
-            saveBaseOuvriers();
-          }
         }
         saveOuvriers();
         renderOuvriers();
-        populateOuvrierSelect();
         this.reset();
       }
     });
@@ -658,71 +617,17 @@
     }
     renderOuvriers();
     populateOuvrierSelect();
-    function renderBaseOuvriers() {
-      const tbody = document.querySelector('#table-baseouvriers tbody');
-      tbody.innerHTML = '';
-      baseOuvriers.forEach(o => {
-        const total = o.tarif * o.jours;
-        const payeTotal = o.payeTotal || 0;
-        const due = total - payeTotal;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${o.nom}</td>
-          <td>${o.jours.toFixed(1)}</td>
-          <td>${total.toFixed(2)}</td>
-          <td>${payeTotal.toFixed(2)}</td>
-          <td>${due.toFixed(2)}</td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
 
-    /* =======================
-       Module Chantiers
-       ======================= */
-    let chantiers = JSON.parse(localStorage.getItem(STORAGE_CHANTIERS)) || [];
-    function saveChantiers() { localStorage.setItem(STORAGE_CHANTIERS, JSON.stringify(chantiers)); }
-    function renderChantiers() {
-      const tbody = document.querySelector('#table-chantier tbody');
-      tbody.innerHTML = '';
-      chantiers.forEach((c, idx) => {
-        let coutOuvriers = 0;
-        if (c.workerIds && c.duree) {
-          c.workerIds.forEach(name => {
-            const worker = ouvriers.find(o => o.nom === name);
-            if (worker) { coutOuvriers += worker.tarif * c.duree; }
-          });
-        }
-        const coutMateriel = c.matPayee ? 0 : c.materiel;
-        const benef = c.prix - (c.prix * 0.22) - coutOuvriers - coutMateriel;
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${c.nom}</td>
-          <td>${c.duree} j</td>
-          <td>${c.prix.toFixed(2)} €</td>
-          <td>${c.materiel.toFixed(2)} €</td>
-          <td>
-            <div class="progress-container">
-              <div class="progress-bar" style="width: ${c.progress}%;"></div>
-            </div>
-            ${c.progress.toFixed(0)} %
-          </td>
-          <td>${coutOuvriers.toFixed(2)} €</td>
-          <td>${benef.toFixed(2)} €</td>
-          <td>
-            <button class="action-btn" onclick="editChantier(${idx})">Modifier</button>
-            <button class="action-btn" onclick="deleteChantier(${idx})">Supprimer</button>
-            <button class="action-btn" onclick="editChantierSteps(${idx})">Modifier étapes</button>
-          </td>`;
-        tbody.appendChild(tr);
-      });
-      populateChantierFinanceSelect();
-    }
+    /* --- Chantiers --- */
+    let chantiers = JSON.parse(localStorage.getItem('gestion_chantiers')) || [];
+    let travauxFinis = JSON.parse(localStorage.getItem('travaux_finiss')) || [];
     let currentEtapes = [];
+    function saveChantiers() { localStorage.setItem('gestion_chantiers', JSON.stringify(chantiers)); }
+    function saveTravauxFinis() { localStorage.setItem('travaux_finiss', JSON.stringify(travauxFinis)); }
     function addEtape() {
       const etapeInput = document.getElementById('etape-input');
       const desc = etapeInput.value.trim();
-      if (desc === "") return;
+      if(desc === "") return;
       currentEtapes.push({ description: desc, done: false });
       etapeInput.value = "";
       renderEtapes();
@@ -732,7 +637,7 @@
       container.innerHTML = "";
       currentEtapes.forEach((etape, index) => {
         container.innerHTML += `
-          <div style="margin-bottom:5px; border:1px solid #000; padding:4px; border-radius:4px;">
+          <div style="margin-bottom:5px; border:1px solid #ccc; padding:4px; border-radius:4px;">
             <label>
               <input type="checkbox" onchange="toggleEtape(${index})" ${etape.done ? "checked" : ""}>
               ${etape.description}
@@ -747,7 +652,7 @@
       renderEtapes();
     }
     function updateChantierProgress(etapes) {
-      if (!etapes || etapes.length === 0) return 0;
+      if(!etapes || etapes.length === 0) return 0;
       const completed = etapes.filter(e => e.done).length;
       return (completed / etapes.length) * 100;
     }
@@ -758,17 +663,10 @@
       const prix = parseFloat(document.getElementById('chantier-prix').value);
       const materiel = parseFloat(document.getElementById('chantier-materiel').value);
       const matPayee = document.getElementById('chantier-mat-payee').checked;
-      const workerCheckboxes = document.querySelectorAll('#chantier-workers input[type="checkbox"]');
-      let selectedWorkerIds = [];
-      workerCheckboxes.forEach(cb => { if (cb.checked) selectedWorkerIds.push(cb.value); });
-      if (nom && !isNaN(duree) && !isNaN(prix) && !isNaN(materiel)) {
+      if(nom && !isNaN(duree) && !isNaN(prix) && !isNaN(materiel)) {
         const chantier = {
-          nom,
-          duree,
-          prix,
-          materiel,
-          matPayee,
-          workerIds: selectedWorkerIds,
+          nom, duree, prix, materiel, matPayee,
+          workerIds: [],
           etapes: currentEtapes.slice(),
           progress: updateChantierProgress(currentEtapes)
         };
@@ -778,86 +676,79 @@
         this.reset();
         currentEtapes = [];
         renderEtapes();
-        populateChantierWorkers();
       }
     });
+    function renderChantiers() {
+      const tbody = document.querySelector('#table-chantier tbody');
+      tbody.innerHTML = '';
+      chantiers.forEach((c, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${c.nom}</td>
+          <td>${c.duree} j</td>
+          <td>${c.prix.toFixed(2)} €</td>
+          <td>${c.materiel.toFixed(2)} €</td>
+          <td>${c.progress.toFixed(0)} %</td>
+          <td>
+            <button class="action-btn" onclick="editChantier(${idx})">Modifier</button>
+            <button class="action-btn" onclick="deleteChantier(${idx})">Supprimer</button>
+          </td>`;
+        tbody.appendChild(tr);
+      });
+    }
     function editChantier(index) {
       const chantier = chantiers[index];
       const newNom = prompt("Modifier le nom du chantier :", chantier.nom);
-      if (newNom !== null) { chantier.nom = newNom.trim() || chantier.nom; }
-      const newDuree = prompt("Modifier la durée (jours) :", chantier.duree);
-      if (newDuree !== null) { chantier.duree = parseFloat(newDuree) || chantier.duree; }
-      const newPrix = prompt("Modifier le prix du chantier (€) :", chantier.prix);
-      if (newPrix !== null) { chantier.prix = parseFloat(newPrix) || chantier.prix; }
-      const newMateriel = prompt("Modifier le coût des matériaux (€) :", chantier.materiel);
-      if (newMateriel !== null) { chantier.materiel = parseFloat(newMateriel) || chantier.materiel; }
-      chantier.progress = updateChantierProgress(chantier.etapes);
+      if(newNom !== null) { chantier.nom = newNom.trim() || chantier.nom; }
       saveChantiers();
       renderChantiers();
     }
     function deleteChantier(index) {
-      if (confirm("Supprimer le chantier " + chantiers[index].nom + " ?")) {
+      if(confirm("Supprimer le chantier " + chantiers[index].nom + " ?")) {
         chantiers.splice(index, 1);
         saveChantiers();
         renderChantiers();
       }
     }
-    function resetChantiers() {
-      if (confirm("Réinitialiser tous les chantiers ?")) {
-        chantiers = [];
-        saveChantiers();
-        renderChantiers();
-      }
-    }
-    function populateChantierWorkers() {
-      const container = document.getElementById('chantier-workers');
-      if (container) {
-        container.innerHTML = '<p>Sélectionnez les ouvriers affectés :</p>';
-        ouvriers.forEach(o => {
-          container.innerHTML += `<label style="margin-right:10px;">
-                                      <input type="checkbox" value="${o.nom}"> ${o.nom}
-                                    </label>`;
-        });
-      }
-    }
     renderChantiers();
 
-    /* =======================
-       Module Finance
-       ======================= */
-    let revenus = JSON.parse(localStorage.getItem(STORAGE_REVENUS)) || [];
-    let revenusAttente = []; // non persistés pour simplifier
-    let depenses = JSON.parse(localStorage.getItem(STORAGE_DEPENSES)) || [];
-    let depensesPrevues = JSON.parse(localStorage.getItem(STORAGE_DEPENSES_PREVUES)) || [];
-    function saveFinance() {
-      localStorage.setItem(STORAGE_REVENUS, JSON.stringify(revenus));
-      localStorage.setItem(STORAGE_DEPENSES, JSON.stringify(depenses));
-      localStorage.setItem(STORAGE_DEPENSES_PREVUES, JSON.stringify(depensesPrevues));
+    /* --- Base Chantiers --- */
+    function renderBaseChantiers() {
+      const tbodyActif = document.querySelector('#table-base-chantier-actif tbody');
+      tbodyActif.innerHTML = '';
+      chantiers.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${c.nom}</td><td>${c.duree} j</td><td>${c.prix.toFixed(2)} €</td><td>${c.progress.toFixed(0)} %</td>`;
+        tbodyActif.appendChild(tr);
+      });
+      const tbodyFini = document.querySelector('#table-base-chantier-fini tbody');
+      tbodyFini.innerHTML = '';
+      travauxFinis.forEach(c => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `<td>${c.nom}</td><td>${c.duree} j</td><td>${c.prix.toFixed(2)} €</td>`;
+        tbodyFini.appendChild(tr);
+      });
     }
-    function renderFinanceSummary() {
-      const totalRevenus = revenus.reduce((sum, r) => sum + r.amount, 0);
-      const totalRevenusAttente = revenusAttente.reduce((sum, r) => sum + r.amount, 0);
-      const totalDepensesManuelles = depenses.reduce((sum, d) => sum + d.amount, 0);
-      const totalDepensesPrevues = depensesPrevues.reduce((sum, d) => sum + d.amount, 0);
-      const autoOuvriers = ouvriers.filter(o => !o.paye).reduce((sum, o) => sum + (o.tarif * o.jours), 0);
-      const autoMateriel = chantiers.reduce((sum, c) => sum + (c.matPayee ? 0 : c.materiel), 0);
-      const net = totalRevenus + totalRevenusAttente - totalDepensesManuelles - autoOuvriers - autoMateriel;
-      document.getElementById('manual-revenus').innerText = "Revenus manuels : " + totalRevenus.toFixed(2) + " €";
-      document.getElementById('revenus-attente').innerText = "Revenus en attente : " + totalRevenusAttente.toFixed(2) + " €";
-      document.getElementById('manual-depenses').innerText = "Dépenses manuelles : " + totalDepensesManuelles.toFixed(2) + " €";
-      document.getElementById('depenses-prevues').innerText = "Dépenses prévues : " + totalDepensesPrevues.toFixed(2) + " €";
-      document.getElementById('auto-ouvriers').innerText = "Dépenses ouvriers (non payés) : " + autoOuvriers.toFixed(2) + " €";
-      document.getElementById('auto-materiel').innerText = "Dépenses matériaux (non payés) : " + autoMateriel.toFixed(2) + " €";
-      document.getElementById('global-balance').innerText = "Solde global : " + net.toFixed(2) + " €";
+
+    /* --- Finance --- */
+    let revenus = JSON.parse(localStorage.getItem('gestion_revenus')) || [];
+    let depenses = JSON.parse(localStorage.getItem('gestion_depenses')) || [];
+    let depensesPrevues = JSON.parse(localStorage.getItem('gestion_depenses_prevues')) || [];
+    let revenusAttente = [];
+    function saveFinance() {
+      localStorage.setItem('gestion_revenus', JSON.stringify(revenus));
+      localStorage.setItem('gestion_depenses', JSON.stringify(depenses));
+      localStorage.setItem('gestion_depenses_prevues', JSON.stringify(depensesPrevues));
     }
     document.getElementById('form-revenu').addEventListener('submit', function(e) {
       e.preventDefault();
       const description = document.getElementById('revenu-description').value.trim();
       const amount = parseFloat(document.getElementById('revenu-montant').value);
-      if (description && !isNaN(amount)) {
+      if(description && !isNaN(amount)) {
         revenus.push({ description, amount });
         saveFinance();
         renderFinanceSummary();
+        renderRevenus();
         this.reset();
       }
     });
@@ -865,9 +756,10 @@
       e.preventDefault();
       const description = document.getElementById('revenu-attente-description').value.trim();
       const amount = parseFloat(document.getElementById('revenu-attente-montant').value);
-      if (description && !isNaN(amount)) {
+      if(description && !isNaN(amount)) {
         revenusAttente.push({ description, amount });
         renderFinanceSummary();
+        renderRevenusAttente();
         this.reset();
       }
     });
@@ -875,10 +767,11 @@
       e.preventDefault();
       const description = document.getElementById('depense-description').value.trim();
       const amount = parseFloat(document.getElementById('depense-montant').value);
-      if (description && !isNaN(amount)) {
+      if(description && !isNaN(amount)) {
         depenses.push({ description, amount });
         saveFinance();
         renderFinanceSummary();
+        renderDepenses();
         this.reset();
       }
     });
@@ -886,73 +779,213 @@
       e.preventDefault();
       const description = document.getElementById('depense-prevue-description').value.trim();
       const amount = parseFloat(document.getElementById('depense-prevue-montant').value);
-      if (description && !isNaN(amount)) {
+      if(description && !isNaN(amount)) {
         depensesPrevues.push({ description, amount });
         saveFinance();
         renderFinanceSummary();
+        renderDepensesPrevues();
         this.reset();
       }
     });
-    function resetFinance() {
-      if (confirm("Réinitialiser les données Finance ?")) {
-        revenus = [];
-        revenusAttente = [];
-        depenses = [];
-        depensesPrevues = [];
+    function renderFinanceSummary() {
+      const totalRevenus = revenus.reduce((sum, r) => sum + r.amount, 0);
+      const totalRevenusAttente = revenusAttente.reduce((sum, r) => sum + r.amount, 0);
+      const totalDepenses = depenses.reduce((sum, d) => sum + d.amount, 0);
+      const totalDepensesPrevues = depensesPrevues.reduce((sum, d) => sum + d.amount, 0);
+      const net = totalRevenus + totalRevenusAttente - totalDepenses;
+      document.getElementById('manual-revenus').innerText = "Revenus manuels : " + totalRevenus.toFixed(2) + " €";
+      document.getElementById('revenus-attente').innerText = "Revenus en attente : " + totalRevenusAttente.toFixed(2) + " €";
+      document.getElementById('manual-depenses').innerText = "Dépenses manuelles : " + totalDepenses.toFixed(2) + " €";
+      document.getElementById('depenses-prevues').innerText = "Dépenses prévues : " + totalDepensesPrevues.toFixed(2) + " €";
+      document.getElementById('global-balance').innerText = "Solde global : " + net.toFixed(2) + " €";
+    }
+    function renderRevenus() {
+      const container = document.getElementById('revenus-list');
+      if(revenus.length === 0) { container.innerHTML = "<p>Aucun revenu enregistré.</p>"; return; }
+      let html = `<table>
+                    <thead>
+                      <tr>
+                        <th>Description</th>
+                        <th>Montant</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>`;
+      revenus.forEach((r, idx) => {
+        html += `<tr>
+                   <td>${r.description}</td>
+                   <td>${r.amount.toFixed(2)} €</td>
+                   <td>
+                     <button class="action-btn" onclick="editRevenu(${idx})">Modifier</button>
+                     <button class="action-btn" onclick="deleteRevenu(${idx})">Supprimer</button>
+                   </td>
+                 </tr>`;
+      });
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+    function renderRevenusAttente() {
+      const container = document.getElementById('revenus-attente-list');
+      if(revenusAttente.length === 0) { container.innerHTML = "<p>Aucun revenu en attente.</p>"; return; }
+      let html = `<table>
+                    <thead>
+                      <tr>
+                        <th>Description</th>
+                        <th>Montant</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>`;
+      revenusAttente.forEach((r, idx) => {
+        html += `<tr>
+                   <td>${r.description}</td>
+                   <td>${r.amount.toFixed(2)} €</td>
+                   <td>
+                     <button class="action-btn" onclick="editRevenuAttente(${idx})">Modifier</button>
+                     <button class="action-btn" onclick="deleteRevenuAttente(${idx})">Supprimer</button>
+                   </td>
+                 </tr>`;
+      });
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+    function renderDepenses() {
+      const container = document.getElementById('depenses-list');
+      if(depenses.length === 0) { container.innerHTML = "<p>Aucune dépense enregistrée.</p>"; return; }
+      let html = `<table>
+                    <thead>
+                      <tr>
+                        <th>Description</th>
+                        <th>Montant</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>`;
+      depenses.forEach((d, idx) => {
+        html += `<tr>
+                   <td>${d.description}</td>
+                   <td>${d.amount.toFixed(2)} €</td>
+                   <td>
+                     <button class="action-btn" onclick="editDepense(${idx})">Modifier</button>
+                     <button class="action-btn" onclick="deleteDepense(${idx})">Supprimer</button>
+                   </td>
+                 </tr>`;
+      });
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+    function renderDepensesPrevues() {
+      const container = document.getElementById('depenses-prevues-list');
+      if(depensesPrevues.length === 0) { container.innerHTML = "<p>Aucune dépense prévue enregistrée.</p>"; return; }
+      let html = `<table>
+                    <thead>
+                      <tr>
+                        <th>Description</th>
+                        <th>Montant</th>
+                        <th>Actions</th>
+                      </tr>
+                    </thead>
+                    <tbody>`;
+      depensesPrevues.forEach((d, idx) => {
+        html += `<tr>
+                   <td>${d.description}</td>
+                   <td>${d.amount.toFixed(2)} €</td>
+                   <td>
+                     <button class="action-btn" onclick="editDepensePrevue(${idx})">Modifier</button>
+                     <button class="action-btn" onclick="deleteDepensePrevue(${idx})">Supprimer</button>
+                   </td>
+                 </tr>`;
+      });
+      html += `</tbody></table>`;
+      container.innerHTML = html;
+    }
+    function editRevenu(idx) {
+      const newDesc = prompt("Modifier la description :", revenus[idx].description);
+      const newAmount = prompt("Modifier le montant :", revenus[idx].amount);
+      if(newDesc !== null && newAmount !== null) {
+        revenus[idx].description = newDesc.trim() || revenus[idx].description;
+        revenus[idx].amount = parseFloat(newAmount) || revenus[idx].amount;
         saveFinance();
         renderFinanceSummary();
+        renderRevenus();
       }
     }
-    function exportFinanceJSON() {
-      const financeData = { revenus, revenusAttente, depenses, depensesPrevues };
-      const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(financeData, null, 2));
-      const dlAnchorElem = document.createElement('a');
-      dlAnchorElem.setAttribute("href", dataStr);
-      dlAnchorElem.setAttribute("download", "finance_entreprise.json");
-      dlAnchorElem.click();
-    }
-    function populateChantierFinanceSelect() {
-      const select = document.getElementById('chantier-select-finance');
-      if (select) {
-        select.innerHTML = '<option value="">Sélectionner un chantier</option>';
-        chantiers.forEach((c, index) => {
-          select.innerHTML += `<option value="${index}">${c.nom}</option>`;
-        });
-      }
-    }
-    function ajouterChantierFinance() {
-      const select = document.getElementById('chantier-select-finance');
-      const idx = select.value;
-      if (idx === "" || idx === null) {
-        alert("Veuillez sélectionner un chantier.");
-        return;
-      }
-      const chantier = chantiers[idx];
-      if (chantier) {
-        revenus.push({ description: "Chantier: " + chantier.nom, amount: chantier.prix });
+    function deleteRevenu(idx) {
+      if(confirm("Supprimer ce revenu ?")) {
+        revenus.splice(idx, 1);
         saveFinance();
         renderFinanceSummary();
-        alert("Chantier ajouté aux revenus !");
+        renderRevenus();
       }
     }
-    function ajusterDepense(valeur) {
-      depenses.push({ description: "Dépense quotidienne (" + valeur + "€)", amount: Math.abs(valeur) });
-      saveFinance();
-      renderFinanceSummary();
-      alert("Dépense de " + valeur + "€ enregistrée.");
+    function editRevenuAttente(idx) {
+      const newDesc = prompt("Modifier la description :", revenusAttente[idx].description);
+      const newAmount = prompt("Modifier le montant :", revenusAttente[idx].amount);
+      if(newDesc !== null && newAmount !== null) {
+        revenusAttente[idx].description = newDesc.trim() || revenusAttente[idx].description;
+        revenusAttente[idx].amount = parseFloat(newAmount) || revenusAttente[idx].amount;
+        renderFinanceSummary();
+        renderRevenusAttente();
+      }
     }
+    function deleteRevenuAttente(idx) {
+      if(confirm("Supprimer ce revenu en attente ?")) {
+        revenusAttente.splice(idx, 1);
+        renderFinanceSummary();
+        renderRevenusAttente();
+      }
+    }
+    function editDepense(idx) {
+      const newDesc = prompt("Modifier la description :", depenses[idx].description);
+      const newAmount = prompt("Modifier le montant :", depenses[idx].amount);
+      if(newDesc !== null && newAmount !== null) {
+        depenses[idx].description = newDesc.trim() || depenses[idx].description;
+        depenses[idx].amount = parseFloat(newAmount) || depenses[idx].amount;
+        saveFinance();
+        renderFinanceSummary();
+        renderDepenses();
+      }
+    }
+    function deleteDepense(idx) {
+      if(confirm("Supprimer cette dépense ?")) {
+        depenses.splice(idx, 1);
+        saveFinance();
+        renderFinanceSummary();
+        renderDepenses();
+      }
+    }
+    function editDepensePrevue(idx) {
+      const newDesc = prompt("Modifier la description :", depensesPrevues[idx].description);
+      const newAmount = prompt("Modifier le montant prévu :", depensesPrevues[idx].amount);
+      if(newDesc !== null && newAmount !== null) {
+        depensesPrevues[idx].description = newDesc.trim() || depensesPrevues[idx].description;
+        depensesPrevues[idx].amount = parseFloat(newAmount) || depensesPrevues[idx].amount;
+        saveFinance();
+        renderFinanceSummary();
+        renderDepensesPrevues();
+      }
+    }
+    function deleteDepensePrevue(idx) {
+      if(confirm("Supprimer cette dépense prévue ?")) {
+        depensesPrevues.splice(idx, 1);
+        saveFinance();
+        renderFinanceSummary();
+        renderDepensesPrevues();
+      }
+    }
+    renderFinanceSummary();
+    renderRevenus();
+    renderRevenusAttente();
+    renderDepenses();
+    renderDepensesPrevues();
 
-    /* =======================
-       Module Projet
-       ======================= */
-    let projets = JSON.parse(localStorage.getItem(STORAGE_PROJETS)) || [];
-    function saveProjets() { localStorage.setItem(STORAGE_PROJETS, JSON.stringify(projets)); }
+    /* --- Projet --- */
+    let projets = JSON.parse(localStorage.getItem('gestion_projets')) || [];
+    function saveProjets() { localStorage.setItem('gestion_projets', JSON.stringify(projets)); }
     function renderProjets() {
       const container = document.getElementById('projet-resultat');
-      if (projets.length === 0) {
-        container.innerHTML = "<p>Aucun projet enregistré.</p>";
-      } else {
-        let html = `<table id="projet-list">
+      if(projets.length === 0) { container.innerHTML = "<p>Aucun projet enregistré.</p>"; return; }
+      let html = `<table id="projet-list">
           <thead>
             <tr>
               <th>Nom</th>
@@ -966,8 +999,8 @@
             </tr>
           </thead>
           <tbody>`;
-        projets.forEach((p, idx) => {
-          html += `<tr>
+      projets.forEach((p, idx) => {
+        html += `<tr>
             <td>${p.nom}</td>
             <td>${p.prix.toFixed(2)}</td>
             <td>${p.lien ? `<a href="${p.lien}" target="_blank">Lien</a>` : "-"}</td>
@@ -980,10 +1013,9 @@
               <button class="action-btn" onclick="deleteProjet(${idx})">Supprimer</button>
             </td>
           </tr>`;
-        });
-        html += "</tbody></table>";
-        container.innerHTML = html;
-      }
+      });
+      html += `</tbody></table>`;
+      container.innerHTML = html;
     }
     function toggleLienProjet() {
       const check = document.getElementById('projet-ajout-lien').checked;
@@ -997,13 +1029,13 @@
       const mensuel = parseFloat(document.getElementById('projet-mensuel').value);
       const priorite = document.getElementById('projet-priorite').value;
       const moisObjectif = parseInt(document.getElementById('projet-mois-objectif').value);
-      if (nom && !isNaN(prix) && !isNaN(duree)) {
+      if(nom && !isNaN(prix) && !isNaN(duree)) {
         let calcul = "";
-        if (mode === "Direct") {
+        if(mode === "Direct") {
           const budgetMensuel = prix / duree;
           calcul = "Budget mensuel requis : " + budgetMensuel.toFixed(2) + " €";
         } else {
-          if (!isNaN(mensuel) && mensuel > 0) {
+          if(!isNaN(mensuel) && mensuel > 0) {
             const moisEstime = Math.ceil(prix / mensuel);
             calcul = "Durée estimée : " + moisEstime + " mois";
           } else {
@@ -1011,20 +1043,11 @@
           }
         }
         let economieMensuelle = "";
-        if (!isNaN(moisObjectif) && moisObjectif > 0) {
+        if(!isNaN(moisObjectif) && moisObjectif > 0) {
           economieMensuelle = " Pour atteindre l'objectif en " + moisObjectif + " mois, économisez " + (prix / moisObjectif).toFixed(2) + " € par mois.";
         }
         const lien = document.getElementById('projet-lien').value.trim();
-        const projet = {
-          nom,
-          prix,
-          duree,
-          lien: lien || null,
-          mode,
-          calcul: calcul + economieMensuelle,
-          priorite,
-          suivi: []
-        };
+        const projet = { nom, prix, duree, lien: lien || null, mode, calcul: calcul + economieMensuelle, priorite, suivi: [] };
         projets.push(projet);
         saveProjets();
         renderProjets();
@@ -1037,199 +1060,163 @@
     function editProjet(idx) {
       const projet = projets[idx];
       const newNom = prompt("Modifier le nom du projet :", projet.nom);
-      if (newNom !== null) { projet.nom = newNom.trim() || projet.nom; }
+      if(newNom !== null) { projet.nom = newNom.trim() || projet.nom; }
       const newPrix = prompt("Modifier le budget total (€) :", projet.prix);
-      if (newPrix !== null) { projet.prix = parseFloat(newPrix) || projet.prix; }
+      if(newPrix !== null) { projet.prix = parseFloat(newPrix) || projet.prix; }
       const newDuree = prompt("Modifier le délai souhaité (mois) :", projet.duree);
-      if (newDuree !== null) { projet.duree = parseInt(newDuree) || projet.duree; }
+      if(newDuree !== null) { projet.duree = parseInt(newDuree) || projet.duree; }
       const newPriorite = prompt("Modifier la priorité (1 à 5) :", projet.priorite);
-      if (newPriorite !== null) { projet.priorite = newPriorite || projet.priorite; }
+      if(newPriorite !== null) { projet.priorite = newPriorite || projet.priorite; }
       saveProjets();
       renderProjets();
     }
     function deleteProjet(idx) {
-      if (confirm("Supprimer le projet " + projets[idx].nom + " ?")) {
+      if(confirm("Supprimer le projet " + projets[idx].nom + " ?")) {
         projets.splice(idx, 1);
         saveProjets();
         renderProjets();
       }
     }
-    function resetProjets() {
-      if (confirm("Réinitialiser tous les projets ?")) {
-        projets = [];
-        saveProjets();
-        renderProjets();
-      }
-    }
-    let achats = [];
-    function ajouterAchat() {
-      const nom = document.getElementById('achat-nom').value.trim();
-      const prix = parseFloat(document.getElementById('achat-prix').value);
-      const priorite = parseInt(document.getElementById('achat-priorite').value);
-      if (nom && !isNaN(prix) && !isNaN(priorite)) {
-        achats.push({ nom, prix, priorite });
-        renderAchats();
-        document.getElementById('form-achat').reset();
-      }
-    }
-    function renderAchats() {
-      const tbody = document.querySelector('#table-achats tbody');
-      tbody.innerHTML = '';
-      achats.sort((a,b) => a.priorite - b.priorite);
-      achats.forEach((a, index) => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = `
-          <td>${a.nom}</td>
-          <td>${a.prix.toFixed(2)} €</td>
-          <td>${a.priorite}</td>
-          <td><button class="action-btn" onclick="acheterArticle(${index})">Acheter</button></td>
-        `;
-        tbody.appendChild(tr);
-      });
-    }
-    function acheterArticle(index) {
-      const article = achats[index];
-      depenses.push({ description: "Achat: " + article.nom, amount: article.prix });
-      saveFinance();
-      renderFinanceSummary();
-      achats.splice(index, 1);
-      renderAchats();
-      alert("Achat de " + article.nom + " enregistré !");
-    }
+    renderProjets();
 
-    /* =======================
-       Module Surprises (fonctions utiles)
-       ======================= */
-    // 1. Calcul de la marge bénéficiaire pour un chantier
+    /* --- Plus d'Options --- */
     function calculerMargeBeneficiaire() {
-      const idx = prompt("Entrez l'indice du chantier (0 pour le premier, etc.) pour calculer la marge :");
-      if (idx === null) return;
+      const idx = prompt("Entrez l'indice du chantier pour calculer la marge :");
+      if(idx === null) return;
       const chantier = chantiers[idx];
-      if (!chantier) { alert("Chantier non trouvé."); return; }
+      if(!chantier) { alert("Chantier non trouvé."); return; }
       let coutOuvriers = 0;
-      if (chantier.workerIds && chantier.duree) {
+      if(chantier.workerIds && chantier.duree) {
         chantier.workerIds.forEach(name => {
           const worker = ouvriers.find(o => o.nom === name);
-          if (worker) { coutOuvriers += worker.tarif * chantier.duree; }
+          if(worker) { coutOuvriers += worker.tarif * chantier.duree; }
         });
       }
       const coutMateriel = chantier.matPayee ? 0 : chantier.materiel;
       const coutTotal = (chantier.prix * 0.22) + coutOuvriers + coutMateriel;
       const marge = ((chantier.prix - coutTotal) / chantier.prix) * 100;
-      document.getElementById('surprises-output').innerText = "Marge bénéficiaire du chantier '" + chantier.nom + "' : " + marge.toFixed(2) + " %";
+      document.getElementById('plusoptions-output').innerText = "Marge bénéficiaire du chantier '" + chantier.nom + "' : " + marge.toFixed(2) + " %";
     }
-    // 2. Prévision de trésorerie
     function previsionTresorerie() {
-      const mois = parseInt(prompt("Sur combien de mois souhaitez-vous projeter la trésorerie ?"));
-      if (isNaN(mois) || mois <= 0) { alert("Valeur invalide."); return; }
-      // Utilisation du solde global actuel
+      const mois = parseInt(prompt("Sur combien de mois projeter la trésorerie ?"));
+      if(isNaN(mois) || mois <= 0) { alert("Valeur invalide."); return; }
       const soldeText = document.getElementById('global-balance').innerText;
       const solde = parseFloat(soldeText.replace(/[^\d.-]/g, ""));
       const projection = solde * mois;
-      document.getElementById('surprises-output').innerText = "Projection de trésorerie sur " + mois + " mois : " + projection.toFixed(2) + " € (sans tenir compte d'intérêts ou de variations).";
+      document.getElementById('plusoptions-output').innerText = "Projection sur " + mois + " mois : " + projection.toFixed(2) + " €";
     }
-    // 3. Analyse de rentabilité d'un projet
     function analyserRentabiliteProjet() {
       const idx = prompt("Entrez l'indice du projet à analyser :");
-      if (idx === null) return;
+      if(idx === null) return;
       const projet = projets[idx];
-      if (!projet) { alert("Projet non trouvé."); return; }
-      const revenuEstime = parseFloat(prompt("Entrez le revenu estimé pour ce projet (€) :"));
-      if (isNaN(revenuEstime)) { alert("Valeur invalide."); return; }
+      if(!projet) { alert("Projet non trouvé."); return; }
+      const revenuEstime = parseFloat(prompt("Revenu estimé pour ce projet (€) :"));
+      if(isNaN(revenuEstime)) { alert("Valeur invalide."); return; }
       const roi = ((revenuEstime - projet.prix) / projet.prix) * 100;
-      document.getElementById('surprises-output').innerText = "ROI estimé pour le projet '" + projet.nom + "' : " + roi.toFixed(2) + " %";
+      document.getElementById('plusoptions-output').innerText = "ROI pour le projet '" + projet.nom + "' : " + roi.toFixed(2) + " %";
     }
-    // 4. Générateur d'échéancier de paiements
     function genererEcheancier() {
-      const montantTotal = parseFloat(prompt("Entrez le montant total (€) :"));
-      const mois = parseInt(prompt("Sur combien de mois répartir ce montant ?"));
-      if (isNaN(montantTotal) || isNaN(mois) || mois <= 0) { alert("Valeurs invalides."); return; }
+      const montantTotal = parseFloat(prompt("Montant total (€) :"));
+      const mois = parseInt(prompt("Répartir sur combien de mois ?"));
+      if(isNaN(montantTotal) || isNaN(mois) || mois <= 0) { alert("Valeurs invalides."); return; }
       const montantMensuel = montantTotal / mois;
-      let echeancier = "Échéancier de paiements :\n";
+      let echeancier = "Échéancier :\n";
       let date = new Date();
-      for (let i = 1; i <= mois; i++) {
+      for(let i = 1; i <= mois; i++) {
         date.setMonth(date.getMonth() + 1);
         echeancier += "Mois " + i + " (" + date.toLocaleDateString() + ") : " + montantMensuel.toFixed(2) + " €\n";
       }
-      document.getElementById('surprises-output').innerText = echeancier;
+      document.getElementById('plusoptions-output').innerText = echeancier;
     }
-    // 5. Comparateur de coûts entre deux chantiers
     function comparerCouts() {
-      const idx1 = prompt("Entrez l'indice du premier chantier :");
-      const idx2 = prompt("Entrez l'indice du deuxième chantier :");
+      const idx1 = prompt("Indice du premier chantier :");
+      const idx2 = prompt("Indice du deuxième chantier :");
       const chantier1 = chantiers[idx1];
       const chantier2 = chantiers[idx2];
-      if (!chantier1 || !chantier2) { alert("Un des chantiers n'a pas été trouvé."); return; }
+      if(!chantier1 || !chantier2) { alert("Chantier introuvable."); return; }
       const cout1 = chantier1.prix + chantier1.materiel;
       const cout2 = chantier2.prix + chantier2.materiel;
-      let message = "Comparaison des coûts :\n";
+      let message = "Comparaison :\n";
       message += chantier1.nom + " : " + cout1.toFixed(2) + " €\n";
       message += chantier2.nom + " : " + cout2.toFixed(2) + " €\n";
-      message += (cout1 < cout2) ? chantier1.nom + " est moins cher." : (cout2 < cout1) ? chantier2.nom + " est moins cher." : "Les deux chantiers ont le même coût.";
-      document.getElementById('surprises-output').innerText = message;
+      message += (cout1 < cout2) ? chantier1.nom + " est moins cher." : (cout2 < cout1) ? chantier2.nom + " est moins cher." : "Les deux ont le même coût.";
+      document.getElementById('plusoptions-output').innerText = message;
     }
-    // 6. Planificateur de tâches
     function planifierTaches() {
-      const nb = parseInt(prompt("Combien de tâches souhaitez-vous planifier ?"));
-      if (isNaN(nb) || nb <= 0) { alert("Nombre invalide."); return; }
+      const nb = parseInt(prompt("Nombre de tâches à planifier :"));
+      if(isNaN(nb) || nb <= 0) { alert("Nombre invalide."); return; }
       let taches = [];
-      for (let i = 0; i < nb; i++) {
-        const tache = prompt("Entrez la description de la tâche " + (i+1) + " :");
-        const dateLimite = prompt("Entrez la date limite (AAAA-MM-JJ) pour la tâche " + (i+1) + " :");
-        if (tache && dateLimite) {
-          taches.push({ tache, dateLimite });
-        }
+      for(let i = 0; i < nb; i++) {
+        const tache = prompt("Tâche " + (i+1) + " :");
+        const dateLimite = prompt("Date limite (AAAA-MM-JJ) pour la tâche " + (i+1) + " :");
+        if(tache && dateLimite) { taches.push({ tache, dateLimite }); }
       }
       taches.sort((a, b) => new Date(a.dateLimite) - new Date(b.dateLimite));
-      let message = "Tâches planifiées par ordre croissant de date limite :\n";
-      taches.forEach((t, i) => { message += (i+1) + ". " + t.tache + " (à faire avant " + t.dateLimite + ")\n"; });
-      document.getElementById('surprises-output').innerText = message;
+      let message = "Tâches planifiées :\n";
+      taches.forEach((t, i) => { message += (i+1) + ". " + t.tache + " (avant " + t.dateLimite + ")\n"; });
+      document.getElementById('plusoptions-output').innerText = message;
     }
-    // 7. Simulation d'investissement
     function simulerInvestissement() {
-      const principal = parseFloat(prompt("Entrez le montant investi initialement (€) :"));
-      const taux = parseFloat(prompt("Entrez le taux d'intérêt annuel (en %) :"));
-      const annees = parseInt(prompt("Entrez la durée de l'investissement (années) :"));
-      if (isNaN(principal) || isNaN(taux) || isNaN(annees)) { alert("Valeurs invalides."); return; }
+      const principal = parseFloat(prompt("Montant investi initialement (€) :"));
+      const taux = parseFloat(prompt("Taux d'intérêt annuel (%) :"));
+      const annees = parseInt(prompt("Durée de l'investissement (années) :"));
+      if(isNaN(principal) || isNaN(taux) || isNaN(annees)) { alert("Valeurs invalides."); return; }
       const montantFinal = principal * Math.pow((1 + taux/100), annees);
-      document.getElementById('surprises-output').innerText = "Après " + annees + " ans, un investissement de " + principal.toFixed(2) + " € à " + taux + "% générera " + montantFinal.toFixed(2) + " €.";
+      document.getElementById('plusoptions-output').innerText = "Après " + annees + " ans, " + principal.toFixed(2) + " € à " + taux + "% donnera " + montantFinal.toFixed(2) + " €.";
     }
-    // 8. Calculateur TVA avancé
     function calculerTVAAvance() {
-      const montant = parseFloat(prompt("Entrez le montant hors taxe (€) :"));
-      const taux = parseFloat(prompt("Entrez le taux de TVA (%) :"));
-      if (isNaN(montant) || isNaN(taux)) { alert("Valeurs invalides."); return; }
+      const montant = parseFloat(prompt("Montant hors taxe (€) :"));
+      const taux = parseFloat(prompt("Taux de TVA (%) :"));
+      if(isNaN(montant) || isNaN(taux)) { alert("Valeurs invalides."); return; }
       const tva = montant * (taux/100);
-      document.getElementById('surprises-output').innerText = "TVA à " + taux + "% sur " + montant.toFixed(2) + " € = " + tva.toFixed(2) + " € (Total TTC = " + (montant+tva).toFixed(2) + " €)";
+      document.getElementById('plusoptions-output').innerText = "TVA à " + taux + "% sur " + montant.toFixed(2) + " € = " + tva.toFixed(2) + " € (Total TTC = " + (montant+tva).toFixed(2) + " €)";
     }
-    // 9. Générateur de rapport personnalisé (simulation)
     function genererRapportPersonnalise() {
-      const dateDebut = prompt("Entrez la date de début (AAAA-MM-JJ) :");
-      const dateFin = prompt("Entrez la date de fin (AAAA-MM-JJ) :");
-      if (!dateDebut || !dateFin) { alert("Dates invalides."); return; }
-      document.getElementById('surprises-output').innerText = "Rapport personnalisé généré pour la période du " + dateDebut + " au " + dateFin + ". (Voir exportation JSON pour détails complets.)";
+      const dateDebut = prompt("Date de début (AAAA-MM-JJ) :");
+      const dateFin = prompt("Date de fin (AAAA-MM-JJ) :");
+      if(!dateDebut || !dateFin) { alert("Dates invalides."); return; }
+      document.getElementById('plusoptions-output').innerText = "Rapport pour la période du " + dateDebut + " au " + dateFin + ".";
     }
-    // 10. Analyse de performance des ouvriers
     function analyserPerformanceOuvriers() {
-      if (ouvriers.length === 0) { alert("Aucun ouvrier enregistré."); return; }
+      if(ouvriers.length === 0) { alert("Aucun ouvrier enregistré."); return; }
       let totalCout = 0, totalJours = 0;
       let details = "";
       ouvriers.forEach(o => {
         const total = o.tarif * o.jours;
         totalCout += total;
         totalJours += o.jours;
-        details += o.nom + " : Coût/jour = " + o.tarif.toFixed(2) + " €, Total = " + total.toFixed(2) + " €\n";
+        details += o.nom + " : " + o.tarif.toFixed(2) + " €/jour, Total " + total.toFixed(2) + " €\n";
       });
       const moyenne = totalJours > 0 ? (totalCout / totalJours) : 0;
-      details += "\nPerformance globale moyenne : " + moyenne.toFixed(2) + " € par jour.";
-      document.getElementById('surprises-output').innerText = details;
+      details += "\nPerformance moyenne : " + moyenne.toFixed(2) + " €/jour.";
+      document.getElementById('plusoptions-output').innerText = details;
     }
-
-    /* =======================
-       Module Utilitaires
-       ======================= */
+    function calculerChiffreAffaires() {
+      if(travauxFinis.length === 0) {
+        document.getElementById('plusoptions-output').innerText = "Aucun chantier terminé enregistré.";
+        return;
+      }
+      const ca = travauxFinis.reduce((sum, c) => sum + c.prix, 0);
+      document.getElementById('plusoptions-output').innerText = "Chiffre d'Affaires des travaux terminés : " + ca.toFixed(2) + " €";
+    }
+    function afficherHistoriqueTravaux() {
+      if(travauxFinis.length === 0) {
+        document.getElementById('plusoptions-output').innerText = "Aucun travail terminé.";
+        return;
+      }
+      let historique = "Historique des Travaux Terminés :\n";
+      travauxFinis.forEach((c, idx) => {
+        historique += idx + ". " + c.nom + " – " + c.prix.toFixed(2) + " €\n";
+      });
+      document.getElementById('plusoptions-output').innerText = historique;
+    }
+    function analyserAvancee() {
+      alert("Analyse avancée en cours de développement…");
+    }
+    
+    /* --- Utilitaires --- */
     function exportAllData() {
-      const allData = { ouvriers, baseOuvriers, chantiers, revenus, revenusAttente, depenses, depensesPrevues, projets, achats };
+      const allData = { ouvriers, baseOuvriers, chantiers, revenus, revenusAttente, depenses, depensesPrevues, projets, travauxFinis };
       const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allData, null, 2));
       const dlAnchorElem = document.createElement('a');
       dlAnchorElem.setAttribute("href", dataStr);
@@ -1241,61 +1228,48 @@
     }
     function handleImport(event) {
       const file = event.target.files[0];
-      if (!file) return;
+      if(!file) return;
       const reader = new FileReader();
       reader.onload = function(e) {
         try {
           const importedData = JSON.parse(e.target.result);
-          if (importedData.ouvriers) { ouvriers = importedData.ouvriers; saveOuvriers(); renderOuvriers(); populateOuvrierSelect(); }
-          if (importedData.baseOuvriers) { baseOuvriers = importedData.baseOuvriers; saveBaseOuvriers(); renderBaseOuvriers(); }
-          if (importedData.chantiers) { chantiers = importedData.chantiers; saveChantiers(); renderChantiers(); }
-          if (importedData.revenus) { revenus = importedData.revenus; }
-          if (importedData.depenses) { depenses = importedData.depenses; }
-          if (importedData.projets) { projets = importedData.projets; saveProjets(); renderProjets(); }
+          if(importedData.ouvriers) { ouvriers = importedData.ouvriers; saveOuvriers(); renderOuvriers(); populateOuvrierSelect(); }
+          if(importedData.baseOuvriers) { baseOuvriers = importedData.baseOuvriers; saveBaseOuvriers(); }
+          if(importedData.chantiers) { chantiers = importedData.chantiers; saveChantiers(); renderChantiers(); }
+          if(importedData.revenus) { revenus = importedData.revenus; }
+          if(importedData.depenses) { depenses = importedData.depenses; }
+          if(importedData.projets) { projets = importedData.projets; saveProjets(); renderProjets(); }
+          if(importedData.travauxFinis) { travauxFinis = importedData.travauxFinis; saveTravauxFinis(); }
           renderFinanceSummary();
-          populateChantierFinanceSelect();
           alert("Importation réussie !");
-        } catch (error) {
+        } catch(error) {
           alert("Erreur lors de l'importation des données.");
         }
       };
       reader.readAsText(file);
     }
     function clearAllData() {
-      if (confirm("Tout réinitialiser ? Cette action effacera toutes vos données.")) {
-        localStorage.clear();
-        location.reload();
-      }
+      if(confirm("Tout réinitialiser ? Cette action effacera toutes vos données.")) { localStorage.clear(); location.reload(); }
     }
     function showHelp() {
-      alert("Utilitaires :\n1. Exporter données\n2. Importer données\n3. Réinitialiser toutes les données\n4. Afficher Synthèse\n5. Fonctions Surprises utiles\n...");
+      alert("Utilitaires :\n1. Exporter données\n2. Importer données\n3. Réinitialiser toutes les données\n4. Afficher Synthèse\n5. Autres options...");
     }
     function viewSummary() { generateReport(); }
-
-    /* =======================
-       Rapport Global (Modal)
-       ======================= */
     function generateReport() {
       let reportHTML = "<h3>Rapport Global</h3>";
       reportHTML += "<h4>Ouvriers</h4><ul>";
-      ouvriers.forEach(o => {
-        reportHTML += `<li>${o.nom} - Tarif: ${o.tarif} €, Jours: ${o.jours}, Total: ${(o.tarif * o.jours).toFixed(2)} €, Paiement: ${o.paye ? "Payé" : "Non payé"}</li>`;
-      });
-      reportHTML += "</ul><h4>Chantiers</h4><ul>";
-      chantiers.forEach(c => {
-        reportHTML += `<li>${c.nom} - Durée: ${c.duree} j, Prix: ${c.prix} €, Matériaux: ${c.materiel} €, Avancement: ${c.progress.toFixed(0)} %, Ouvriers: ${c.workerIds.join(", ") || "Aucun"}</li>`;
-      });
+      ouvriers.forEach(o => { reportHTML += `<li>${o.nom} – Tarif: ${o.tarif} €, Jours: ${o.jours}, Total: ${(o.tarif * o.jours).toFixed(2)} €</li>`; });
+      reportHTML += "</ul><h4>Chantiers Actifs</h4><ul>";
+      chantiers.forEach(c => { reportHTML += `<li>${c.nom} – Durée: ${c.duree} j, Prix: ${c.prix} €</li>`; });
+      reportHTML += "</ul><h4>Travaux Terminés</h4><ul>";
+      travauxFinis.forEach(c => { reportHTML += `<li>${c.nom} – Durée: ${c.duree} j, Prix: ${c.prix} €</li>`; });
       reportHTML += "</ul><h4>Projets</h4><ul>";
-      projets.forEach(p => {
-        reportHTML += `<li>${p.nom} - Budget: ${p.prix} €, Délai: ${p.duree} mois, Mode: ${p.mode}, Calcul: ${p.calcul}, Priorité: ${p.priorite}</li>`;
-      });
+      projets.forEach(p => { reportHTML += `<li>${p.nom} – Budget: ${p.prix}, Délai: ${p.duree} mois</li>`; });
       reportHTML += "</ul><h4>Finance</h4>";
       reportHTML += `<p>${document.getElementById('manual-revenus').innerText}</p>`;
       reportHTML += `<p>${document.getElementById('revenus-attente').innerText}</p>`;
       reportHTML += `<p>${document.getElementById('manual-depenses').innerText}</p>`;
       reportHTML += `<p>${document.getElementById('depenses-prevues').innerText}</p>`;
-      reportHTML += `<p>${document.getElementById('auto-ouvriers').innerText}</p>`;
-      reportHTML += `<p>${document.getElementById('auto-materiel').innerText}</p>`;
       reportHTML += `<p>${document.getElementById('global-balance').innerText}</p>`;
       document.getElementById('report-data').innerHTML = reportHTML;
       document.getElementById('report-modal').style.display = "flex";
@@ -1318,14 +1292,10 @@
       depensesPrevues.forEach(d => { csvContent += `Dépense prévue,${d.description},${d.amount}\n`; });
       ouvriers.forEach(o => {
         const total = o.tarif * o.jours;
-        csvContent += `Ouvrier,${o.nom} - Tarif: ${o.tarif},Total: ${total.toFixed(2)}\n`;
+        csvContent += `Ouvrier,${o.nom} – Tarif: ${o.tarif}, Total: ${total.toFixed(2)}\n`;
       });
-      chantiers.forEach(c => {
-        csvContent += `Chantier,${c.nom} - Durée: ${c.duree} j,${c.prix}\n`;
-      });
-      projets.forEach(p => {
-        csvContent += `Projet,${p.nom} - Budget: ${p.prix},Délai: ${p.duree} mois\n`;
-      });
+      chantiers.forEach(c => { csvContent += `Chantier,${c.nom} – Durée: ${c.duree} j, ${c.prix}\n`; });
+      projets.forEach(p => { csvContent += `Projet,${p.nom} – Budget: ${p.prix}, Délai: ${p.duree} mois\n`; });
       const encodedUri = encodeURI(csvContent);
       const link = document.createElement("a");
       link.setAttribute("href", encodedUri);
@@ -1335,5 +1305,15 @@
       document.body.removeChild(link);
     }
   </script>
+  
+  <!-- Modal Rapport -->
+  <div class="report-modal" id="report-modal">
+    <div class="report-content">
+      <span class="close-report" onclick="closeReport()">&times;</span>
+      <h2>Rapport Global</h2>
+      <div id="report-data"></div>
+      <button class="extra-btn" onclick="printReport()">Imprimer Rapport</button>
+    </div>
+  </div>
 </body>
 </html>
