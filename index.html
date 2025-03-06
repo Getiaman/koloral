@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <title>Koloral Sheqiri – Gestion d'Entreprise</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Manifest (assurez-vous que le fichier manifest.json existe) -->
+  <!-- Manifest (vérifiez que le fichier manifest.json et les icônes existent) -->
   <link rel="manifest" href="manifest.json">
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    /* Styles généraux */
+    /* --- Styles généraux --- */
     body {
       font-family: 'Roboto', sans-serif;
       margin: 0;
@@ -31,21 +31,30 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
     header h1 { margin: 0; font-size: 1.8em; }
-    /* Navigation via liste déroulante (au-dessous de l'en‑tête) */
+    
+    /* --- Navigation via liste déroulante --- */
     #nav-dropdown {
-      margin-top: 70px;
-      font-size: 1em;
-      padding: 8px 12px;
-      border: none;
-      border-radius: 4px;
-      outline: none;
+      margin: 90px auto 20px;
       display: block;
+      font-size: 1em;
+      padding: 10px 15px;
+      border: 2px solid #005f73;
+      border-radius: 8px;
+      outline: none;
+      background: #fff;
+      color: #005f73;
       width: 90%;
       max-width: 400px;
-      margin-left: auto;
-      margin-right: auto;
+      -webkit-appearance: none;
+      -moz-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D'10'%20height%3D'10'%20xmlns%3D'http%3A//www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M0%200l5%205l5-5z'%20fill%3D'%23005f73'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 10px;
     }
-    /* Menu déroulant pour ajustements rapides (achat/dépense) */
+    
+    /* --- Quick Menu pour ajustements rapides --- */
     .quick-menu {
       position: fixed;
       top: 10px;
@@ -57,6 +66,7 @@
       border-radius: 4px;
       cursor: pointer;
       font-size: 0.9em;
+      z-index: 1100;
     }
     .quick-menu-container {
       position: fixed;
@@ -66,30 +76,33 @@
       border: 1px solid #005f73;
       border-radius: 4px;
       display: none;
-      z-index: 1001;
+      z-index: 1100;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
     .quick-menu-container button {
       display: block;
-      padding: 8px 12px;
+      padding: 10px 12px;
       border: none;
-      border-bottom: 1px solid #005f73;
       background: #fff;
       color: #005f73;
       font-size: 0.9em;
-      cursor: pointer;
       text-align: left;
+      width: 100%;
+      cursor: pointer;
+      border-bottom: 1px solid #005f73;
     }
     .quick-menu-container button:last-child { border-bottom: none; }
     .quick-menu-container button:hover {
       background: #005f73;
       color: #fff;
     }
-    /* Conteneur principal (espace sous header et dropdown) */
+    
+    /* --- Contenu principal --- */
     #main-content {
-      padding-top: 140px;
+      padding: 140px 20px 120px; /* espace pour header, dropdown et footer */
       min-height: calc(100vh - 140px);
     }
-    /* Chaque section représente une “page” */
+    /* --- Sections (chaque "page") --- */
     .section {
       display: none;
       padding: 20px;
@@ -100,7 +113,8 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     .section.active { display: block; }
-    /* Formulaires, tables et boutons (extraits de vos styles précédents) */
+    
+    /* --- Formulaires, tableaux, boutons --- */
     form input, form select, form button {
       width: 100%;
       padding: 10px;
@@ -117,21 +131,14 @@
       transition: background 0.3s;
     }
     form button:hover { background: #0a9396; }
-    .table-container {
-      overflow-x: auto;
-      margin-top: 1rem;
-    }
+    .table-container { overflow-x: auto; margin-top: 1rem; }
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 10px;
     }
     table, th, td { border: 1px solid #ddd; }
-    th, td {
-      padding: 10px;
-      text-align: left;
-      font-size: 0.95em;
-    }
+    th, td { padding: 10px; text-align: left; font-size: 0.95em; }
     th { background: #005f73; color: #fff; }
     .action-btn {
       padding: 6px 8px;
@@ -145,7 +152,7 @@
       transition: background 0.3s;
     }
     .action-btn:hover { background: #0a9396; }
-    /* Barre de progression */
+    /* --- Barre de progression --- */
     .progress-container {
       width: 100%;
       background: #eee;
@@ -161,7 +168,7 @@
       border-radius: 4px;
       transition: width 0.3s;
     }
-    /* Options supplémentaires avec icônes */
+    /* --- Options supplémentaires --- */
     .options-list {
       list-style: none;
       padding: 0;
@@ -184,7 +191,8 @@
     }
     .options-list li:hover { background: #0a9396; }
     .option-icon { font-size: 1.2em; }
-    /* Footer fixe */
+    
+    /* --- Footer fixe --- */
     footer {
       text-align: center;
       padding: 1rem;
@@ -196,7 +204,50 @@
       left: 0;
       z-index: 1000;
     }
-    /* Adaptation smartphone */
+    
+    /* --- Modal Rapport (centré et épuré) --- */
+    .report-modal {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0,0,0,0.5);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1200;
+    }
+    .report-content {
+      background: #fff;
+      padding: 20px;
+      border-radius: 8px;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      position: relative;
+      text-align: center;
+    }
+    .modal-buttons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-around;
+    }
+    .modal-buttons button {
+      padding: 10px 16px;
+      background: #005f73;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-size: 1em;
+      transition: background 0.3s;
+    }
+    .modal-buttons button:hover { background: #0a9396; }
+    /* Pour laisser un peu d'espace en bas (afin que le footer ne masque pas le contenu) */
+    .spacer { height: 120px; }
+    
+    /* --- Adaptation Smartphone --- */
     @media (max-width: 600px) {
       header h1 { font-size: 1.5em; }
       #nav-dropdown { width: 95%; }
@@ -209,9 +260,9 @@
   <!-- En-tête fixe -->
   <header>
     <h1>Koloral Sheqiri</h1>
-    <!-- Bouton d'accès au menu rapide pour ajustements d'achat/dépense -->
+    <!-- Bouton Quick Menu pour ajustements rapides -->
     <div class="quick-menu" id="quick-menu-btn">€ Dépenses</div>
-    <!-- Menu déroulant pour les ajustements rapides -->
+    <!-- Menu déroulant Quick Menu -->
     <div class="quick-menu-container" id="quick-menu">
       <button onclick="ajusterDepense(-20)">-20 €</button>
       <button onclick="ajusterDepense(-50)">-50 €</button>
@@ -221,8 +272,8 @@
     </div>
   </header>
   
-  <!-- Navigation principale via liste déroulante -->
-  <div style="margin-top: 70px; text-align: center;">
+  <!-- Navigation principale via dropdown -->
+  <div style="margin-top: 90px; text-align: center;">
     <select id="nav-dropdown" onchange="showSection(this.value)">
       <option value="ouvriers">Ouvriers</option>
       <option value="baseouvriers">Base Ouvriers</option>
@@ -266,7 +317,7 @@
         </table>
       </div>
     </section>
-
+    
     <!-- Section Base Ouvriers -->
     <section id="baseouvriers" class="section">
       <h2>Base Ouvriers</h2>
@@ -286,7 +337,7 @@
         </table>
       </div>
     </section>
-
+    
     <!-- Section Chantiers -->
     <section id="chantier" class="section">
       <h2>Chantiers</h2>
@@ -324,7 +375,7 @@
         </table>
       </div>
     </section>
-
+    
     <!-- Section Base Chantiers -->
     <section id="basechantier" class="section">
       <h2>Base Chantiers</h2>
@@ -357,7 +408,7 @@
         </table>
       </div>
     </section>
-
+    
     <!-- Section Finance -->
     <section id="finance" class="section">
       <h2>Finance</h2>
@@ -410,7 +461,7 @@
         <p id="global-balance">Solde global : 0 €</p>
       </div>
     </section>
-
+    
     <!-- Section Projet -->
     <section id="projet" class="section">
       <h2>Projet</h2>
@@ -460,7 +511,7 @@
       </div>
       <div id="projet-resultat"></div>
     </section>
-
+    
     <!-- Section Plus d'Options -->
     <section id="plusoptions" class="section">
       <h2>Plus d'Options</h2>
@@ -481,7 +532,7 @@
       </ul>
       <div id="plusoptions-output"></div>
     </section>
-
+    
     <!-- Section Site Web -->
     <section id="siteweb" class="section">
       <h2>Site Web</h2>
@@ -491,7 +542,7 @@
         <li><a href="https://hostinger.com" target="_blank">Hostinger</a></li>
       </ul>
     </section>
-
+    
     <!-- Section Utilitaires -->
     <section id="utilitaires" class="section">
       <h2>Utilitaires</h2>
@@ -502,16 +553,31 @@
       <button class="extra-btn" onclick="showHelp()">Afficher aide</button>
       <button class="extra-btn" onclick="viewSummary()">Afficher Synthèse</button>
     </section>
+    
+    <!-- Spacer pour que le footer ne masque pas le contenu -->
+    <div class="spacer"></div>
   </div>
-
+  
   <!-- Footer fixe -->
   <footer>
     <p>&copy; 2025 Koloral Sheqiri</p>
   </footer>
-
+  
+  <!-- Modal Rapport (centré et épuré) -->
+  <div class="report-modal" id="report-modal">
+    <div class="report-content">
+      <h2>Rapport Global</h2>
+      <div id="report-data"></div>
+      <div class="modal-buttons">
+        <button onclick="printReport()">Imprimer Rapport</button>
+        <button onclick="closeReport()">Fermer</button>
+      </div>
+    </div>
+  </div>
+  
   <!-- Script JavaScript regroupant toutes les fonctions -->
   <script>
-    /* --- Navigation par sections via le dropdown --- */
+    /* --- Navigation par dropdown --- */
     function showSection(sectionId) {
       const sections = document.querySelectorAll('.section');
       sections.forEach(sec => sec.classList.remove('active'));
@@ -519,18 +585,15 @@
       window.scrollTo(0, 0);
     }
     
-    /* --- Quick Menu pour ajustements rapides d'achat/dépense --- */
+    /* --- Quick Menu --- */
     const quickBtn = document.getElementById('quick-menu-btn');
     const quickMenu = document.getElementById('quick-menu');
     quickBtn.addEventListener('click', (e) => {
       quickMenu.style.display = (quickMenu.style.display === "block") ? "none" : "block";
       e.stopPropagation();
     });
-    document.addEventListener('click', () => {
-      quickMenu.style.display = "none";
-    });
+    document.addEventListener('click', () => { quickMenu.style.display = "none"; });
     function ajusterDepense(valeur) {
-      // Pour cet exemple, on ajoute simplement une dépense dans la section Finance
       depenses.push({ description: "Dépense rapide (" + valeur + "€)", amount: Math.abs(valeur) });
       saveFinance();
       renderFinanceSummary();
@@ -611,13 +674,11 @@
     function populateOuvrierSelect() {
       const select = document.getElementById('ouvrier-select');
       select.innerHTML = '<option value="">Sélectionner un ouvrier (facultatif)</option>';
-      ouvriers.forEach(o => {
-        select.innerHTML += `<option value="${o.nom}">${o.nom}</option>`;
-      });
+      ouvriers.forEach(o => { select.innerHTML += `<option value="${o.nom}">${o.nom}</option>`; });
     }
     renderOuvriers();
     populateOuvrierSelect();
-
+    
     /* --- Chantiers --- */
     let chantiers = JSON.parse(localStorage.getItem('gestion_chantiers')) || [];
     let travauxFinis = JSON.parse(localStorage.getItem('travaux_finiss')) || [];
@@ -665,7 +726,11 @@
       const matPayee = document.getElementById('chantier-mat-payee').checked;
       if(nom && !isNaN(duree) && !isNaN(prix) && !isNaN(materiel)) {
         const chantier = {
-          nom, duree, prix, materiel, matPayee,
+          nom,
+          duree,
+          prix,
+          materiel,
+          matPayee,
           workerIds: [],
           etapes: currentEtapes.slice(),
           progress: updateChantierProgress(currentEtapes)
@@ -711,7 +776,7 @@
       }
     }
     renderChantiers();
-
+    
     /* --- Base Chantiers --- */
     function renderBaseChantiers() {
       const tbodyActif = document.querySelector('#table-base-chantier-actif tbody');
@@ -729,7 +794,7 @@
         tbodyFini.appendChild(tr);
       });
     }
-
+    
     /* --- Finance --- */
     let revenus = JSON.parse(localStorage.getItem('gestion_revenus')) || [];
     let depenses = JSON.parse(localStorage.getItem('gestion_depenses')) || [];
@@ -978,7 +1043,7 @@
     renderRevenusAttente();
     renderDepenses();
     renderDepensesPrevues();
-
+    
     /* --- Projet --- */
     let projets = JSON.parse(localStorage.getItem('gestion_projets')) || [];
     function saveProjets() { localStorage.setItem('gestion_projets', JSON.stringify(projets)); }
@@ -1078,10 +1143,10 @@
       }
     }
     renderProjets();
-
+    
     /* --- Plus d'Options --- */
     function calculerMargeBeneficiaire() {
-      const idx = prompt("Entrez l'indice du chantier pour calculer la marge :");
+      const idx = prompt("Indice du chantier pour calculer la marge :");
       if(idx === null) return;
       const chantier = chantiers[idx];
       if(!chantier) { alert("Chantier non trouvé."); return; }
@@ -1106,7 +1171,7 @@
       document.getElementById('plusoptions-output').innerText = "Projection sur " + mois + " mois : " + projection.toFixed(2) + " €";
     }
     function analyserRentabiliteProjet() {
-      const idx = prompt("Entrez l'indice du projet à analyser :");
+      const idx = prompt("Indice du projet à analyser :");
       if(idx === null) return;
       const projet = projets[idx];
       if(!projet) { alert("Projet non trouvé."); return; }
@@ -1309,11 +1374,16 @@
   <!-- Modal Rapport -->
   <div class="report-modal" id="report-modal">
     <div class="report-content">
-      <span class="close-report" onclick="closeReport()">&times;</span>
       <h2>Rapport Global</h2>
       <div id="report-data"></div>
-      <button class="extra-btn" onclick="printReport()">Imprimer Rapport</button>
+      <div class="modal-buttons">
+        <button onclick="printReport()">Imprimer Rapport</button>
+        <button onclick="closeReport()">Fermer</button>
+      </div>
     </div>
   </div>
+  
+  <!-- Spacer -->
+  <div class="spacer"></div>
 </body>
 </html>
