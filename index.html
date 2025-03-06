@@ -199,6 +199,20 @@
     }
     .options-list li:hover { background: #0a9396; }
     .option-icon { font-size: 1.4rem; }
+    /* -------------------- Tableaux Collapsibles -------------------- */
+    .collapsible-header {
+      background: #005f73;
+      color: #fff;
+      padding: 10px;
+      cursor: pointer;
+      font-size: 1.2rem;
+      margin-top: 20px;
+      border-radius: 4px;
+    }
+    .collapsible-content {
+      display: none;
+      margin-top: 10px;
+    }
     /* -------------------- Footer -------------------- */
     footer {
       text-align: center;
@@ -307,7 +321,6 @@
     <!-- Quick Menu pour Dépenses Rapides -->
     <div class="quick-menu" id="quick-menu-btn" onclick="toggleQuickMenu()">€ Dépenses</div>
     <div class="quick-menu-container" id="quick-menu">
-      <!-- Les boutons de dépense rapide utilisent la fonction ajusterDepense -->
       <button onclick="ajusterDepense(-20)">-20 €</button>
       <button onclick="ajusterDepense(-50)">-50 €</button>
       <button onclick="ajusterDepense(-100)">-100 €</button>
@@ -474,7 +487,7 @@
         </form>
         <div id="revenus-attente-list"></div>
       </div>
-      <!-- Dépenses Manuelles -->
+      <!-- Dépenses Manuelles avec case « Effectué » -->
       <div>
         <h3>Dépenses Manuelles</h3>
         <form id="form-depense">
@@ -529,6 +542,7 @@
         </select>
         <button type="button" onclick="calculateProjet()">Calculer Projet</button>
       </form>
+      <!-- Section Liste d'Achats avec possibilité de créer un groupe -->
       <div id="projet-achats">
         <h3>Liste d'Achats</h3>
         <form id="form-achat">
@@ -551,7 +565,16 @@
             <tbody></tbody>
           </table>
         </div>
-        <button type="button" onclick="validerAchatGroupe()">Valider Achat Groupé</button>
+        <!-- Création d'un groupe d'achats -->
+        <div style="margin-top:10px;">
+          <input type="text" id="nom-groupe" placeholder="Nom du groupe d'achats">
+          <button type="button" onclick="creerGroupeAchats()">Créer Groupe d'Achats</button>
+        </div>
+        <!-- Section Collapsible pour afficher les groupes d'achats -->
+        <div class="collapsible-header" onclick="toggleGroupedAchats()">Groupes d'Achats</div>
+        <div class="collapsible-content" id="grouped-achats-table">
+          <!-- Le tableau des groupes sera généré ici -->
+        </div>
       </div>
       <div id="projet-resultat"></div>
     </section>
@@ -648,6 +671,7 @@
       window.depensesPrevues = JSON.parse(localStorage.getItem('gestion_depenses_prevues')) || [];
       window.revenusAttente = [];
       window.achats = [];
+      window.groupedAchats = [];  // Nouvel array pour les groupes d’achats
       window.projets = JSON.parse(localStorage.getItem('gestion_projets')) || [];
       
       /* ---------- Fonctions de Sauvegarde ---------- */
@@ -673,13 +697,15 @@
         renderDepenses();
         renderDepensesPrevues();
         window.renderAchats();
+        renderGroupedAchats();
         window.renderProjets();
       };
 
       /* ---------- Navigation via Dropdown ---------- */
       window.showSection = function(sectionId) {
-        var sections = document.querySelectorAll(".section");
-        sections.forEach(function(sec) { sec.classList.remove("active"); });
+        document.querySelectorAll(".section").forEach(function(sec) {
+          sec.classList.remove("active");
+        });
         var target = document.getElementById(sectionId);
         if(target) {
           target.classList.add("active");
@@ -786,7 +812,7 @@
         });
       }
       renderBaseOuvriers();
-
+      
       /* ---------- Chantiers et Étapes ---------- */
       window.renderEtapes = function() {
         var container = document.getElementById("etapes-container");
@@ -924,7 +950,7 @@
         document.getElementById("steps-modal").style.display = "none";
         window.currentEditingChantier = null;
       }
-
+      
       /* ---------- Base Chantiers ---------- */
       function renderBaseChantiers() {
         var tbodyActif = document.querySelector("#table-base-chantier-actif tbody");
@@ -956,7 +982,7 @@
         }
       };
 
-      /* ---------- Finance ---------- */
+      /* ---------- Finance & Gestion des Dépenses effectuées ---------- */
       function renderFinanceSummary() {
         var totalRevenus = window.revenus.reduce(function(sum, r) { return sum + r.amount; }, 0);
         var totalRevenusAttente = window.revenusAttente.reduce(function(sum, r) { return sum + r.amount; }, 0);
@@ -996,15 +1022,21 @@
       function renderDepenses() {
         var container = document.getElementById("depenses-list");
         if(window.depenses.length === 0) { container.innerHTML = "<p>Aucune dépense enregistrée.</p>"; return; }
-        var html = "<table><thead><tr><th>Description</th><th>Montant</th><th>Actions</th></tr></thead><tbody>";
+        var html = "<table><thead><tr><th>Description</th><th>Montant</th><th>Effectué</th><th>Actions</th></tr></thead><tbody>";
         window.depenses.forEach(function(d, idx) {
           html += "<tr><td>" + d.description + "</td><td>" + d.amount.toFixed(2) + " €</td>" +
+                  "<td><input type='checkbox' onchange='toggleDepenseEffectue(" + idx + ")' " + (d.effectue ? "checked" : "") + "></td>" +
                   "<td><button class='action-btn' onclick='editDepense(" + idx + ")'>Modifier</button> " +
                   "<button class='action-btn' onclick='deleteDepense(" + idx + ")'>Supprimer</button></td></tr>";
         });
         html += "</tbody></table>";
         container.innerHTML = html;
       }
+      window.toggleDepenseEffectue = function(idx) {
+        window.depenses[idx].effectue = !window.depenses[idx].effectue;
+        // Vous pouvez ajouter ici des actions supplémentaires (ex. changer le style ou mettre à jour d'autres indicateurs)
+        renderDepenses();
+      };
       function renderDepensesPrevues() {
         var container = document.getElementById("depenses-prevues-list");
         if(window.depensesPrevues.length === 0) { container.innerHTML = "<p>Aucune dépense prévue enregistrée.</p>"; return; }
@@ -1096,297 +1128,90 @@
       renderRevenusAttente();
       renderDepenses();
       renderDepensesPrevues();
-
-      /* ---------- Liste d'Achats (Nouveau système de groupe) ---------- */
-      window.renderAchats = function() {
-        var tbody = document.querySelector("#table-achats tbody");
-        tbody.innerHTML = "";
-        window.achats.sort(function(a, b) { return a.priorite - b.priorite; });
-        window.achats.forEach(function(a, index) {
-          var tr = document.createElement("tr");
-          tr.innerHTML = "<td><input type='checkbox' class='achat-checkbox'></td>" +
-                         "<td>" + a.nom + "</td>" +
-                         "<td>" + a.prix.toFixed(2) + " €</td>" +
-                         "<td>" + a.priorite + "</td>" +
-                         "<td><button class='action-btn' onclick='acheterArticle(" + index + ")'>Acheter Individuel</button></td>";
-          tbody.appendChild(tr);
-        });
-      };
-      window.acheterArticle = function(index) {
-        var article = window.achats[index];
-        window.depenses.push({ description: "Achat individuel : " + article.nom, amount: article.prix });
-        window.saveFinance();
-        renderFinanceSummary();
-        renderDepenses();
-        window.achats.splice(index, 1);
-        window.renderAchats();
-        alert("Achat de " + article.nom + " enregistré !");
-      };
-      window.validerAchatGroupe = function() {
-        var checkboxes = document.querySelectorAll(".achat-checkbox");
-        var total = 0;
-        var indicesToRemove = [];
-        checkboxes.forEach(function(cb, index) {
-          if(cb.checked) {
-            total += window.achats[index].prix;
-            indicesToRemove.push(index);
-          }
-        });
-        if(total > 0) {
-          window.depenses.push({ description: "Achat groupé", amount: total });
-          window.saveFinance();
-          renderFinanceSummary();
-          renderDepenses();
-          // Supprimer les articles sélectionnés (de la fin vers le début)
-          indicesToRemove.sort(function(a, b) { return b - a; });
-          indicesToRemove.forEach(function(i) { window.achats.splice(i, 1); });
+      
+      /* ---------- Système de Groupement d'Articles ---------- */
+      // Nouvel array "groupedAchats" déjà défini
+      // Fonction pour ajouter un article dans la liste individuelle
+      window.ajouterAchat = function() {
+        var nom = document.getElementById("achat-nom").value.trim();
+        var prix = parseFloat(document.getElementById("achat-prix").value);
+        var priorite = parseInt(document.getElementById("achat-priorite").value);
+        if(nom && !isNaN(prix) && !isNaN(priorite)) {
+          window.achats.push({ nom: nom, prix: prix, priorite: priorite });
+          document.getElementById("form-achat").reset();
           window.renderAchats();
-          alert("Achat groupé de " + total.toFixed(2) + " € enregistré !");
         } else {
-          alert("Aucun article sélectionné pour l'achat groupé.");
+          alert("Veuillez remplir correctement les champs de l'article.");
         }
       };
-      window.renderAchats();
-      
-      /* ---------- Projets ---------- */
-      window.renderProjets = function() {
-        var container = document.getElementById("projet-resultat");
-        if(window.projets.length === 0) { container.innerHTML = "<p>Aucun projet enregistré.</p>"; return; }
-        var html = "<table id='projet-list'><thead><tr>" +
-          "<th>Nom</th><th>Budget (€)</th><th>Lien</th><th>Délai (mois)</th><th>Mode</th><th>Calcul</th><th>Priorité</th><th>Actions</th>" +
-          "</tr></thead><tbody>";
-        window.projets.forEach(function(p, idx) {
-          html += "<tr><td>" + p.nom + "</td>" +
-                  "<td>" + p.prix.toFixed(2) + "</td>" +
-                  "<td>" + (p.lien ? "<a href='" + p.lien + "' target='_blank'>Lien</a>" : "-") + "</td>" +
-                  "<td>" + p.duree + " mois</td>" +
-                  "<td>" + p.mode + "</td>" +
-                  "<td>" + p.calcul + "</td>" +
-                  "<td>" + p.priorite + "</td>" +
-                  "<td><button class='action-btn' onclick='editProjet(" + idx + ")'>Modifier</button> " +
-                  "<button class='action-btn' onclick='deleteProjet(" + idx + ")'>Supprimer</button></td></tr>";
+      // Fonction pour créer un groupe d'achats à partir des articles sélectionnés
+      window.creerGroupeAchats = function() {
+        var checkboxes = document.querySelectorAll(".achat-checkbox");
+        var articlesGroupe = [];
+        checkboxes.forEach(function(cb, index) {
+          if(cb.checked) {
+            articlesGroupe.push(window.achats[index]);
+          }
+        });
+        if(articlesGroupe.length === 0) {
+          alert("Veuillez sélectionner au moins un article pour le groupe.");
+          return;
+        }
+        var nomGroupe = document.getElementById("nom-groupe").value.trim();
+        if(nomGroupe === "") {
+          nomGroupe = prompt("Entrez le nom du groupe d'achats :");
+          if(!nomGroupe) return;
+        }
+        // Calcul du total du groupe
+        var totalGroupe = articlesGroupe.reduce(function(sum, art) { return sum + art.prix; }, 0);
+        window.groupedAchats.push({ groupName: nomGroupe, articles: articlesGroupe, total: totalGroupe, effectue: false });
+        // Supprimer les articles sélectionnés de la liste individuelle
+        window.achats = window.achats.filter(function(art) {
+          return !articlesGroupe.find(function(a) { return a.nom === art.nom && a.prix === art.prix; });
+        });
+        document.getElementById("nom-groupe").value = "";
+        window.renderAchats();
+        renderGroupedAchats();
+        alert("Groupe '" + nomGroupe + "' créé avec un total de " + totalGroupe.toFixed(2) + " €.");
+      };
+      // Fonction pour afficher le tableau des groupes d'achats dans une section collapsible
+      function renderGroupedAchats() {
+        var container = document.getElementById("grouped-achats-table");
+        if(window.groupedAchats.length === 0) {
+          container.innerHTML = "<p>Aucun groupe d'achats.</p>";
+          return;
+        }
+        var html = "<table><thead><tr><th>Groupe</th><th>Total</th><th>Effectué</th><th>Actions</th></tr></thead><tbody>";
+        window.groupedAchats.forEach(function(g, idx) {
+          html += "<tr><td>" + g.groupName + "</td>" +
+                  "<td>" + g.total.toFixed(2) + " €</td>" +
+                  "<td><input type='checkbox' onchange='toggleGroupeEffectue(" + idx + ")' " + (g.effectue ? "checked" : "") + "></td>" +
+                  "<td><button class='action-btn' onclick='supprimerGroupe(" + idx + ")'>Supprimer</button></td></tr>";
         });
         html += "</tbody></table>";
         container.innerHTML = html;
-      };
-      window.editProjet = function(idx) {
-        var projet = window.projets[idx];
-        var newNom = prompt("Modifier le nom du projet :", projet.nom);
-        if(newNom !== null) { projet.nom = newNom.trim() || projet.nom; }
-        var newPrix = prompt("Modifier le budget total (€) :", projet.prix);
-        if(newPrix !== null) { projet.prix = parseFloat(newPrix) || projet.prix; }
-        var newDuree = prompt("Modifier le délai souhaité (mois) :", projet.duree);
-        if(newDuree !== null) { projet.duree = parseInt(newDuree) || projet.duree; }
-        var newPriorite = prompt("Modifier la priorité (1 à 5) :", projet.priorite);
-        if(newPriorite !== null) { projet.priorite = newPriorite || projet.priorite; }
-        window.saveProjets();
-        window.renderProjets();
-      };
-      window.deleteProjet = function(idx) {
-        if(confirm("Supprimer le projet " + window.projets[idx].nom + " ?")) {
-          window.projets.splice(idx, 1);
-          window.saveProjets();
-          window.renderProjets();
-        }
-      };
-      window.renderProjets();
-      window.toggleLienProjet = function() {
-        var check = document.getElementById("projet-ajout-lien").checked;
-        document.getElementById("projet-lien").style.display = check ? "block" : "none";
-      };
-      window.calculateProjet = function() {
-        var nom = document.getElementById("projet-nom").value.trim();
-        var prix = parseFloat(document.getElementById("projet-prix").value);
-        var duree = parseInt(document.getElementById("projet-duree").value);
-        var mode = document.getElementById("projet-mode-inverse").checked ? "Inverse" : "Direct";
-        var mensuel = parseFloat(document.getElementById("projet-mensuel").value);
-        var priorite = document.getElementById("projet-priorite").value;
-        var moisObjectif = parseInt(document.getElementById("projet-mois-objectif").value);
-        if(nom && !isNaN(prix) && !isNaN(duree)) {
-          var calcul = "";
-          if(mode === "Direct") {
-            var budgetMensuel = prix / duree;
-            calcul = "Budget mensuel requis : " + budgetMensuel.toFixed(2) + " €";
-          } else {
-            if(!isNaN(mensuel) && mensuel > 0) {
-              var moisEstime = Math.ceil(prix / mensuel);
-              calcul = "Durée estimée : " + moisEstime + " mois";
-            } else {
-              calcul = "Montant mensuel invalide";
-            }
-          }
-          var economieMensuelle = "";
-          if(!isNaN(moisObjectif) && moisObjectif > 0) {
-            economieMensuelle = " Pour atteindre l'objectif en " + moisObjectif + " mois, économisez " + (prix / moisObjectif).toFixed(2) + " € par mois.";
-          }
-          var lien = document.getElementById("projet-lien").value.trim();
-          var projet = { nom: nom, prix: prix, duree: duree, lien: lien || null, mode: mode, calcul: calcul + economieMensuelle, priorite: priorite, suivi: [] };
-          window.projets.push(projet);
-          window.saveProjets();
-          window.renderProjets();
-          document.getElementById("form-projet").reset();
-          document.getElementById("projet-lien").style.display = "none";
-        } else {
-          alert("Veuillez remplir correctement les champs du projet.");
-        }
-      };
-
-      /* ---------- Options Supplémentaires ---------- */
-      function findChantierByName(nom) {
-        return window.chantiers.find(function(c) { return c.nom.toLowerCase() === nom.toLowerCase(); });
       }
-      window.calculerMargeBeneficiaire = function() {
-        var nom = prompt("Entrez le nom du chantier pour calculer la marge :");
-        if(!nom) return;
-        var chantier = findChantierByName(nom);
-        if(!chantier) { alert("Chantier non trouvé."); return; }
-        var coutOuvriers = 0;
-        if(chantier.workerIds && chantier.duree) {
-          chantier.workerIds.forEach(function(name) {
-            var worker = window.ouvriers.find(function(o) { return o.nom.toLowerCase() === name.toLowerCase(); });
-            if(worker) { coutOuvriers += worker.tarif * chantier.duree; }
-          });
-        }
-        var coutMateriel = chantier.matPayee ? 0 : chantier.materiel;
-        var coutTotal = (chantier.prix * 0.22) + coutOuvriers + coutMateriel;
-        var marge = ((chantier.prix - coutTotal) / chantier.prix) * 100;
-        document.getElementById("plusoptions-output").innerText = "Marge bénéficiaire du chantier '" + chantier.nom + "' : " + marge.toFixed(2) + " %";
-      };
-      window.previsionTresorerie = function() {
-        var mois = parseInt(prompt("Sur combien de mois projeter la trésorerie ?"));
-        if(isNaN(mois) || mois <= 0) { alert("Valeur invalide."); return; }
-        var soldeText = document.getElementById("global-balance").innerText;
-        var solde = parseFloat(soldeText.replace(/[^\d.-]/g, ""));
-        var projection = solde * mois;
-        document.getElementById("plusoptions-output").innerText = "Projection sur " + mois + " mois : " + projection.toFixed(2) + " €";
-      };
-      window.analyserRentabiliteProjet = function() {
-        var nom = prompt("Entrez le nom du projet à analyser :");
-        if(!nom) return;
-        var projet = window.projets.find(function(p) { return p.nom.toLowerCase() === nom.toLowerCase(); });
-        if(!projet) { alert("Projet non trouvé."); return; }
-        var revenuEstime = parseFloat(prompt("Revenu estimé pour ce projet (€) :"));
-        if(isNaN(revenuEstime)) { alert("Valeur invalide."); return; }
-        var roi = ((revenuEstime - projet.prix) / projet.prix) * 100;
-        document.getElementById("plusoptions-output").innerText = "ROI pour le projet '" + projet.nom + "' : " + roi.toFixed(2) + " %";
-      };
-      window.genererEcheancier = function() {
-        var montantTotal = parseFloat(prompt("Montant total (€) :"));
-        var mois = parseInt(prompt("Répartir sur combien de mois ?"));
-        if(isNaN(montantTotal) || isNaN(mois) || mois <= 0) { alert("Valeurs invalides."); return; }
-        var montantMensuel = montantTotal / mois;
-        var echeancier = "Échéancier :\n";
-        var date = new Date();
-        for(var i = 1; i <= mois; i++) {
-          date.setMonth(date.getMonth() + 1);
-          echeancier += "Mois " + i + " (" + date.toLocaleDateString() + ") : " + montantMensuel.toFixed(2) + " €\n";
-        }
-        document.getElementById("plusoptions-output").innerText = echeancier;
-      };
-      window.comparerCouts = function() {
-        var nom1 = prompt("Entrez le nom du premier chantier :");
-        var nom2 = prompt("Entrez le nom du deuxième chantier :");
-        if(!nom1 || !nom2) return;
-        var chantier1 = findChantierByName(nom1);
-        var chantier2 = findChantierByName(nom2);
-        if(!chantier1 || !chantier2) { alert("Un des chantiers est introuvable."); return; }
-        var cout1 = chantier1.prix + chantier1.materiel;
-        var cout2 = chantier2.prix + chantier2.materiel;
-        var message = "Comparaison :\n" +
-                      chantier1.nom + " : " + cout1.toFixed(2) + " €\n" +
-                      chantier2.nom + " : " + cout2.toFixed(2) + " €\n";
-        message += (cout1 < cout2) ? chantier1.nom + " est moins cher." : (cout2 < cout1) ? chantier2.nom + " est moins cher." : "Les deux ont le même coût.";
-        document.getElementById("plusoptions-output").innerText = message;
-      };
-      window.planifierTaches = function() {
-        var nb = parseInt(prompt("Nombre de tâches à planifier :"));
-        if(isNaN(nb) || nb <= 0) { alert("Nombre invalide."); return; }
-        var taches = [];
-        for(var i = 0; i < nb; i++) {
-          var tache = prompt("Tâche " + (i+1) + " :");
-          var dateLimite = prompt("Date limite (AAAA-MM-JJ) pour la tâche " + (i+1) + " :");
-          if(tache && dateLimite) { taches.push({ tache: tache, dateLimite: dateLimite }); }
-        }
-        taches.sort(function(a, b) { return new Date(a.dateLimite) - new Date(b.dateLimite); });
-        var message = "Tâches planifiées :\n";
-        taches.forEach(function(t, i) { message += (i+1) + ". " + t.tache + " (avant " + t.dateLimite + ")\n"; });
-        document.getElementById("plusoptions-output").innerText = message;
-      };
-      window.simulerInvestissement = function() {
-        var principal = parseFloat(prompt("Montant investi initialement (€) :"));
-        var taux = parseFloat(prompt("Taux d'intérêt annuel (%) :"));
-        var annees = parseInt(prompt("Durée de l'investissement (années) :"));
-        if(isNaN(principal) || isNaN(taux) || isNaN(annees)) { alert("Valeurs invalides."); return; }
-        var montantFinal = principal * Math.pow((1 + taux/100), annees);
-        document.getElementById("plusoptions-output").innerText = "Après " + annees + " ans, " + principal.toFixed(2) + " € à " + taux + "% donnera " + montantFinal.toFixed(2) + " €.";
-      };
-      window.calculerTVAAvance = function() {
-        var montant = parseFloat(prompt("Montant hors taxe (€) :"));
-        var taux = parseFloat(prompt("Taux de TVA (%) :"));
-        if(isNaN(montant) || isNaN(taux)) { alert("Valeurs invalides."); return; }
-        var tva = montant * (taux/100);
-        document.getElementById("plusoptions-output").innerText = "TVA à " + taux + "% sur " + montant.toFixed(2) + " € = " + tva.toFixed(2) + " € (Total TTC = " + (montant+tva).toFixed(2) + " €)";
-      };
-      window.genererRapportPersonnalise = function() {
-        var dateDebut = prompt("Date de début (AAAA-MM-JJ) :");
-        var dateFin = prompt("Date de fin (AAAA-MM-JJ) :");
-        if(!dateDebut || !dateFin) { alert("Dates invalides."); return; }
-        document.getElementById("plusoptions-output").innerText = "Rapport pour la période du " + dateDebut + " au " + dateFin + ".";
-      };
-      window.analyserAvancee = function() {
-        alert("Analyse avancée en cours de développement…");
-      };
-
-      /* ---------- Liste d'Achats (Nouveau Système de Groupe) ---------- */
-      window.renderAchats = function() {
-        var tbody = document.querySelector("#table-achats tbody");
-        tbody.innerHTML = "";
-        window.achats.sort(function(a, b) { return a.priorite - b.priorite; });
-        window.achats.forEach(function(a, index) {
-          var tr = document.createElement("tr");
-          tr.innerHTML = "<td><input type='checkbox' class='achat-checkbox'></td>" +
-                         "<td>" + a.nom + "</td>" +
-                         "<td>" + a.prix.toFixed(2) + " €</td>" +
-                         "<td>" + a.priorite + "</td>" +
-                         "<td><button class='action-btn' onclick='acheterArticle(" + index + ")'>Acheter Individuel</button></td>";
-          tbody.appendChild(tr);
-        });
-      };
-      window.acheterArticle = function(index) {
-        var article = window.achats[index];
-        window.depenses.push({ description: "Achat individuel : " + article.nom, amount: article.prix });
-        window.saveFinance();
-        renderFinanceSummary();
-        renderDepenses();
-        window.achats.splice(index, 1);
-        window.renderAchats();
-        alert("Achat de " + article.nom + " enregistré !");
-      };
-      window.validerAchatGroupe = function() {
-        var checkboxes = document.querySelectorAll(".achat-checkbox");
-        var total = 0;
-        var indicesToRemove = [];
-        checkboxes.forEach(function(cb, index) {
-          if(cb.checked) {
-            total += window.achats[index].prix;
-            indicesToRemove.push(index);
-          }
-        });
-        if(total > 0) {
-          window.depenses.push({ description: "Achat groupé", amount: total });
+      // Fonction pour basculer la case "effectué" d'un groupe d'achats
+      window.toggleGroupeEffectue = function(idx) {
+        window.groupedAchats[idx].effectue = !window.groupedAchats[idx].effectue;
+        if(window.groupedAchats[idx].effectue) {
+          // Dès qu'un groupe est coché, on l'enregistre comme dépense
+          window.depenses.push({ description: "Groupe d'achats : " + window.groupedAchats[idx].groupName, amount: window.groupedAchats[idx].total });
           window.saveFinance();
           renderFinanceSummary();
           renderDepenses();
-          // Supprimer les articles sélectionnés (du dernier au premier)
-          indicesToRemove.sort(function(a, b) { return b - a; });
-          indicesToRemove.forEach(function(i) { window.achats.splice(i, 1); });
-          window.renderAchats();
-          alert("Achat groupé de " + total.toFixed(2) + " € enregistré !");
-        } else {
-          alert("Aucun article sélectionné pour l'achat groupé.");
+          // Retirer le groupe de la liste
+          window.groupedAchats.splice(idx, 1);
+        }
+        renderGroupedAchats();
+      };
+      // Fonction pour supprimer un groupe d'achats sans le marquer effectué
+      window.supprimerGroupe = function(idx) {
+        if(confirm("Supprimer le groupe '" + window.groupedAchats[idx].groupName + "' ?")) {
+          window.groupedAchats.splice(idx, 1);
+          renderGroupedAchats();
         }
       };
-      window.renderAchats();
       
       /* ---------- Projets ---------- */
       window.renderProjets = function() {
@@ -1469,260 +1294,6 @@
         } else {
           alert("Veuillez remplir correctement les champs du projet.");
         }
-      };
-
-      /* ---------- Options Supplémentaires ---------- */
-      function findChantierByName(nom) {
-        return window.chantiers.find(function(c) { return c.nom.toLowerCase() === nom.toLowerCase(); });
-      }
-      window.calculerMargeBeneficiaire = function() {
-        var nom = prompt("Entrez le nom du chantier pour calculer la marge :");
-        if(!nom) return;
-        var chantier = findChantierByName(nom);
-        if(!chantier) { alert("Chantier non trouvé."); return; }
-        var coutOuvriers = 0;
-        if(chantier.workerIds && chantier.duree) {
-          chantier.workerIds.forEach(function(name) {
-            var worker = window.ouvriers.find(function(o) { return o.nom.toLowerCase() === name.toLowerCase(); });
-            if(worker) { coutOuvriers += worker.tarif * chantier.duree; }
-          });
-        }
-        var coutMateriel = chantier.matPayee ? 0 : chantier.materiel;
-        var coutTotal = (chantier.prix * 0.22) + coutOuvriers + coutMateriel;
-        var marge = ((chantier.prix - coutTotal) / chantier.prix) * 100;
-        document.getElementById("plusoptions-output").innerText = "Marge bénéficiaire du chantier '" + chantier.nom + "' : " + marge.toFixed(2) + " %";
-      };
-      window.previsionTresorerie = function() {
-        var mois = parseInt(prompt("Sur combien de mois projeter la trésorerie ?"));
-        if(isNaN(mois) || mois <= 0) { alert("Valeur invalide."); return; }
-        var soldeText = document.getElementById("global-balance").innerText;
-        var solde = parseFloat(soldeText.replace(/[^\d.-]/g, ""));
-        var projection = solde * mois;
-        document.getElementById("plusoptions-output").innerText = "Projection sur " + mois + " mois : " + projection.toFixed(2) + " €";
-      };
-      window.analyserRentabiliteProjet = function() {
-        var nom = prompt("Entrez le nom du projet à analyser :");
-        if(!nom) return;
-        var projet = window.projets.find(function(p) { return p.nom.toLowerCase() === nom.toLowerCase(); });
-        if(!projet) { alert("Projet non trouvé."); return; }
-        var revenuEstime = parseFloat(prompt("Revenu estimé pour ce projet (€) :"));
-        if(isNaN(revenuEstime)) { alert("Valeur invalide."); return; }
-        var roi = ((revenuEstime - projet.prix) / projet.prix) * 100;
-        document.getElementById("plusoptions-output").innerText = "ROI pour le projet '" + projet.nom + "' : " + roi.toFixed(2) + " %";
-      };
-      window.genererEcheancier = function() {
-        var montantTotal = parseFloat(prompt("Montant total (€) :"));
-        var mois = parseInt(prompt("Répartir sur combien de mois ?"));
-        if(isNaN(montantTotal) || isNaN(mois) || mois <= 0) { alert("Valeurs invalides."); return; }
-        var montantMensuel = montantTotal / mois;
-        var echeancier = "Échéancier :\n";
-        var date = new Date();
-        for(var i = 1; i <= mois; i++) {
-          date.setMonth(date.getMonth() + 1);
-          echeancier += "Mois " + i + " (" + date.toLocaleDateString() + ") : " + montantMensuel.toFixed(2) + " €\n";
-        }
-        document.getElementById("plusoptions-output").innerText = echeancier;
-      };
-      window.comparerCouts = function() {
-        var nom1 = prompt("Entrez le nom du premier chantier :");
-        var nom2 = prompt("Entrez le nom du deuxième chantier :");
-        if(!nom1 || !nom2) return;
-        var chantier1 = findChantierByName(nom1);
-        var chantier2 = findChantierByName(nom2);
-        if(!chantier1 || !chantier2) { alert("Un des chantiers est introuvable."); return; }
-        var cout1 = chantier1.prix + chantier1.materiel;
-        var cout2 = chantier2.prix + chantier2.materiel;
-        var message = "Comparaison :\n" +
-                      chantier1.nom + " : " + cout1.toFixed(2) + " €\n" +
-                      chantier2.nom + " : " + cout2.toFixed(2) + " €\n";
-        message += (cout1 < cout2) ? chantier1.nom + " est moins cher." : (cout2 < cout1) ? chantier2.nom + " est moins cher." : "Les deux ont le même coût.";
-        document.getElementById("plusoptions-output").innerText = message;
-      };
-      window.planifierTaches = function() {
-        var nb = parseInt(prompt("Nombre de tâches à planifier :"));
-        if(isNaN(nb) || nb <= 0) { alert("Nombre invalide."); return; }
-        var taches = [];
-        for(var i = 0; i < nb; i++) {
-          var tache = prompt("Tâche " + (i+1) + " :");
-          var dateLimite = prompt("Date limite (AAAA-MM-JJ) pour la tâche " + (i+1) + " :");
-          if(tache && dateLimite) { taches.push({ tache: tache, dateLimite: dateLimite }); }
-        }
-        taches.sort(function(a, b) { return new Date(a.dateLimite) - new Date(b.dateLimite); });
-        var message = "Tâches planifiées :\n";
-        taches.forEach(function(t, i) { message += (i+1) + ". " + t.tache + " (avant " + t.dateLimite + ")\n"; });
-        document.getElementById("plusoptions-output").innerText = message;
-      };
-      window.simulerInvestissement = function() {
-        var principal = parseFloat(prompt("Montant investi initialement (€) :"));
-        var taux = parseFloat(prompt("Taux d'intérêt annuel (%) :"));
-        var annees = parseInt(prompt("Durée de l'investissement (années) :"));
-        if(isNaN(principal) || isNaN(taux) || isNaN(annees)) { alert("Valeurs invalides."); return; }
-        var montantFinal = principal * Math.pow((1 + taux/100), annees);
-        document.getElementById("plusoptions-output").innerText = "Après " + annees + " ans, " + principal.toFixed(2) + " € à " + taux + "% donnera " + montantFinal.toFixed(2) + " €.";
-      };
-      window.calculerTVAAvance = function() {
-        var montant = parseFloat(prompt("Montant hors taxe (€) :"));
-        var taux = parseFloat(prompt("Taux de TVA (%) :"));
-        if(isNaN(montant) || isNaN(taux)) { alert("Valeurs invalides."); return; }
-        var tva = montant * (taux/100);
-        document.getElementById("plusoptions-output").innerText = "TVA à " + taux + "% sur " + montant.toFixed(2) + " € = " + tva.toFixed(2) + " € (Total TTC = " + (montant+tva).toFixed(2) + " €)";
-      };
-      window.genererRapportPersonnalise = function() {
-        var dateDebut = prompt("Date de début (AAAA-MM-JJ) :");
-        var dateFin = prompt("Date de fin (AAAA-MM-JJ) :");
-        if(!dateDebut || !dateFin) { alert("Dates invalides."); return; }
-        document.getElementById("plusoptions-output").innerText = "Rapport pour la période du " + dateDebut + " au " + dateFin + ".";
-      };
-      window.analyserAvancee = function() {
-        alert("Analyse avancée en cours de développement…");
-      };
-
-      /* ---------- Liste d'Achats (Nouveau système de groupe) ---------- */
-      window.renderAchats = function() {
-        var tbody = document.querySelector("#table-achats tbody");
-        tbody.innerHTML = "";
-        window.achats.sort(function(a, b) { return a.priorite - b.priorite; });
-        window.achats.forEach(function(a, index) {
-          var tr = document.createElement("tr");
-          tr.innerHTML = "<td><input type='checkbox' class='achat-checkbox'></td>" +
-                         "<td>" + a.nom + "</td>" +
-                         "<td>" + a.prix.toFixed(2) + " €</td>" +
-                         "<td>" + a.priorite + "</td>" +
-                         "<td><button class='action-btn' onclick='acheterArticle(" + index + ")'>Acheter Individuel</button></td>";
-          tbody.appendChild(tr);
-        });
-      };
-      window.acheterArticle = function(index) {
-        var article = window.achats[index];
-        window.depenses.push({ description: "Achat individuel : " + article.nom, amount: article.prix });
-        window.saveFinance();
-        renderFinanceSummary();
-        renderDepenses();
-        window.achats.splice(index, 1);
-        window.renderAchats();
-        alert("Achat de " + article.nom + " enregistré !");
-      };
-      window.validerAchatGroupe = function() {
-        var checkboxes = document.querySelectorAll(".achat-checkbox");
-        var total = 0;
-        var indicesToRemove = [];
-        checkboxes.forEach(function(cb, index) {
-          if(cb.checked) {
-            total += window.achats[index].prix;
-            indicesToRemove.push(index);
-          }
-        });
-        if(total > 0) {
-          window.depenses.push({ description: "Achat groupé", amount: total });
-          window.saveFinance();
-          renderFinanceSummary();
-          renderDepenses();
-          indicesToRemove.sort(function(a, b) { return b - a; });
-          indicesToRemove.forEach(function(i) { window.achats.splice(i, 1); });
-          window.renderAchats();
-          alert("Achat groupé de " + total.toFixed(2) + " € enregistré !");
-        } else {
-          alert("Aucun article sélectionné pour l'achat groupé.");
-        }
-      };
-      window.renderAchats();
-      
-      /* ---------- Projets ---------- */
-      window.renderProjets = function() {
-        var container = document.getElementById("projet-resultat");
-        if(window.projets.length === 0) { container.innerHTML = "<p>Aucun projet enregistré.</p>"; return; }
-        var html = "<table id='projet-list'><thead><tr>" +
-          "<th>Nom</th><th>Budget (€)</th><th>Lien</th><th>Délai (mois)</th><th>Mode</th><th>Calcul</th><th>Priorité</th><th>Actions</th>" +
-          "</tr></thead><tbody>";
-        window.projets.forEach(function(p, idx) {
-          html += "<tr><td>" + p.nom + "</td>" +
-                  "<td>" + p.prix.toFixed(2) + "</td>" +
-                  "<td>" + (p.lien ? "<a href='" + p.lien + "' target='_blank'>Lien</a>" : "-") + "</td>" +
-                  "<td>" + p.duree + " mois</td>" +
-                  "<td>" + p.mode + "</td>" +
-                  "<td>" + p.calcul + "</td>" +
-                  "<td>" + p.priorite + "</td>" +
-                  "<td><button class='action-btn' onclick='editProjet(" + idx + ")'>Modifier</button> " +
-                  "<button class='action-btn' onclick='deleteProjet(" + idx + ")'>Supprimer</button></td></tr>";
-        });
-        html += "</tbody></table>";
-        container.innerHTML = html;
-      };
-      window.editProjet = function(idx) {
-        var projet = window.projets[idx];
-        var newNom = prompt("Modifier le nom du projet :", projet.nom);
-        if(newNom !== null) { projet.nom = newNom.trim() || projet.nom; }
-        var newPrix = prompt("Modifier le budget total (€) :", projet.prix);
-        if(newPrix !== null) { projet.prix = parseFloat(newPrix) || projet.prix; }
-        var newDuree = prompt("Modifier le délai souhaité (mois) :", projet.duree);
-        if(newDuree !== null) { projet.duree = parseInt(newDuree) || projet.duree; }
-        var newPriorite = prompt("Modifier la priorité (1 à 5) :", projet.priorite);
-        if(newPriorite !== null) { projet.priorite = newPriorite || projet.priorite; }
-        window.saveProjets();
-        window.renderProjets();
-      };
-      window.deleteProjet = function(idx) {
-        if(confirm("Supprimer le projet " + window.projets[idx].nom + " ?")) {
-          window.projets.splice(idx, 1);
-          window.saveProjets();
-          window.renderProjets();
-        }
-      };
-      window.renderProjets();
-      window.toggleLienProjet = function() {
-        var check = document.getElementById("projet-ajout-lien").checked;
-        document.getElementById("projet-lien").style.display = check ? "block" : "none";
-      };
-      window.calculateProjet = function() {
-        var nom = document.getElementById("projet-nom").value.trim();
-        var prix = parseFloat(document.getElementById("projet-prix").value);
-        var duree = parseInt(document.getElementById("projet-duree").value);
-        var mode = document.getElementById("projet-mode-inverse").checked ? "Inverse" : "Direct";
-        var mensuel = parseFloat(document.getElementById("projet-mensuel").value);
-        var priorite = document.getElementById("projet-priorite").value;
-        var moisObjectif = parseInt(document.getElementById("projet-mois-objectif").value);
-        if(nom && !isNaN(prix) && !isNaN(duree)) {
-          var calcul = "";
-          if(mode === "Direct") {
-            var budgetMensuel = prix / duree;
-            calcul = "Budget mensuel requis : " + budgetMensuel.toFixed(2) + " €";
-          } else {
-            if(!isNaN(mensuel) && mensuel > 0) {
-              var moisEstime = Math.ceil(prix / mensuel);
-              calcul = "Durée estimée : " + moisEstime + " mois";
-            } else {
-              calcul = "Montant mensuel invalide";
-            }
-          }
-          var economieMensuelle = "";
-          if(!isNaN(moisObjectif) && moisObjectif > 0) {
-            economieMensuelle = " Pour atteindre l'objectif en " + moisObjectif + " mois, économisez " + (prix / moisObjectif).toFixed(2) + " € par mois.";
-          }
-          var lien = document.getElementById("projet-lien").value.trim();
-          var projet = { nom: nom, prix: prix, duree: duree, lien: lien || null, mode: mode, calcul: calcul + economieMensuelle, priorite: priorite, suivi: [] };
-          window.projets.push(projet);
-          window.saveProjets();
-          window.renderProjets();
-          document.getElementById("form-projet").reset();
-          document.getElementById("projet-lien").style.display = "none";
-        } else {
-          alert("Veuillez remplir correctement les champs du projet.");
-        }
-      };
-
-      /* ---------- Quick Dépense (ajusterDepense) ---------- */
-      window.ajusterDepense = function(valeur) {
-        if(valeur < 0) {
-          window.depenses.push({ description: "Dépense rapide (" + valeur + "€)", amount: Math.abs(valeur) });
-          alert("Dépense de " + Math.abs(valeur) + " € enregistrée.");
-        } else {
-          window.revenus.push({ description: "Revenu rapide (" + valeur + "€)", amount: valeur });
-          alert("Revenu de " + valeur + " € enregistré.");
-        }
-        window.saveFinance();
-        renderFinanceSummary();
-        renderDepenses();
-        renderRevenus();
       };
 
       /* ---------- Utilitaires ---------- */
@@ -1737,7 +1308,8 @@
           depensesPrevues: window.depensesPrevues,
           projets: window.projets,
           travauxFinis: window.travauxFinis,
-          achats: window.achats
+          achats: window.achats,
+          groupedAchats: window.groupedAchats
         };
         var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allData, null, 2));
         var dlAnchorElem = document.createElement("a");
@@ -1763,6 +1335,7 @@
             if(importedData.projets) { window.projets = importedData.projets; window.saveProjets(); window.renderProjets(); }
             if(importedData.travauxFinis) { window.travauxFinis = importedData.travauxFinis; window.saveTravauxFinis(); }
             if(importedData.achats) { window.achats = importedData.achats; window.renderAchats(); }
+            if(importedData.groupedAchats) { window.groupedAchats = importedData.groupedAchats; renderGroupedAchats(); }
             window.renderFinanceSummary();
             alert("Importation réussie !");
           } catch(error) {
@@ -1835,52 +1408,73 @@
       };
 
       /* ---------- Système de Groupement d'Articles ---------- */
-      window.renderAchats = function() {
-        var tbody = document.querySelector("#table-achats tbody");
-        tbody.innerHTML = "";
-        window.achats.sort(function(a, b) { return a.priorite - b.priorite; });
-        window.achats.forEach(function(a, index) {
-          var tr = document.createElement("tr");
-          tr.innerHTML = "<td><input type='checkbox' class='achat-checkbox'></td>" +
-                         "<td>" + a.nom + "</td>" +
-                         "<td>" + a.prix.toFixed(2) + " €</td>" +
-                         "<td>" + a.priorite + "</td>" +
-                         "<td><button class='action-btn' onclick='acheterArticle(" + index + ")'>Acheter Individuel</button></td>";
-          tbody.appendChild(tr);
-        });
-      };
-      window.acheterArticle = function(index) {
-        var article = window.achats[index];
-        window.depenses.push({ description: "Achat individuel : " + article.nom, amount: article.prix });
-        window.saveFinance();
-        renderFinanceSummary();
-        renderDepenses();
-        window.achats.splice(index, 1);
-        window.renderAchats();
-        alert("Achat de " + article.nom + " enregistré !");
-      };
-      // Nouveau bouton pour valider le groupe d'articles
-      window.validerAchatGroupe = function() {
+      // Fonction pour ajouter un article à la liste (déjà définie ci-dessus)
+      // Fonction pour créer un groupe d'achats
+      window.creerGroupeAchats = function() {
         var checkboxes = document.querySelectorAll(".achat-checkbox");
-        var total = 0;
-        var indicesToRemove = [];
+        var articlesGroupe = [];
         checkboxes.forEach(function(cb, index) {
           if(cb.checked) {
-            total += window.achats[index].prix;
-            indicesToRemove.push(index);
+            articlesGroupe.push(window.achats[index]);
           }
         });
-        if(total > 0) {
-          window.depenses.push({ description: "Achat groupé", amount: total });
+        if(articlesGroupe.length === 0) {
+          alert("Veuillez sélectionner au moins un article pour le groupe.");
+          return;
+        }
+        var nomGroupe = document.getElementById("nom-groupe").value.trim();
+        if(nomGroupe === "") {
+          nomGroupe = prompt("Entrez le nom du groupe d'achats :");
+          if(!nomGroupe) return;
+        }
+        var totalGroupe = articlesGroupe.reduce(function(sum, art) { return sum + art.prix; }, 0);
+        window.groupedAchats.push({ groupName: nomGroupe, articles: articlesGroupe, total: totalGroupe, effectue: false });
+        // Retirer les articles sélectionnés de la liste individuelle
+        window.achats = window.achats.filter(function(art) {
+          return !articlesGroupe.find(function(a) { return a.nom === art.nom && a.prix === art.prix; });
+        });
+        document.getElementById("nom-groupe").value = "";
+        window.renderAchats();
+        renderGroupedAchats();
+        alert("Groupe '" + nomGroupe + "' créé avec un total de " + totalGroupe.toFixed(2) + " €.");
+      };
+      // Fonction pour rendre visible ou masquer le tableau des groupes d'achats
+      window.toggleGroupedAchats = function() {
+        var content = document.getElementById("grouped-achats-table");
+        content.style.display = (content.style.display === "block") ? "none" : "block";
+      };
+      // Fonction pour afficher le tableau des groupes d'achats
+      function renderGroupedAchats() {
+        var container = document.getElementById("grouped-achats-table");
+        if(window.groupedAchats.length === 0) {
+          container.innerHTML = "<p>Aucun groupe d'achats.</p>";
+          return;
+        }
+        var html = "<table><thead><tr><th>Groupe</th><th>Total</th><th>Effectué</th><th>Actions</th></tr></thead><tbody>";
+        window.groupedAchats.forEach(function(g, idx) {
+          html += "<tr><td>" + g.groupName + "</td>" +
+                  "<td>" + g.total.toFixed(2) + " €</td>" +
+                  "<td><input type='checkbox' onchange='toggleGroupeEffectue(" + idx + ")' " + (g.effectue ? "checked" : "") + "></td>" +
+                  "<td><button class='action-btn' onclick='supprimerGroupe(" + idx + ")'>Supprimer</button></td></tr>";
+        });
+        html += "</tbody></table>";
+        container.innerHTML = html;
+      }
+      window.toggleGroupeEffectue = function(idx) {
+        window.groupedAchats[idx].effectue = !window.groupedAchats[idx].effectue;
+        if(window.groupedAchats[idx].effectue) {
+          window.depenses.push({ description: "Groupe d'achats : " + window.groupedAchats[idx].groupName, amount: window.groupedAchats[idx].total });
           window.saveFinance();
           renderFinanceSummary();
           renderDepenses();
-          indicesToRemove.sort(function(a, b) { return b - a; });
-          indicesToRemove.forEach(function(i) { window.achats.splice(i, 1); });
-          window.renderAchats();
-          alert("Achat groupé de " + total.toFixed(2) + " € enregistré !");
-        } else {
-          alert("Aucun article sélectionné pour l'achat groupé.");
+          window.groupedAchats.splice(idx, 1);
+        }
+        renderGroupedAchats();
+      };
+      window.supprimerGroupe = function(idx) {
+        if(confirm("Supprimer le groupe '" + window.groupedAchats[idx].groupName + "' ?")) {
+          window.groupedAchats.splice(idx, 1);
+          renderGroupedAchats();
         }
       };
       window.renderAchats();
@@ -1980,7 +1574,8 @@
           depensesPrevues: window.depensesPrevues,
           projets: window.projets,
           travauxFinis: window.travauxFinis,
-          achats: window.achats
+          achats: window.achats,
+          groupedAchats: window.groupedAchats
         };
         var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allData, null, 2));
         var dlAnchorElem = document.createElement("a");
@@ -2006,6 +1601,7 @@
             if(importedData.projets) { window.projets = importedData.projets; window.saveProjets(); window.renderProjets(); }
             if(importedData.travauxFinis) { window.travauxFinis = importedData.travauxFinis; window.saveTravauxFinis(); }
             if(importedData.achats) { window.achats = importedData.achats; window.renderAchats(); }
+            if(importedData.groupedAchats) { window.groupedAchats = importedData.groupedAchats; renderGroupedAchats(); }
             window.renderFinanceSummary();
             alert("Importation réussie !");
           } catch(error) {
@@ -2075,32 +1671,6 @@
       window.toggleQuickMenu = function() {
         var qm = document.getElementById("quick-menu");
         qm.style.display = (qm.style.display === "block") ? "none" : "block";
-      };
-
-      /* ---------- Système de Groupement d'Articles ---------- */
-      window.renderAchats();
-      window.validerAchatGroupe = function() {
-        var checkboxes = document.querySelectorAll(".achat-checkbox");
-        var total = 0;
-        var indicesToRemove = [];
-        checkboxes.forEach(function(cb, index) {
-          if(cb.checked) {
-            total += window.achats[index].prix;
-            indicesToRemove.push(index);
-          }
-        });
-        if(total > 0) {
-          window.depenses.push({ description: "Achat groupé", amount: total });
-          window.saveFinance();
-          renderFinanceSummary();
-          renderDepenses();
-          indicesToRemove.sort(function(a, b) { return b - a; });
-          indicesToRemove.forEach(function(i) { window.achats.splice(i, 1); });
-          window.renderAchats();
-          alert("Achat groupé de " + total.toFixed(2) + " € enregistré !");
-        } else {
-          alert("Aucun article sélectionné pour l'achat groupé.");
-        }
       };
 
       /* ---------- Initial Refresh ---------- */
