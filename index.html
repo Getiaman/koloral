@@ -4,12 +4,12 @@
   <meta charset="UTF-8">
   <title>Koloral Sheqiri – Gestion d'Entreprise</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- Assurez-vous que manifest.json et les icônes existent -->
+  <!-- Manifest -->
   <link rel="manifest" href="manifest.json">
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    /* -------------------- Styles Globaux -------------------- */
+    /* ---------- Styles Globaux ---------- */
     body {
       font-family: 'Roboto', sans-serif;
       font-size: 18px;
@@ -30,7 +30,6 @@
       box-shadow: 0 2px 6px rgba(0,0,0,0.3);
     }
     header h1 { margin: 0; font-size: 2rem; }
-    /* Bouton Rafraîchir */
     #refresh-btn {
       position: fixed;
       top: 10px;
@@ -44,10 +43,13 @@
       font-size: 1rem;
       z-index: 1100;
     }
-    /* -------------------- Navigation Dropdown -------------------- */
     #nav-dropdown {
-      margin: 90px auto 20px;
-      display: block;
+      position: fixed;
+      top: 70px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1050;
+      margin: 0;
       font-size: 1.2rem;
       padding: 12px 18px;
       border: 2px solid #005f73;
@@ -64,7 +66,6 @@
       background-position: right 10px center;
       background-size: 10px;
     }
-    /* -------------------- Quick Menu -------------------- */
     .quick-menu {
       position: fixed;
       top: 10px;
@@ -76,17 +77,18 @@
       border-radius: 4px;
       cursor: pointer;
       font-size: 1rem;
-      z-index: 1100;
+      z-index: 1200;
     }
     .quick-menu-container {
       position: fixed;
-      top: 50px;
-      right: 10px;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
       background: #fff;
       border: 1px solid #005f73;
       border-radius: 4px;
       display: none;
-      z-index: 1100;
+      z-index: 1200;
       box-shadow: 0 2px 6px rgba(0,0,0,0.2);
     }
     .quick-menu-container button {
@@ -106,23 +108,20 @@
       background: #005f73;
       color: #fff;
     }
-    /* -------------------- Contenu Principal -------------------- */
     #main-content {
       padding: 140px 20px 80px;
       min-height: calc(100vh - 140px);
     }
-    /* -------------------- Sections -------------------- */
     .section {
       display: none;
       padding: 20px;
       background: #fff;
       border-radius: 8px;
       margin: 10px auto;
-      max-width: 800px;
+      max-width: 90%;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
     }
     .section.active { display: block; }
-    /* -------------------- Formulaires et Tables -------------------- */
     form input, form select, form button {
       width: 100%;
       padding: 10px;
@@ -139,14 +138,21 @@
       transition: background 0.3s;
     }
     form button:hover { background: #0a9396; }
-    .table-container { overflow-x: auto; margin-top: 1rem; }
+    .table-container {
+      overflow-x: auto;
+      margin-top: 1rem;
+    }
     table {
       width: 100%;
       border-collapse: collapse;
       margin-top: 10px;
     }
     table, th, td { border: 1px solid #ddd; }
-    th, td { padding: 12px; text-align: left; font-size: 1.1rem; }
+    th, td {
+      padding: 12px;
+      text-align: left;
+      font-size: 1.1rem;
+    }
     th { background: #005f73; color: #fff; }
     .action-btn {
       padding: 8px 10px;
@@ -160,7 +166,6 @@
       transition: background 0.3s;
     }
     .action-btn:hover { background: #0a9396; }
-    /* -------------------- Barre de Progression -------------------- */
     .progress-container {
       width: 100%;
       background: #eee;
@@ -176,7 +181,7 @@
       border-radius: 4px;
       transition: width 0.3s;
     }
-    /* -------------------- Options Supplémentaires -------------------- */
+    /* Options Supplémentaires */
     .options-list {
       list-style: none;
       padding: 0;
@@ -199,21 +204,6 @@
     }
     .options-list li:hover { background: #0a9396; }
     .option-icon { font-size: 1.4rem; }
-    /* -------------------- Tableaux Collapsibles -------------------- */
-    .collapsible-header {
-      background: #005f73;
-      color: #fff;
-      padding: 10px;
-      cursor: pointer;
-      font-size: 1.2rem;
-      margin-top: 20px;
-      border-radius: 4px;
-    }
-    .collapsible-content {
-      display: none;
-      margin-top: 10px;
-    }
-    /* -------------------- Footer -------------------- */
     footer {
       text-align: center;
       padding: 1rem;
@@ -225,8 +215,7 @@
       left: 0;
       z-index: 1000;
     }
-    /* -------------------- Modal Rapport -------------------- */
-    .report-modal {
+    .report-modal, .steps-modal {
       position: fixed;
       top: 0; left: 0;
       width: 100%;
@@ -237,7 +226,7 @@
       justify-content: center;
       z-index: 1200;
     }
-    .report-content {
+    .report-content, .steps-content {
       background: #fff;
       padding: 20px;
       border-radius: 8px;
@@ -246,6 +235,7 @@
       box-shadow: 0 4px 10px rgba(0,0,0,0.2);
       text-align: center;
     }
+    .steps-content { text-align: left; }
     .modal-buttons {
       margin-top: 20px;
       display: flex;
@@ -262,47 +252,7 @@
       transition: background 0.3s;
     }
     .modal-buttons button:hover { background: #0a9396; }
-    /* -------------------- Modal Modifier Étapes -------------------- */
-    .steps-modal {
-      position: fixed;
-      top: 0; left: 0;
-      width: 100%;
-      height: 100%;
-      background: rgba(0,0,0,0.5);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 1200;
-    }
-    .steps-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
-      width: 90%;
-      max-width: 500px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-      text-align: left;
-    }
-    .steps-content h2 { text-align: center; }
-    .steps-buttons {
-      margin-top: 20px;
-      text-align: center;
-    }
-    .steps-buttons button {
-      padding: 8px 14px;
-      background: #005f73;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      margin: 0 10px;
-      font-size: 1rem;
-      transition: background 0.3s;
-    }
-    .steps-buttons button:hover { background: #0a9396; }
-    /* -------------------- Spacer -------------------- */
     .spacer { height: 60px; }
-    /* -------------------- Adaptation Smartphone -------------------- */
     @media (max-width: 600px) {
       header h1 { font-size: 1.6rem; }
       #nav-dropdown { width: 95%; }
@@ -310,6 +260,98 @@
       .options-list li { flex: 1 1 100%; }
     }
   </style>
+  <script>
+    /* Définition des wrappers pour les options supplémentaires */
+    window.calculerMargeBeneficiaire = function() {
+      if(typeof window._calculerMargeBeneficiaire === "function") {
+        window._calculerMargeBeneficiaire();
+      } else {
+        alert("Fonction calculerMargeBeneficiaire non disponible.");
+      }
+    };
+    window.previsionTresorerie = function() {
+      if(typeof window._previsionTresorerie === "function") {
+        window._previsionTresorerie();
+      } else {
+        alert("Fonction previsionTresorerie non disponible.");
+      }
+    };
+    window.analyserRentabiliteProjet = function() {
+      if(typeof window._analyserRentabiliteProjet === "function") {
+        window._analyserRentabiliteProjet();
+      } else {
+        alert("Fonction analyserRentabiliteProjet non disponible.");
+      }
+    };
+    window.genererEcheancier = function() {
+      if(typeof window._genererEcheancier === "function") {
+        window._genererEcheancier();
+      } else {
+        alert("Fonction genererEcheancier non disponible.");
+      }
+    };
+    window.comparerCouts = function() {
+      if(typeof window._comparerCouts === "function") {
+        window._comparerCouts();
+      } else {
+        alert("Fonction comparerCouts non disponible.");
+      }
+    };
+    window.planifierTaches = function() {
+      if(typeof window._planifierTaches === "function") {
+        window._planifierTaches();
+      } else {
+        alert("Fonction planifierTaches non disponible.");
+      }
+    };
+    window.simulerInvestissement = function() {
+      if(typeof window._simulerInvestissement === "function") {
+        window._simulerInvestissement();
+      } else {
+        alert("Fonction simulerInvestissement non disponible.");
+      }
+    };
+    window.calculerTVAAvance = function() {
+      if(typeof window._calculerTVAAvance === "function") {
+        window._calculerTVAAvance();
+      } else {
+        alert("Fonction calculerTVAAvance non disponible.");
+      }
+    };
+    window.genererRapportPersonnalise = function() {
+      if(typeof window._genererRapportPersonnalise === "function") {
+        window._genererRapportPersonnalise();
+      } else {
+        alert("Fonction genererRapportPersonnalise non disponible.");
+      }
+    };
+    window.analyserAvancee = function() {
+      if(typeof window._analyserAvancee === "function") {
+        window._analyserAvancee();
+      } else {
+        alert("Fonction analyserAvancee non disponible.");
+      }
+    };
+    window.calculerChiffreAffaires = function() {
+      alert("Calcul du chiffre d'affaires en cours de développement.");
+    };
+    window.afficherHistoriqueTravaux = function() {
+      alert("Historique des travaux en cours de développement.");
+    };
+    
+    window.toggleQuickMenu = function() {
+      var qm = document.getElementById("quick-menu");
+      if(qm) {
+        qm.style.display = (qm.style.display === "block") ? "none" : "block";
+      }
+    };
+    window.toggleGroupedAchats = function() {
+      var content = document.getElementById("grouped-achats-table");
+      if(content) {
+        content.style.display = (content.style.display === "block") ? "none" : "block";
+      }
+    };
+  </script>
 </head>
 <body>
   <!-- Bouton Rafraîchir -->
@@ -318,7 +360,6 @@
   <!-- En-tête fixe -->
   <header>
     <h1>Koloral Sheqiri</h1>
-    <!-- Quick Menu pour Dépenses Rapides -->
     <div class="quick-menu" id="quick-menu-btn" onclick="toggleQuickMenu()">€ Dépenses</div>
     <div class="quick-menu-container" id="quick-menu">
       <button onclick="ajusterDepense(-20)">-20 €</button>
@@ -330,19 +371,17 @@
   </header>
   
   <!-- Navigation Dropdown -->
-  <div style="margin-top: 90px; text-align: center;">
-    <select id="nav-dropdown" onchange="showSection(this.value)">
-      <option value="ouvriers">Ouvriers</option>
-      <option value="baseouvriers">Base Ouvriers</option>
-      <option value="chantier">Chantiers</option>
-      <option value="basechantier">Base Chantiers</option>
-      <option value="finance">Finance</option>
-      <option value="projet">Projet</option>
-      <option value="plusoptions">Plus d’Options</option>
-      <option value="siteweb">Site Web</option>
-      <option value="utilitaires">Utilitaires</option>
-    </select>
-  </div>
+  <select id="nav-dropdown" onchange="showSection(this.value)">
+    <option value="ouvriers">Ouvriers</option>
+    <option value="baseouvriers">Base Ouvriers</option>
+    <option value="chantier">Chantiers</option>
+    <option value="basechantier">Base Chantiers</option>
+    <option value="finance">Finance</option>
+    <option value="projet">Projet</option>
+    <option value="plusoptions">Plus d’Options</option>
+    <option value="siteweb">Site Web</option>
+    <option value="utilitaires">Utilitaires</option>
+  </select>
   
   <!-- Contenu Principal -->
   <div id="main-content">
@@ -487,7 +526,7 @@
         </form>
         <div id="revenus-attente-list"></div>
       </div>
-      <!-- Dépenses Manuelles avec case « Effectué » -->
+      <!-- Dépenses Manuelles -->
       <div>
         <h3>Dépenses Manuelles</h3>
         <form id="form-depense">
@@ -542,7 +581,7 @@
         </select>
         <button type="button" onclick="calculateProjet()">Calculer Projet</button>
       </form>
-      <!-- Section Liste d'Achats avec possibilité de créer un groupe -->
+      <!-- Section Achats & Groupement -->
       <div id="projet-achats">
         <h3>Liste d'Achats</h3>
         <form id="form-achat">
@@ -565,16 +604,12 @@
             <tbody></tbody>
           </table>
         </div>
-        <!-- Création d'un groupe d'achats -->
         <div style="margin-top:10px;">
           <input type="text" id="nom-groupe" placeholder="Nom du groupe d'achats">
           <button type="button" onclick="creerGroupeAchats()">Créer Groupe d'Achats</button>
         </div>
-        <!-- Section Collapsible pour afficher les groupes d'achats -->
         <div class="collapsible-header" onclick="toggleGroupedAchats()">Groupes d'Achats</div>
-        <div class="collapsible-content" id="grouped-achats-table">
-          <!-- Le tableau des groupes sera généré ici -->
-        </div>
+        <div class="collapsible-content" id="grouped-achats-table"></div>
       </div>
       <div id="projet-resultat"></div>
     </section>
@@ -592,10 +627,9 @@
         <li onclick="simulerInvestissement()"><span class="option-icon">💹</span><span class="option-label">Investissement</span></li>
         <li onclick="calculerTVAAvance()"><span class="option-icon">🧾</span><span class="option-label">Calcul TVA</span></li>
         <li onclick="genererRapportPersonnalise()"><span class="option-icon">📰</span><span class="option-label">Rapport Perso</span></li>
-        <li onclick="analyserPerformanceOuvriers()"><span class="option-icon">🏭</span><span class="option-label">Perf. Ouvriers</span></li>
+        <li onclick="analyserAvancee()"><span class="option-icon">🔍</span><span class="option-label">Analyse Avancée</span></li>
         <li onclick="calculerChiffreAffaires()"><span class="option-icon">💵</span><span class="option-label">Chiffre d'Aff.</span></li>
         <li onclick="afficherHistoriqueTravaux()"><span class="option-icon">📚</span><span class="option-label">Hist. Travaux</span></li>
-        <li onclick="analyserAvancee()"><span class="option-icon">🔍</span><span class="option-label">Analyse Avancée</span></li>
       </ul>
       <div id="plusoptions-output"></div>
     </section>
@@ -621,11 +655,10 @@
       <button onclick="viewSummary()">Afficher Synthèse</button>
     </section>
     
-    <!-- Spacer pour le footer -->
     <div class="spacer"></div>
   </div>
   
-  <!-- Footer fixe -->
+  <!-- Footer -->
   <footer>
     <p>&copy; 2025 Koloral Sheqiri</p>
   </footer>
@@ -642,7 +675,7 @@
     </div>
   </div>
   
-  <!-- Modal Modifier Étapes d'un Chantier -->
+  <!-- Modal Modifier Étapes -->
   <div class="steps-modal" id="steps-modal">
     <div class="steps-content">
       <h2>Modifier les Étapes</h2>
@@ -654,10 +687,9 @@
     </div>
   </div>
   
-  <!-- Spacer Final -->
   <div class="spacer"></div>
   
-  <!-- Script JavaScript -->
+  <!-- Script JavaScript Principal -->
   <script>
     document.addEventListener("DOMContentLoaded", function() {
       /* ---------- Variables Globales ---------- */
@@ -671,7 +703,7 @@
       window.depensesPrevues = JSON.parse(localStorage.getItem('gestion_depenses_prevues')) || [];
       window.revenusAttente = [];
       window.achats = [];
-      window.groupedAchats = [];  // Nouvel array pour les groupes d’achats
+      window.groupedAchats = [];
       window.projets = JSON.parse(localStorage.getItem('gestion_projets')) || [];
       
       /* ---------- Fonctions de Sauvegarde ---------- */
@@ -685,27 +717,10 @@
         localStorage.setItem('gestion_depenses_prevues', JSON.stringify(window.depensesPrevues));
       };
       window.saveProjets = function() { localStorage.setItem('gestion_projets', JSON.stringify(window.projets)); };
-      
-      /* ---------- Rafraîchir Tout en Temps Réel ---------- */
-      window.refreshAll = function() {
-        window.renderOuvriers();
-        populateOuvrierSelect();
-        renderBaseOuvriers();
-        renderChantiers();
-        renderFinanceSummary();
-        renderRevenus();
-        renderDepenses();
-        renderDepensesPrevues();
-        window.renderAchats();
-        renderGroupedAchats();
-        window.renderProjets();
-      };
 
-      /* ---------- Navigation via Dropdown ---------- */
+      /* ---------- Navigation ---------- */
       window.showSection = function(sectionId) {
-        document.querySelectorAll(".section").forEach(function(sec) {
-          sec.classList.remove("active");
-        });
+        document.querySelectorAll(".section").forEach(function(sec) { sec.classList.remove("active"); });
         var target = document.getElementById(sectionId);
         if(target) {
           target.classList.add("active");
@@ -714,9 +729,16 @@
         }
       };
 
-      /* ---------- Ouvriers et Base Ouvriers ---------- */
+      /* ---------- Gestion des Ouvriers ---------- */
+      function populateOuvrierSelect() {
+        var select = document.getElementById("ouvrier-select");
+        select.innerHTML = "<option value=''>Sélectionner un ouvrier (facultatif)</option>";
+        window.ouvriers.forEach(function(o) {
+          select.innerHTML += "<option value='" + o.nom + "'>" + o.nom + "</option>";
+        });
+      }
       window.renderOuvriers = function() {
-        var tbody = document.querySelector('#table-ouvriers tbody');
+        var tbody = document.querySelector("#table-ouvriers tbody");
         tbody.innerHTML = "";
         window.ouvriers.forEach(function(o) {
           var total = o.tarif * o.jours;
@@ -764,16 +786,10 @@
         var nom = document.getElementById("ouvrier-nom").value.trim();
         var select = document.getElementById("ouvrier-select");
         if(select.value && !nom) { nom = select.value; }
-        if(nom === "") {
-          alert("Veuillez saisir le nom de l'ouvrier.");
-          return;
-        }
+        if(nom === "") { alert("Veuillez saisir le nom de l'ouvrier."); return; }
         var tarif = parseFloat(document.getElementById("ouvrier-tarif").value);
         var jours = parseFloat(document.getElementById("ouvrier-jours").value);
-        if(isNaN(tarif) || isNaN(jours)) {
-          alert("Veuillez saisir un tarif et un nombre de jours valides.");
-          return;
-        }
+        if(isNaN(tarif) || isNaN(jours)) { alert("Veuillez saisir un tarif et un nombre de jours valides."); return; }
         var index = window.ouvriers.findIndex(function(o) { return o.nom.toLowerCase() === nom.toLowerCase(); });
         if(index !== -1) {
           window.ouvriers[index].jours += jours;
@@ -790,15 +806,8 @@
         populateOuvrierSelect();
         this.reset();
       });
-      function populateOuvrierSelect() {
-        var select = document.getElementById("ouvrier-select");
-        select.innerHTML = "<option value=''>Sélectionner un ouvrier (facultatif)</option>";
-        window.ouvriers.forEach(function(o) {
-          select.innerHTML += "<option value='" + o.nom + "'>" + o.nom + "</option>";
-        });
-      }
-      window.renderOuvriers();
       populateOuvrierSelect();
+      window.renderOuvriers();
       function renderBaseOuvriers() {
         var tbody = document.querySelector("#table-baseouvriers tbody");
         tbody.innerHTML = "";
@@ -813,7 +822,7 @@
       }
       renderBaseOuvriers();
       
-      /* ---------- Chantiers et Étapes ---------- */
+      /* ---------- Gestion des Chantiers ---------- */
       window.renderEtapes = function() {
         var container = document.getElementById("etapes-container");
         container.innerHTML = "";
@@ -862,6 +871,7 @@
           window.chantiers.push(chantier);
           window.saveChantiers();
           renderChantiers();
+          renderBaseChantiers();
           this.reset();
           window.currentEtapes = [];
           window.renderEtapes();
@@ -892,12 +902,14 @@
         if(newNom !== null) { chantier.nom = newNom.trim() || chantier.nom; }
         window.saveChantiers();
         renderChantiers();
+        renderBaseChantiers();
       };
       window.deleteChantier = function(index) {
         if(confirm("Supprimer le chantier " + window.chantiers[index].nom + " ?")) {
           window.chantiers.splice(index, 1);
           window.saveChantiers();
           renderChantiers();
+          renderBaseChantiers();
         }
       };
       window.markChantierTermine = function(index) {
@@ -907,19 +919,17 @@
           window.chantiers.splice(index, 1);
           window.saveChantiers();
           renderChantiers();
+          renderBaseChantiers();
           alert("Chantier terminé enregistré !");
         }
       };
-      renderChantiers();
-
-      /* ---------- Modal Modifier Étapes d'un Chantier ---------- */
-      window.currentEditingChantier = null;
-      window.currentEtapesModal = [];
       window.editChantierSteps = function(idx) {
         window.currentEditingChantier = idx;
         window.currentEtapesModal = window.chantiers[idx].etapes.slice();
         showStepsModal();
       };
+      var currentEditingChantier = null;
+      var currentEtapesModal = [];
       function showStepsModal() {
         populateStepsModal();
         document.getElementById("steps-modal").style.display = "flex";
@@ -927,31 +937,30 @@
       function populateStepsModal() {
         var content = document.getElementById("steps-modal-content");
         content.innerHTML = "";
-        window.currentEtapesModal.forEach(function(etape, i) {
+        currentEtapesModal.forEach(function(etape, i) {
           content.innerHTML += "<div style='margin-bottom:5px;'>" +
             "<label><input type='checkbox' onchange='toggleModalEtape(" + i + ")' " + (etape.done ? "checked" : "") + "> " + etape.description + "</label>" +
             "</div>";
         });
       }
       window.toggleModalEtape = function(i) {
-        window.currentEtapesModal[i].done = !window.currentEtapesModal[i].done;
+        currentEtapesModal[i].done = !currentEtapesModal[i].done;
         populateStepsModal();
       };
       window.saveChantierSteps = function() {
-        if(window.currentEditingChantier !== null) {
-          window.chantiers[window.currentEditingChantier].etapes = window.currentEtapesModal.slice();
-          window.chantiers[window.currentEditingChantier].progress = updateChantierProgress(window.currentEtapesModal);
+        if(currentEditingChantier !== null) {
+          window.chantiers[currentEditingChantier].etapes = currentEtapesModal.slice();
+          window.chantiers[currentEditingChantier].progress = updateChantierProgress(currentEtapesModal);
           window.saveChantiers();
           renderChantiers();
+          renderBaseChantiers();
           closeStepsModal();
         }
       };
       function closeStepsModal() {
         document.getElementById("steps-modal").style.display = "none";
-        window.currentEditingChantier = null;
+        currentEditingChantier = null;
       }
-      
-      /* ---------- Base Chantiers ---------- */
       function renderBaseChantiers() {
         var tbodyActif = document.querySelector("#table-base-chantier-actif tbody");
         tbodyActif.innerHTML = "";
@@ -981,322 +990,111 @@
           renderBaseChantiers();
         }
       };
-
-      /* ---------- Finance & Gestion des Dépenses effectuées ---------- */
-      function renderFinanceSummary() {
-        var totalRevenus = window.revenus.reduce(function(sum, r) { return sum + r.amount; }, 0);
-        var totalRevenusAttente = window.revenusAttente.reduce(function(sum, r) { return sum + r.amount; }, 0);
-        var totalDepenses = window.depenses.reduce(function(sum, d) { return sum + d.amount; }, 0);
-        var totalDepensesPrevues = window.depensesPrevues.reduce(function(sum, d) { return sum + d.amount; }, 0);
-        var net = totalRevenus + totalRevenusAttente - totalDepenses;
-        document.getElementById("manual-revenus").innerText = "Revenus manuels : " + totalRevenus.toFixed(2) + " €";
-        document.getElementById("revenus-attente").innerText = "Revenus en attente : " + totalRevenusAttente.toFixed(2) + " €";
-        document.getElementById("manual-depenses").innerText = "Dépenses manuelles : " + totalDepenses.toFixed(2) + " €";
-        document.getElementById("depenses-prevues").innerText = "Dépenses prévues : " + totalDepensesPrevues.toFixed(2) + " €";
-        document.getElementById("global-balance").innerText = "Solde global : " + net.toFixed(2) + " €";
-      }
-      function renderRevenus() {
-        var container = document.getElementById("revenus-list");
-        if(window.revenus.length === 0) { container.innerHTML = "<p>Aucun revenu enregistré.</p>"; return; }
-        var html = "<table><thead><tr><th>Description</th><th>Montant</th><th>Actions</th></tr></thead><tbody>";
-        window.revenus.forEach(function(r, idx) {
-          html += "<tr><td>" + r.description + "</td><td>" + r.amount.toFixed(2) + " €</td>" +
-                  "<td><button class='action-btn' onclick='editRevenu(" + idx + ")'>Modifier</button> " +
-                  "<button class='action-btn' onclick='deleteRevenu(" + idx + ")'>Supprimer</button></td></tr>";
-        });
-        html += "</tbody></table>";
-        container.innerHTML = html;
-      }
-      function renderRevenusAttente() {
-        var container = document.getElementById("revenus-attente-list");
-        if(window.revenusAttente.length === 0) { container.innerHTML = "<p>Aucun revenu en attente.</p>"; return; }
-        var html = "<table><thead><tr><th>Description</th><th>Montant</th><th>Actions</th></tr></thead><tbody>";
-        window.revenusAttente.forEach(function(r, idx) {
-          html += "<tr><td>" + r.description + "</td><td>" + r.amount.toFixed(2) + " €</td>" +
-                  "<td><button class='action-btn' onclick='editRevenuAttente(" + idx + ")'>Modifier</button> " +
-                  "<button class='action-btn' onclick='deleteRevenuAttente(" + idx + ")'>Supprimer</button></td></tr>";
-        });
-        html += "</tbody></table>";
-        container.innerHTML = html;
-      }
-      function renderDepenses() {
-        var container = document.getElementById("depenses-list");
-        if(window.depenses.length === 0) { container.innerHTML = "<p>Aucune dépense enregistrée.</p>"; return; }
-        var html = "<table><thead><tr><th>Description</th><th>Montant</th><th>Effectué</th><th>Actions</th></tr></thead><tbody>";
-        window.depenses.forEach(function(d, idx) {
-          html += "<tr><td>" + d.description + "</td><td>" + d.amount.toFixed(2) + " €</td>" +
-                  "<td><input type='checkbox' onchange='toggleDepenseEffectue(" + idx + ")' " + (d.effectue ? "checked" : "") + "></td>" +
-                  "<td><button class='action-btn' onclick='editDepense(" + idx + ")'>Modifier</button> " +
-                  "<button class='action-btn' onclick='deleteDepense(" + idx + ")'>Supprimer</button></td></tr>";
-        });
-        html += "</tbody></table>";
-        container.innerHTML = html;
-      }
-      window.toggleDepenseEffectue = function(idx) {
-        window.depenses[idx].effectue = !window.depenses[idx].effectue;
-        // Vous pouvez ajouter ici des actions supplémentaires (ex. changer le style ou mettre à jour d'autres indicateurs)
-        renderDepenses();
-      };
-      function renderDepensesPrevues() {
-        var container = document.getElementById("depenses-prevues-list");
-        if(window.depensesPrevues.length === 0) { container.innerHTML = "<p>Aucune dépense prévue enregistrée.</p>"; return; }
-        var html = "<table><thead><tr><th>Description</th><th>Montant</th><th>Actions</th></tr></thead><tbody>";
-        window.depensesPrevues.forEach(function(d, idx) {
-          html += "<tr><td>" + d.description + "</td><td>" + d.amount.toFixed(2) + " €</td>" +
-                  "<td><button class='action-btn' onclick='editDepensePrevue(" + idx + ")'>Modifier</button> " +
-                  "<button class='action-btn' onclick='deleteDepensePrevue(" + idx + ")'>Supprimer</button></td></tr>";
-        });
-        html += "</tbody></table>";
-        container.innerHTML = html;
-      }
-      window.editRevenu = function(idx) {
-        var newDesc = prompt("Modifier la description :", window.revenus[idx].description);
-        var newAmount = prompt("Modifier le montant :", window.revenus[idx].amount);
-        if(newDesc !== null && newAmount !== null) {
-          window.revenus[idx].description = newDesc.trim() || window.revenus[idx].description;
-          window.revenus[idx].amount = parseFloat(newAmount) || window.revenus[idx].amount;
-          window.saveFinance();
-          renderFinanceSummary();
-          renderRevenus();
-        }
-      };
-      window.deleteRevenu = function(idx) {
-        if(confirm("Supprimer ce revenu ?")) {
-          window.revenus.splice(idx, 1);
-          window.saveFinance();
-          renderFinanceSummary();
-          renderRevenus();
-        }
-      };
-      window.editRevenuAttente = function(idx) {
-        var newDesc = prompt("Modifier la description :", window.revenusAttente[idx].description);
-        var newAmount = prompt("Modifier le montant :", window.revenusAttente[idx].amount);
-        if(newDesc !== null && newAmount !== null) {
-          window.revenusAttente[idx].description = newDesc.trim() || window.revenusAttente[idx].description;
-          window.revenusAttente[idx].amount = parseFloat(newAmount) || window.revenusAttente[idx].amount;
-          renderFinanceSummary();
-          renderRevenusAttente();
-        }
-      };
-      window.deleteRevenuAttente = function(idx) {
-        if(confirm("Supprimer ce revenu en attente ?")) {
-          window.revenusAttente.splice(idx, 1);
-          renderFinanceSummary();
-          renderRevenusAttente();
-        }
-      };
-      window.editDepense = function(idx) {
-        var newDesc = prompt("Modifier la description :", window.depenses[idx].description);
-        var newAmount = prompt("Modifier le montant :", window.depenses[idx].amount);
-        if(newDesc !== null && newAmount !== null) {
-          window.depenses[idx].description = newDesc.trim() || window.depenses[idx].description;
-          window.depenses[idx].amount = parseFloat(newAmount) || window.depenses[idx].amount;
-          window.saveFinance();
-          renderFinanceSummary();
-          renderDepenses();
-        }
-      };
-      window.deleteDepense = function(idx) {
-        if(confirm("Supprimer cette dépense ?")) {
-          window.depenses.splice(idx, 1);
-          window.saveFinance();
-          renderFinanceSummary();
-          renderDepenses();
-        }
-      };
-      window.editDepensePrevue = function(idx) {
-        var newDesc = prompt("Modifier la description :", window.depensesPrevues[idx].description);
-        var newAmount = prompt("Modifier le montant prévu :", window.depensesPrevues[idx].amount);
-        if(newDesc !== null && newAmount !== null) {
-          window.depensesPrevues[idx].description = newDesc.trim() || window.depensesPrevues[idx].description;
-          window.depensesPrevues[idx].amount = parseFloat(newAmount) || window.depensesPrevues[idx].amount;
-          window.saveFinance();
-          renderFinanceSummary();
-          renderDepensesPrevues();
-        }
-      };
-      window.deleteDepensePrevue = function(idx) {
-        if(confirm("Supprimer cette dépense prévue ?")) {
-          window.depensesPrevues.splice(idx, 1);
-          window.saveFinance();
-          renderFinanceSummary();
-          renderDepensesPrevues();
-        }
-      };
-      renderFinanceSummary();
-      renderRevenus();
-      renderRevenusAttente();
-      renderDepenses();
-      renderDepensesPrevues();
       
-      /* ---------- Système de Groupement d'Articles ---------- */
-      // Nouvel array "groupedAchats" déjà défini
-      // Fonction pour ajouter un article dans la liste individuelle
-      window.ajouterAchat = function() {
-        var nom = document.getElementById("achat-nom").value.trim();
-        var prix = parseFloat(document.getElementById("achat-prix").value);
-        var priorite = parseInt(document.getElementById("achat-priorite").value);
-        if(nom && !isNaN(prix) && !isNaN(priorite)) {
-          window.achats.push({ nom: nom, prix: prix, priorite: priorite });
-          document.getElementById("form-achat").reset();
-          window.renderAchats();
-        } else {
-          alert("Veuillez remplir correctement les champs de l'article.");
+      /* ---------- Options Supplémentaires ---------- */
+      window._calculerMargeBeneficiaire = function() {
+        var nom = prompt("Entrez le nom du chantier pour calculer la marge :");
+        if(!nom) return;
+        var chantier = window.chantiers.find(function(c) { return c.nom.toLowerCase() === nom.toLowerCase(); });
+        if(!chantier) { alert("Chantier non trouvé."); return; }
+        var coutOuvriers = 0;
+        if(chantier.workerIds && chantier.duree) {
+          chantier.workerIds.forEach(function(name) {
+            var worker = window.ouvriers.find(function(o) { return o.nom.toLowerCase() === name.toLowerCase(); });
+            if(worker) { coutOuvriers += worker.tarif * chantier.duree; }
+          });
         }
+        var coutMateriel = chantier.matPayee ? 0 : chantier.materiel;
+        var coutTotal = (chantier.prix * 0.22) + coutOuvriers + coutMateriel;
+        var marge = ((chantier.prix - coutTotal) / chantier.prix) * 100;
+        document.getElementById("plusoptions-output").innerText = "Marge bénéficiaire du chantier '" + chantier.nom + "' : " + marge.toFixed(2) + " %";
       };
-      // Fonction pour créer un groupe d'achats à partir des articles sélectionnés
-      window.creerGroupeAchats = function() {
-        var checkboxes = document.querySelectorAll(".achat-checkbox");
-        var articlesGroupe = [];
-        checkboxes.forEach(function(cb, index) {
-          if(cb.checked) {
-            articlesGroupe.push(window.achats[index]);
-          }
-        });
-        if(articlesGroupe.length === 0) {
-          alert("Veuillez sélectionner au moins un article pour le groupe.");
-          return;
-        }
-        var nomGroupe = document.getElementById("nom-groupe").value.trim();
-        if(nomGroupe === "") {
-          nomGroupe = prompt("Entrez le nom du groupe d'achats :");
-          if(!nomGroupe) return;
-        }
-        // Calcul du total du groupe
-        var totalGroupe = articlesGroupe.reduce(function(sum, art) { return sum + art.prix; }, 0);
-        window.groupedAchats.push({ groupName: nomGroupe, articles: articlesGroupe, total: totalGroupe, effectue: false });
-        // Supprimer les articles sélectionnés de la liste individuelle
-        window.achats = window.achats.filter(function(art) {
-          return !articlesGroupe.find(function(a) { return a.nom === art.nom && a.prix === art.prix; });
-        });
-        document.getElementById("nom-groupe").value = "";
-        window.renderAchats();
-        renderGroupedAchats();
-        alert("Groupe '" + nomGroupe + "' créé avec un total de " + totalGroupe.toFixed(2) + " €.");
+      window._previsionTresorerie = function() {
+        var mois = parseInt(prompt("Sur combien de mois projeter la trésorerie ?"));
+        if(isNaN(mois) || mois <= 0) { alert("Valeur invalide."); return; }
+        var soldeText = document.getElementById("global-balance").innerText;
+        var solde = parseFloat(soldeText.replace(/[^\d.-]/g, ""));
+        var projection = solde * mois;
+        document.getElementById("plusoptions-output").innerText = "Projection sur " + mois + " mois : " + projection.toFixed(2) + " €";
       };
-      // Fonction pour afficher le tableau des groupes d'achats dans une section collapsible
-      function renderGroupedAchats() {
-        var container = document.getElementById("grouped-achats-table");
-        if(window.groupedAchats.length === 0) {
-          container.innerHTML = "<p>Aucun groupe d'achats.</p>";
-          return;
-        }
-        var html = "<table><thead><tr><th>Groupe</th><th>Total</th><th>Effectué</th><th>Actions</th></tr></thead><tbody>";
-        window.groupedAchats.forEach(function(g, idx) {
-          html += "<tr><td>" + g.groupName + "</td>" +
-                  "<td>" + g.total.toFixed(2) + " €</td>" +
-                  "<td><input type='checkbox' onchange='toggleGroupeEffectue(" + idx + ")' " + (g.effectue ? "checked" : "") + "></td>" +
-                  "<td><button class='action-btn' onclick='supprimerGroupe(" + idx + ")'>Supprimer</button></td></tr>";
-        });
-        html += "</tbody></table>";
-        container.innerHTML = html;
-      }
-      // Fonction pour basculer la case "effectué" d'un groupe d'achats
-      window.toggleGroupeEffectue = function(idx) {
-        window.groupedAchats[idx].effectue = !window.groupedAchats[idx].effectue;
-        if(window.groupedAchats[idx].effectue) {
-          // Dès qu'un groupe est coché, on l'enregistre comme dépense
-          window.depenses.push({ description: "Groupe d'achats : " + window.groupedAchats[idx].groupName, amount: window.groupedAchats[idx].total });
-          window.saveFinance();
-          renderFinanceSummary();
-          renderDepenses();
-          // Retirer le groupe de la liste
-          window.groupedAchats.splice(idx, 1);
-        }
-        renderGroupedAchats();
+      window._analyserRentabiliteProjet = function() {
+        var nom = prompt("Entrez le nom du projet à analyser :");
+        if(!nom) return;
+        var projet = window.projets.find(function(p) { return p.nom.toLowerCase() === nom.toLowerCase(); });
+        if(!projet) { alert("Projet non trouvé."); return; }
+        var revenuEstime = parseFloat(prompt("Revenu estimé pour ce projet (€) :"));
+        if(isNaN(revenuEstime)) { alert("Valeur invalide."); return; }
+        var roi = ((revenuEstime - projet.prix) / projet.prix) * 100;
+        document.getElementById("plusoptions-output").innerText = "ROI pour le projet '" + projet.nom + "' : " + roi.toFixed(2) + " %";
       };
-      // Fonction pour supprimer un groupe d'achats sans le marquer effectué
-      window.supprimerGroupe = function(idx) {
-        if(confirm("Supprimer le groupe '" + window.groupedAchats[idx].groupName + "' ?")) {
-          window.groupedAchats.splice(idx, 1);
-          renderGroupedAchats();
+      window._genererEcheancier = function() {
+        var montantTotal = parseFloat(prompt("Montant total (€) :"));
+        var mois = parseInt(prompt("Répartir sur combien de mois ?"));
+        if(isNaN(montantTotal) || isNaN(mois) || mois <= 0) { alert("Valeurs invalides."); return; }
+        var montantMensuel = montantTotal / mois;
+        var echeancier = "Échéancier :\n";
+        var date = new Date();
+        for(var i = 1; i <= mois; i++) {
+          date.setMonth(date.getMonth() + 1);
+          echeancier += "Mois " + i + " (" + date.toLocaleDateString() + ") : " + montantMensuel.toFixed(2) + " €\n";
         }
+        document.getElementById("plusoptions-output").innerText = echeancier;
+      };
+      window._comparerCouts = function() {
+        var nom1 = prompt("Entrez le nom du premier chantier :");
+        var nom2 = prompt("Entrez le nom du deuxième chantier :");
+        if(!nom1 || !nom2) return;
+        var chantier1 = window.chantiers.find(function(c) { return c.nom.toLowerCase() === nom1.toLowerCase(); });
+        var chantier2 = window.chantiers.find(function(c) { return c.nom.toLowerCase() === nom2.toLowerCase(); });
+        if(!chantier1 || !chantier2) { alert("Un des chantiers est introuvable."); return; }
+        var cout1 = chantier1.prix + chantier1.materiel;
+        var cout2 = chantier2.prix + chantier2.materiel;
+        var message = "Comparaison :\n" +
+                      chantier1.nom + " : " + cout1.toFixed(2) + " €\n" +
+                      chantier2.nom + " : " + cout2.toFixed(2) + " €\n";
+        message += (cout1 < cout2) ? chantier1.nom + " est moins cher." : (cout2 < cout1) ? chantier2.nom + " est moins cher." : "Les deux ont le même coût.";
+        document.getElementById("plusoptions-output").innerText = message;
+      };
+      window._planifierTaches = function() {
+        var nb = parseInt(prompt("Nombre de tâches à planifier :"));
+        if(isNaN(nb) || nb <= 0) { alert("Nombre invalide."); return; }
+        var taches = [];
+        for(var i = 0; i < nb; i++) {
+          var tache = prompt("Tâche " + (i+1) + " :");
+          var dateLimite = prompt("Date limite (AAAA-MM-JJ) pour la tâche " + (i+1) + " :");
+          if(tache && dateLimite) { taches.push({ tache: tache, dateLimite: dateLimite }); }
+        }
+        taches.sort(function(a, b) { return new Date(a.dateLimite) - new Date(b.dateLimite); });
+        var message = "Tâches planifiées :\n";
+        taches.forEach(function(t, i) { message += (i+1) + ". " + t.tache + " (avant " + t.dateLimite + ")\n"; });
+        document.getElementById("plusoptions-output").innerText = message;
+      };
+      window._simulerInvestissement = function() {
+        var principal = parseFloat(prompt("Montant investi initialement (€) :"));
+        var taux = parseFloat(prompt("Taux d'intérêt annuel (%) :"));
+        var annees = parseInt(prompt("Durée de l'investissement (années) :"));
+        if(isNaN(principal) || isNaN(taux) || isNaN(annees)) { alert("Valeurs invalides."); return; }
+        var montantFinal = principal * Math.pow((1 + taux/100), annees);
+        document.getElementById("plusoptions-output").innerText = "Après " + annees + " ans, " + principal.toFixed(2) + " € à " + taux + "% donnera " + montantFinal.toFixed(2) + " €.";
+      };
+      window._calculerTVAAvance = function() {
+        var montant = parseFloat(prompt("Montant hors taxe (€) :"));
+        var taux = parseFloat(prompt("Taux de TVA (%) :"));
+        if(isNaN(montant) || isNaN(taux)) { alert("Valeurs invalides."); return; }
+        var tva = montant * (taux/100);
+        document.getElementById("plusoptions-output").innerText = "TVA à " + taux + "% sur " + montant.toFixed(2) + " € = " + tva.toFixed(2) + " € (Total TTC = " + (montant+tva).toFixed(2) + " €)";
+      };
+      window._genererRapportPersonnalise = function() {
+        var dateDebut = prompt("Date de début (AAAA-MM-JJ) :");
+        var dateFin = prompt("Date de fin (AAAA-MM-JJ) :");
+        if(!dateDebut || !dateFin) { alert("Dates invalides."); return; }
+        document.getElementById("plusoptions-output").innerText = "Rapport pour la période du " + dateDebut + " au " + dateFin + ".";
+      };
+      window._analyserAvancee = function() {
+        alert("Analyse avancée en cours de développement…");
       };
       
-      /* ---------- Projets ---------- */
-      window.renderProjets = function() {
-        var container = document.getElementById("projet-resultat");
-        if(window.projets.length === 0) { container.innerHTML = "<p>Aucun projet enregistré.</p>"; return; }
-        var html = "<table id='projet-list'><thead><tr>" +
-          "<th>Nom</th><th>Budget (€)</th><th>Lien</th><th>Délai (mois)</th><th>Mode</th><th>Calcul</th><th>Priorité</th><th>Actions</th>" +
-          "</tr></thead><tbody>";
-        window.projets.forEach(function(p, idx) {
-          html += "<tr><td>" + p.nom + "</td>" +
-                  "<td>" + p.prix.toFixed(2) + "</td>" +
-                  "<td>" + (p.lien ? "<a href='" + p.lien + "' target='_blank'>Lien</a>" : "-") + "</td>" +
-                  "<td>" + p.duree + " mois</td>" +
-                  "<td>" + p.mode + "</td>" +
-                  "<td>" + p.calcul + "</td>" +
-                  "<td>" + p.priorite + "</td>" +
-                  "<td><button class='action-btn' onclick='editProjet(" + idx + ")'>Modifier</button> " +
-                  "<button class='action-btn' onclick='deleteProjet(" + idx + ")'>Supprimer</button></td></tr>";
-        });
-        html += "</tbody></table>";
-        container.innerHTML = html;
-      };
-      window.editProjet = function(idx) {
-        var projet = window.projets[idx];
-        var newNom = prompt("Modifier le nom du projet :", projet.nom);
-        if(newNom !== null) { projet.nom = newNom.trim() || projet.nom; }
-        var newPrix = prompt("Modifier le budget total (€) :", projet.prix);
-        if(newPrix !== null) { projet.prix = parseFloat(newPrix) || projet.prix; }
-        var newDuree = prompt("Modifier le délai souhaité (mois) :", projet.duree);
-        if(newDuree !== null) { projet.duree = parseInt(newDuree) || projet.duree; }
-        var newPriorite = prompt("Modifier la priorité (1 à 5) :", projet.priorite);
-        if(newPriorite !== null) { projet.priorite = newPriorite || projet.priorite; }
-        window.saveProjets();
-        window.renderProjets();
-      };
-      window.deleteProjet = function(idx) {
-        if(confirm("Supprimer le projet " + window.projets[idx].nom + " ?")) {
-          window.projets.splice(idx, 1);
-          window.saveProjets();
-          window.renderProjets();
-        }
-      };
-      window.renderProjets();
-      window.toggleLienProjet = function() {
-        var check = document.getElementById("projet-ajout-lien").checked;
-        document.getElementById("projet-lien").style.display = check ? "block" : "none";
-      };
-      window.calculateProjet = function() {
-        var nom = document.getElementById("projet-nom").value.trim();
-        var prix = parseFloat(document.getElementById("projet-prix").value);
-        var duree = parseInt(document.getElementById("projet-duree").value);
-        var mode = document.getElementById("projet-mode-inverse").checked ? "Inverse" : "Direct";
-        var mensuel = parseFloat(document.getElementById("projet-mensuel").value);
-        var priorite = document.getElementById("projet-priorite").value;
-        var moisObjectif = parseInt(document.getElementById("projet-mois-objectif").value);
-        if(nom && !isNaN(prix) && !isNaN(duree)) {
-          var calcul = "";
-          if(mode === "Direct") {
-            var budgetMensuel = prix / duree;
-            calcul = "Budget mensuel requis : " + budgetMensuel.toFixed(2) + " €";
-          } else {
-            if(!isNaN(mensuel) && mensuel > 0) {
-              var moisEstime = Math.ceil(prix / mensuel);
-              calcul = "Durée estimée : " + moisEstime + " mois";
-            } else {
-              calcul = "Montant mensuel invalide";
-            }
-          }
-          var economieMensuelle = "";
-          if(!isNaN(moisObjectif) && moisObjectif > 0) {
-            economieMensuelle = " Pour atteindre l'objectif en " + moisObjectif + " mois, économisez " + (prix / moisObjectif).toFixed(2) + " € par mois.";
-          }
-          var lien = document.getElementById("projet-lien").value.trim();
-          var projet = { nom: nom, prix: prix, duree: duree, lien: lien || null, mode: mode, calcul: calcul + economieMensuelle, priorite: priorite, suivi: [] };
-          window.projets.push(projet);
-          window.saveProjets();
-          window.renderProjets();
-          document.getElementById("form-projet").reset();
-          document.getElementById("projet-lien").style.display = "none";
-        } else {
-          alert("Veuillez remplir correctement les champs du projet.");
-        }
-      };
-
-      /* ---------- Utilitaires ---------- */
+      /* ---------- Importation / Exportation / Utilitaires ---------- */
       window.exportAllData = function() {
         var allData = {
           ouvriers: window.ouvriers,
@@ -1327,16 +1125,37 @@
         reader.onload = function(e) {
           try {
             var importedData = JSON.parse(e.target.result);
-            if(importedData.ouvriers) { window.ouvriers = importedData.ouvriers; window.saveOuvriers(); window.renderOuvriers(); populateOuvrierSelect(); }
-            if(importedData.baseOuvriers) { window.baseOuvriers = importedData.baseOuvriers; window.saveBaseOuvriers(); renderBaseOuvriers(); }
-            if(importedData.chantiers) { window.chantiers = importedData.chantiers; window.saveChantiers(); renderChantiers(); }
+            if(importedData.ouvriers) {
+              window.ouvriers = importedData.ouvriers;
+              window.saveOuvriers();
+              window.renderOuvriers();
+              populateOuvrierSelect();
+            }
+            if(importedData.baseOuvriers) {
+              window.baseOuvriers = importedData.baseOuvriers;
+              window.saveBaseOuvriers();
+              renderBaseOuvriers();
+            }
+            if(importedData.chantiers) {
+              window.chantiers = importedData.chantiers;
+              window.saveChantiers();
+              renderChantiers();
+              renderBaseChantiers();
+            }
             if(importedData.revenus) { window.revenus = importedData.revenus; }
             if(importedData.depenses) { window.depenses = importedData.depenses; }
-            if(importedData.projets) { window.projets = importedData.projets; window.saveProjets(); window.renderProjets(); }
-            if(importedData.travauxFinis) { window.travauxFinis = importedData.travauxFinis; window.saveTravauxFinis(); }
+            if(importedData.projets) {
+              window.projets = importedData.projets;
+              window.saveProjets();
+              window.renderProjets();
+            }
+            if(importedData.travauxFinis) {
+              window.travauxFinis = importedData.travauxFinis;
+              window.saveTravauxFinis();
+            }
             if(importedData.achats) { window.achats = importedData.achats; window.renderAchats(); }
             if(importedData.groupedAchats) { window.groupedAchats = importedData.groupedAchats; renderGroupedAchats(); }
-            window.renderFinanceSummary();
+            renderFinanceSummary();
             alert("Importation réussie !");
           } catch(error) {
             alert("Erreur lors de l'importation des données.");
@@ -1401,280 +1220,17 @@
         document.body.removeChild(link);
       };
       
-      /* ---------- Bouton Quick Menu Toggle ---------- */
-      window.toggleQuickMenu = function() {
-        var qm = document.getElementById("quick-menu");
-        qm.style.display = (qm.style.display === "block") ? "none" : "block";
+      /* ---------- Définition des Fonctions Globales pour être appelées depuis le HTML ---------- */
+      window.refreshAll = function() {
+        window.renderOuvriers();
+        populateOuvrierSelect();
+        renderBaseOuvriers();
+        renderChantiers();
+        renderBaseChantiers();
+        renderFinanceSummary();
       };
-
-      /* ---------- Système de Groupement d'Articles ---------- */
-      // Fonction pour ajouter un article à la liste (déjà définie ci-dessus)
-      // Fonction pour créer un groupe d'achats
-      window.creerGroupeAchats = function() {
-        var checkboxes = document.querySelectorAll(".achat-checkbox");
-        var articlesGroupe = [];
-        checkboxes.forEach(function(cb, index) {
-          if(cb.checked) {
-            articlesGroupe.push(window.achats[index]);
-          }
-        });
-        if(articlesGroupe.length === 0) {
-          alert("Veuillez sélectionner au moins un article pour le groupe.");
-          return;
-        }
-        var nomGroupe = document.getElementById("nom-groupe").value.trim();
-        if(nomGroupe === "") {
-          nomGroupe = prompt("Entrez le nom du groupe d'achats :");
-          if(!nomGroupe) return;
-        }
-        var totalGroupe = articlesGroupe.reduce(function(sum, art) { return sum + art.prix; }, 0);
-        window.groupedAchats.push({ groupName: nomGroupe, articles: articlesGroupe, total: totalGroupe, effectue: false });
-        // Retirer les articles sélectionnés de la liste individuelle
-        window.achats = window.achats.filter(function(art) {
-          return !articlesGroupe.find(function(a) { return a.nom === art.nom && a.prix === art.prix; });
-        });
-        document.getElementById("nom-groupe").value = "";
-        window.renderAchats();
-        renderGroupedAchats();
-        alert("Groupe '" + nomGroupe + "' créé avec un total de " + totalGroupe.toFixed(2) + " €.");
-      };
-      // Fonction pour rendre visible ou masquer le tableau des groupes d'achats
-      window.toggleGroupedAchats = function() {
-        var content = document.getElementById("grouped-achats-table");
-        content.style.display = (content.style.display === "block") ? "none" : "block";
-      };
-      // Fonction pour afficher le tableau des groupes d'achats
-      function renderGroupedAchats() {
-        var container = document.getElementById("grouped-achats-table");
-        if(window.groupedAchats.length === 0) {
-          container.innerHTML = "<p>Aucun groupe d'achats.</p>";
-          return;
-        }
-        var html = "<table><thead><tr><th>Groupe</th><th>Total</th><th>Effectué</th><th>Actions</th></tr></thead><tbody>";
-        window.groupedAchats.forEach(function(g, idx) {
-          html += "<tr><td>" + g.groupName + "</td>" +
-                  "<td>" + g.total.toFixed(2) + " €</td>" +
-                  "<td><input type='checkbox' onchange='toggleGroupeEffectue(" + idx + ")' " + (g.effectue ? "checked" : "") + "></td>" +
-                  "<td><button class='action-btn' onclick='supprimerGroupe(" + idx + ")'>Supprimer</button></td></tr>";
-        });
-        html += "</tbody></table>";
-        container.innerHTML = html;
-      }
-      window.toggleGroupeEffectue = function(idx) {
-        window.groupedAchats[idx].effectue = !window.groupedAchats[idx].effectue;
-        if(window.groupedAchats[idx].effectue) {
-          window.depenses.push({ description: "Groupe d'achats : " + window.groupedAchats[idx].groupName, amount: window.groupedAchats[idx].total });
-          window.saveFinance();
-          renderFinanceSummary();
-          renderDepenses();
-          window.groupedAchats.splice(idx, 1);
-        }
-        renderGroupedAchats();
-      };
-      window.supprimerGroupe = function(idx) {
-        if(confirm("Supprimer le groupe '" + window.groupedAchats[idx].groupName + "' ?")) {
-          window.groupedAchats.splice(idx, 1);
-          renderGroupedAchats();
-        }
-      };
-      window.renderAchats();
-      
-      /* ---------- Projets ---------- */
-      window.renderProjets = function() {
-        var container = document.getElementById("projet-resultat");
-        if(window.projets.length === 0) { container.innerHTML = "<p>Aucun projet enregistré.</p>"; return; }
-        var html = "<table id='projet-list'><thead><tr>" +
-          "<th>Nom</th><th>Budget (€)</th><th>Lien</th><th>Délai (mois)</th><th>Mode</th><th>Calcul</th><th>Priorité</th><th>Actions</th>" +
-          "</tr></thead><tbody>";
-        window.projets.forEach(function(p, idx) {
-          html += "<tr><td>" + p.nom + "</td>" +
-                  "<td>" + p.prix.toFixed(2) + "</td>" +
-                  "<td>" + (p.lien ? "<a href='" + p.lien + "' target='_blank'>Lien</a>" : "-") + "</td>" +
-                  "<td>" + p.duree + " mois</td>" +
-                  "<td>" + p.mode + "</td>" +
-                  "<td>" + p.calcul + "</td>" +
-                  "<td>" + p.priorite + "</td>" +
-                  "<td><button class='action-btn' onclick='editProjet(" + idx + ")'>Modifier</button> " +
-                  "<button class='action-btn' onclick='deleteProjet(" + idx + ")'>Supprimer</button></td></tr>";
-        });
-        html += "</tbody></table>";
-        container.innerHTML = html;
-      };
-      window.editProjet = function(idx) {
-        var projet = window.projets[idx];
-        var newNom = prompt("Modifier le nom du projet :", projet.nom);
-        if(newNom !== null) { projet.nom = newNom.trim() || projet.nom; }
-        var newPrix = prompt("Modifier le budget total (€) :", projet.prix);
-        if(newPrix !== null) { projet.prix = parseFloat(newPrix) || projet.prix; }
-        var newDuree = prompt("Modifier le délai souhaité (mois) :", projet.duree);
-        if(newDuree !== null) { projet.duree = parseInt(newDuree) || projet.duree; }
-        var newPriorite = prompt("Modifier la priorité (1 à 5) :", projet.priorite);
-        if(newPriorite !== null) { projet.priorite = newPriorite || projet.priorite; }
-        window.saveProjets();
-        window.renderProjets();
-      };
-      window.deleteProjet = function(idx) {
-        if(confirm("Supprimer le projet " + window.projets[idx].nom + " ?")) {
-          window.projets.splice(idx, 1);
-          window.saveProjets();
-          window.renderProjets();
-        }
-      };
-      window.renderProjets();
-      window.toggleLienProjet = function() {
-        var check = document.getElementById("projet-ajout-lien").checked;
-        document.getElementById("projet-lien").style.display = check ? "block" : "none";
-      };
-      window.calculateProjet = function() {
-        var nom = document.getElementById("projet-nom").value.trim();
-        var prix = parseFloat(document.getElementById("projet-prix").value);
-        var duree = parseInt(document.getElementById("projet-duree").value);
-        var mode = document.getElementById("projet-mode-inverse").checked ? "Inverse" : "Direct";
-        var mensuel = parseFloat(document.getElementById("projet-mensuel").value);
-        var priorite = document.getElementById("projet-priorite").value;
-        var moisObjectif = parseInt(document.getElementById("projet-mois-objectif").value);
-        if(nom && !isNaN(prix) && !isNaN(duree)) {
-          var calcul = "";
-          if(mode === "Direct") {
-            var budgetMensuel = prix / duree;
-            calcul = "Budget mensuel requis : " + budgetMensuel.toFixed(2) + " €";
-          } else {
-            if(!isNaN(mensuel) && mensuel > 0) {
-              var moisEstime = Math.ceil(prix / mensuel);
-              calcul = "Durée estimée : " + moisEstime + " mois";
-            } else {
-              calcul = "Montant mensuel invalide";
-            }
-          }
-          var economieMensuelle = "";
-          if(!isNaN(moisObjectif) && moisObjectif > 0) {
-            economieMensuelle = " Pour atteindre l'objectif en " + moisObjectif + " mois, économisez " + (prix / moisObjectif).toFixed(2) + " € par mois.";
-          }
-          var lien = document.getElementById("projet-lien").value.trim();
-          var projet = { nom: nom, prix: prix, duree: duree, lien: lien || null, mode: mode, calcul: calcul + economieMensuelle, priorite: priorite, suivi: [] };
-          window.projets.push(projet);
-          window.saveProjets();
-          window.renderProjets();
-          document.getElementById("form-projet").reset();
-          document.getElementById("projet-lien").style.display = "none";
-        } else {
-          alert("Veuillez remplir correctement les champs du projet.");
-        }
-      };
-
-      /* ---------- Utilitaires ---------- */
-      window.exportAllData = function() {
-        var allData = {
-          ouvriers: window.ouvriers,
-          baseOuvriers: window.baseOuvriers,
-          chantiers: window.chantiers,
-          revenus: window.revenus,
-          revenusAttente: window.revenusAttente,
-          depenses: window.depenses,
-          depensesPrevues: window.depensesPrevues,
-          projets: window.projets,
-          travauxFinis: window.travauxFinis,
-          achats: window.achats,
-          groupedAchats: window.groupedAchats
-        };
-        var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allData, null, 2));
-        var dlAnchorElem = document.createElement("a");
-        dlAnchorElem.setAttribute("href", dataStr);
-        dlAnchorElem.setAttribute("download", "donnees_entreprise.json");
-        dlAnchorElem.click();
-      };
-      window.importAllData = function() {
-        document.getElementById("import-file").click();
-      };
-      window.handleImport = function(event) {
-        var file = event.target.files[0];
-        if(!file) return;
-        var reader = new FileReader();
-        reader.onload = function(e) {
-          try {
-            var importedData = JSON.parse(e.target.result);
-            if(importedData.ouvriers) { window.ouvriers = importedData.ouvriers; window.saveOuvriers(); window.renderOuvriers(); populateOuvrierSelect(); }
-            if(importedData.baseOuvriers) { window.baseOuvriers = importedData.baseOuvriers; window.saveBaseOuvriers(); renderBaseOuvriers(); }
-            if(importedData.chantiers) { window.chantiers = importedData.chantiers; window.saveChantiers(); renderChantiers(); }
-            if(importedData.revenus) { window.revenus = importedData.revenus; }
-            if(importedData.depenses) { window.depenses = importedData.depenses; }
-            if(importedData.projets) { window.projets = importedData.projets; window.saveProjets(); window.renderProjets(); }
-            if(importedData.travauxFinis) { window.travauxFinis = importedData.travauxFinis; window.saveTravauxFinis(); }
-            if(importedData.achats) { window.achats = importedData.achats; window.renderAchats(); }
-            if(importedData.groupedAchats) { window.groupedAchats = importedData.groupedAchats; renderGroupedAchats(); }
-            window.renderFinanceSummary();
-            alert("Importation réussie !");
-          } catch(error) {
-            alert("Erreur lors de l'importation des données.");
-          }
-        };
-        reader.readAsText(file);
-      };
-      window.clearAllData = function() {
-        if(confirm("Tout réinitialiser ? Cette action effacera toutes vos données.")) { localStorage.clear(); location.reload(); }
-      };
-      window.showHelp = function() {
-        alert("Utilitaires :\n1. Exporter données\n2. Importer données\n3. Réinitialiser toutes les données\n4. Afficher Synthèse\n5. Autres options...");
-      };
-      window.viewSummary = function() { generateReport(); };
-      function generateReport() {
-        var reportHTML = "<h3>Rapport Global</h3>";
-        reportHTML += "<h4>Ouvriers</h4><ul>";
-        window.ouvriers.forEach(function(o) { reportHTML += "<li>" + o.nom + " – Tarif: " + o.tarif + " €, Jours: " + o.jours + ", Total: " + (o.tarif * o.jours).toFixed(2) + " €</li>"; });
-        reportHTML += "</ul><h4>Chantiers Actifs</h4><ul>";
-        window.chantiers.forEach(function(c) { reportHTML += "<li>" + c.nom + " – Durée: " + c.duree + " j, Prix: " + c.prix + " €</li>"; });
-        reportHTML += "</ul><h4>Travaux Terminés</h4><ul>";
-        window.travauxFinis.forEach(function(c) { reportHTML += "<li>" + c.nom + " – Durée: " + c.duree + " j, Prix: " + c.prix + " €</li>"; });
-        reportHTML += "</ul><h4>Projets</h4><ul>";
-        window.projets.forEach(function(p) { reportHTML += "<li>" + p.nom + " – Budget: " + p.prix + ", Délai: " + p.duree + " mois</li>"; });
-        reportHTML += "</ul><h4>Finance</h4>";
-        reportHTML += "<p>" + document.getElementById("manual-revenus").innerText + "</p>";
-        reportHTML += "<p>" + document.getElementById("revenus-attente").innerText + "</p>";
-        reportHTML += "<p>" + document.getElementById("manual-depenses").innerText + "</p>";
-        reportHTML += "<p>" + document.getElementById("depenses-prevues").innerText + "</p>";
-        reportHTML += "<p>" + document.getElementById("global-balance").innerText + "</p>";
-        document.getElementById("report-data").innerHTML = reportHTML;
-        document.getElementById("report-modal").style.display = "flex";
-      }
-      window.closeReport = function() { document.getElementById("report-modal").style.display = "none"; };
-      window.printReport = function() {
-        var printContent = document.getElementById("report-data").innerHTML;
-        var originalContent = document.body.innerHTML;
-        document.body.innerHTML = printContent;
-        window.print();
-        document.body.innerHTML = originalContent;
-        location.reload();
-      };
-      window.downloadReportCSV = function() {
-        var csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += "Type,Description,Montant\n";
-        window.revenus.forEach(function(r) { csvContent += "Revenu," + r.description + "," + r.amount + "\n"; });
-        window.revenusAttente.forEach(function(r) { csvContent += "Revenu en attente," + r.description + "," + r.amount + "\n"; });
-        window.depenses.forEach(function(d) { csvContent += "Dépense," + d.description + "," + d.amount + "\n"; });
-        window.depensesPrevues.forEach(function(d) { csvContent += "Dépense prévue," + d.description + "," + d.amount + "\n"; });
-        window.ouvriers.forEach(function(o) {
-          var total = o.tarif * o.jours;
-          csvContent += "Ouvrier," + o.nom + " – Tarif: " + o.tarif + ", Total: " + total.toFixed(2) + "\n";
-        });
-        window.chantiers.forEach(function(c) { csvContent += "Chantier," + c.nom + " – Durée: " + c.duree + " j, " + c.prix + "\n"; });
-        window.projets.forEach(function(p) { csvContent += "Projet," + p.nom + " – Budget: " + p.prix + ", Délai: " + p.duree + " mois\n"; });
-        var encodedUri = encodeURI(csvContent);
-        var link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "rapport_global.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-      };
-
-      /* ---------- Bouton Quick Menu Toggle ---------- */
-      window.toggleQuickMenu = function() {
-        var qm = document.getElementById("quick-menu");
-        qm.style.display = (qm.style.display === "block") ? "none" : "block";
-      };
-
-      /* ---------- Initial Refresh ---------- */
-      refreshAll();
+      // On appelle refreshAll pour initialiser les vues
+      window.refreshAll();
     });
   </script>
 </body>
