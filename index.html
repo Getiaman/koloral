@@ -423,107 +423,6 @@
       window.renderFinanceSummary();
     };
 
-    /* Fonctions de voir plus pour les sections Ouvriers et Chantiers déjà présentes */
-    function toggleOuvriersDetails() {
-      var details = document.getElementById("details-ouvriers");
-      var btn = document.getElementById("voir-plus-ouvriers-btn");
-      if(details.style.display === "none" || details.style.display === "") {
-        details.innerHTML = renderOuvriersDetails();
-        details.style.display = "block";
-        btn.innerText = "Voir moins";
-      } else {
-        details.style.display = "none";
-        btn.innerText = "Voir plus";
-      }
-    }
-    function renderOuvriersDetails() {
-      var count = window.ouvriers.length;
-      var totalCost = window.ouvriers.reduce(function(acc, o) {
-        return acc + (o.tarif * o.jours);
-      }, 0);
-      return "Nombre total d'ouvriers : " + count + "<br>Total des coûts : " + totalCost.toFixed(2) + " €";
-    }
-    
-    function toggleBaseOuvriersDetails() {
-      var details = document.getElementById("details-baseouvriers");
-      var btn = document.getElementById("voir-plus-baseouvriers-btn");
-      if(details.style.display === "none" || details.style.display === "") {
-        details.innerHTML = renderBaseOuvriersDetails();
-        details.style.display = "block";
-        btn.innerText = "Voir moins";
-      } else {
-        details.style.display = "none";
-        btn.innerText = "Voir plus";
-      }
-    }
-    function renderBaseOuvriersDetails() {
-      var count = window.baseOuvriers.length;
-      var totalCost = window.baseOuvriers.reduce(function(acc, o) {
-        return acc + (o.tarif * o.jours);
-      }, 0);
-      return "Nombre total d'ouvriers de base : " + count + "<br>Total des coûts : " + totalCost.toFixed(2) + " €";
-    }
-    
-    function toggleChantiersDetails() {
-      var details = document.getElementById("details-chantier");
-      var btn = document.getElementById("voir-plus-chantier-btn");
-      if(details.style.display === "none" || details.style.display === "") {
-        details.innerHTML = renderChantiersDetails();
-        details.style.display = "block";
-        btn.innerText = "Voir moins";
-      } else {
-        details.style.display = "none";
-        btn.innerText = "Voir plus";
-      }
-    }
-    function renderChantiersDetails() {
-      var count = window.chantiers.length;
-      var totalPrix = window.chantiers.reduce(function(acc, c) {
-        return acc + c.prix;
-      }, 0);
-      var avgProgress = count > 0 ? window.chantiers.reduce(function(acc, c) { return acc + c.progress; }, 0) / count : 0;
-      return "Nombre total de chantiers actifs : " + count + "<br>Total des prix : " + totalPrix.toFixed(2) + " €<br>Progression moyenne : " + avgProgress.toFixed(0) + " %";
-    }
-    
-    function toggleBaseChantiersDetails() {
-      var details = document.getElementById("details-basechantier");
-      var btn = document.getElementById("voir-plus-basechantier-btn");
-      if(details.style.display === "none" || details.style.display === "") {
-        details.innerHTML = renderBaseChantiersDetails();
-        details.style.display = "block";
-        btn.innerText = "Voir moins";
-      } else {
-        details.style.display = "none";
-        btn.innerText = "Voir plus";
-      }
-    }
-    function renderBaseChantiersDetails() {
-      var activeCount = window.chantiers.length;
-      var finishedCount = window.travauxFinis.length;
-      return "Chantiers actifs : " + activeCount + "<br>Chantiers terminés : " + finishedCount;
-    }
-    
-    function toggleProjetDetails() {
-      var details = document.getElementById("details-projet");
-      var btn = document.getElementById("voir-plus-projet-btn");
-      if(details.style.display === "none" || details.style.display === "") {
-        details.innerHTML = renderProjetDetails();
-        details.style.display = "block";
-        btn.innerText = "Voir moins";
-      } else {
-        details.style.display = "none";
-        btn.innerText = "Voir plus";
-      }
-    }
-    function renderProjetDetails() {
-      var count = window.projets.length;
-      var totalBudget = window.projets.reduce(function(acc, p) {
-        return acc + p.budgetTotal;
-      }, 0);
-      var avgDuration = count > 0 ? window.projets.reduce(function(acc, p) { return acc + p.duree; }, 0) / count : 0;
-      return "Nombre de projets : " + count + "<br>Total du budget : " + totalBudget.toFixed(2) + " €<br>Durée moyenne : " + avgDuration.toFixed(1) + " mois";
-    }
-    
     /* ---------- Nouveaux toggle pour afficher chaque finance individuelle ---------- */
     function toggleRevenusManuels() {
       var details = document.getElementById("details-revenu");
@@ -587,6 +486,16 @@
       } else {
         details.style.display = "none";
         btn.innerText = "Voir plus";
+      }
+    }
+    
+    /* Fonction ajoutée pour toggle les détails de la finance */
+    function toggleFinanceDetails() {
+      var details = document.getElementById("details-finance");
+      if(details.style.display === "none" || details.style.display === "") {
+        details.style.display = "block";
+      } else {
+        details.style.display = "none";
       }
     }
     
@@ -948,10 +857,10 @@
       </div>
       <!-- Récapitulatif Finance -->
       <div id="finance-summary">
-        <p id="manual-revenus">Revenus manuels : 0 €</p>
-        <p id="revenus-attente">Revenus en attente : 0 €</p>
-        <p id="manual-depenses">Dépenses manuelles : 0 €</p>
-        <p id="depenses-prevues">Dépenses prévues : 0 €</p>
+        <p id="summary-revenus">Revenus manuels : 0 €</p>
+        <p id="summary-revenus-attente">Revenus en attente : 0 €</p>
+        <p id="summary-depenses">Dépenses manuelles : 0 €</p>
+        <p id="summary-depenses-prevues">Dépenses prévues : 0 €</p>
         <p id="global-balance">Solde global : 0 €</p>
       </div>
       <!-- Nouveaux contrôles pour la Finance -->
@@ -1114,7 +1023,7 @@
       window.revenus = JSON.parse(localStorage.getItem('gestion_revenus')) || [];
       window.depenses = JSON.parse(localStorage.getItem('gestion_depenses')) || [];
       window.depensesPrevues = JSON.parse(localStorage.getItem('gestion_depenses_prevues')) || [];
-      window.revenusAttente = [];
+      window.revenusAttente = []; // pas stocké en localStorage
       window.achats = [];
       window.groupedAchats = [];
       window.projets = JSON.parse(localStorage.getItem('gestion_projets')) || [];
@@ -1203,6 +1112,9 @@
             totalRevenus += parseFloat(r.montant);
           }
         });
+        var totalRevenusAttente = window.revenusAttente.reduce(function(acc, r) {
+          return acc + parseFloat(r.montant || 0);
+        }, 0);
         var totalDepenses = window.depenses.reduce(function(acc, d) {
           return acc + parseFloat(d.montant || 0);
         }, 0);
@@ -1210,31 +1122,27 @@
           return acc + parseFloat(d.montant || 0);
         }, 0);
         var balance = totalRevenus - totalDepenses - totalDepensesPrevues;
-        document.getElementById("manual-revenus").innerText = "Revenus manuels : " + totalRevenus.toFixed(2) + " €";
-        document.getElementById("manual-depenses").innerText = "Dépenses manuelles : " + totalDepenses.toFixed(2) + " €";
-        document.getElementById("depenses-prevues").innerText = "Dépenses prévues : " + totalDepensesPrevues.toFixed(2) + " €";
+        document.getElementById("summary-revenus").innerText = "Revenus manuels : " + totalRevenus.toFixed(2) + " €";
+        document.getElementById("summary-revenus-attente").innerText = "Revenus en attente : " + totalRevenusAttente.toFixed(2) + " €";
+        document.getElementById("summary-depenses").innerText = "Dépenses manuelles : " + totalDepenses.toFixed(2) + " €";
+        document.getElementById("summary-depenses-prevues").innerText = "Dépenses prévues : " + totalDepensesPrevues.toFixed(2) + " €";
         document.getElementById("global-balance").innerText = "Solde global : " + balance.toFixed(2) + " €";
         
-        var depList = document.getElementById("depenses-list");
-        depList.innerHTML = "";
-        window.depenses.forEach(function(d) {
+        var revAttList = document.getElementById("revenus-attente-list");
+        revAttList.innerHTML = "";
+        window.revenusAttente.forEach(function(r) {
           var div = document.createElement("div");
-          div.innerText = d.description + " : " + parseFloat(d.montant).toFixed(2) + " €";
-          depList.appendChild(div);
+          div.innerText = r.description + " : " + parseFloat(r.montant).toFixed(2) + " €";
+          revAttList.appendChild(div);
         });
-        
+             
         var totalDettes = 0;
         window.ouvriers.forEach(function(o) {
           if(!o.paye) { totalDettes += o.tarif * o.jours; }
         });
         
-        if(document.getElementById("afficher-dettes").checked) {
-          var dettesElem = document.createElement("p");
-          dettesElem.innerText = "Dettes envers les ouvriers : " + totalDettes.toFixed(2) + " €";
-          document.getElementById("global-balance").insertAdjacentElement("afterend", dettesElem);
-        }
-        
         var detailsHTML = "<p>Total Revenus : " + totalRevenus.toFixed(2) + " €</p>";
+        detailsHTML += "<p>Total Revenus en attente : " + totalRevenusAttente.toFixed(2) + " €</p>";
         detailsHTML += "<p>Total Dépenses : " + totalDepenses.toFixed(2) + " €</p>";
         detailsHTML += "<p>Total Dépenses Prévues : " + totalDepensesPrevues.toFixed(2) + " €</p>";
         if(document.getElementById("appliquer-urssaf").checked) {
@@ -1709,10 +1617,10 @@
         reportHTML += "</ul><h4>Projets</h4><ul>";
         window.projets.forEach(function(p) { reportHTML += "<li>" + p.nom + " – Budget: " + p.budgetTotal + ", Délai: " + p.duree + " mois</li>"; });
         reportHTML += "</ul><h4>Finance</h4>";
-        reportHTML += "<p>" + document.getElementById("manual-revenus").innerText + "</p>";
-        reportHTML += "<p>" + document.getElementById("revenus-attente").innerText + "</p>";
-        reportHTML += "<p>" + document.getElementById("manual-depenses").innerText + "</p>";
-        reportHTML += "<p>" + document.getElementById("depenses-prevues").innerText + "</p>";
+        reportHTML += "<p>" + document.getElementById("summary-revenus").innerText + "</p>";
+        reportHTML += "<p>" + document.getElementById("summary-revenus-attente").innerText + "</p>";
+        reportHTML += "<p>" + document.getElementById("summary-depenses").innerText + "</p>";
+        reportHTML += "<p>" + document.getElementById("summary-depenses-prevues").innerText + "</p>";
         reportHTML += "<p>" + document.getElementById("global-balance").innerText + "</p>";
         document.getElementById("report-data").innerHTML = reportHTML;
         document.getElementById("report-modal").style.display = "flex";
@@ -1759,6 +1667,49 @@
           return;
         }
         window.revenus.push({ description: description, montant: montant, chantier: estChantier });
+        window.saveFinance();
+        renderFinanceSummary();
+        this.reset();
+      });
+      
+      /* ---------- Événements pour les formulaires de Revenus en Attente, Dépenses Manuelles et Dépenses Prévues ---------- */
+      document.getElementById("form-revenu-attente").addEventListener("submit", function(e) {
+        e.preventDefault();
+        var description = document.getElementById("revenu-attente-description").value.trim();
+        var montant = parseFloat(document.getElementById("revenu-attente-montant").value);
+        if(description === "" || isNaN(montant)) {
+          alert("Veuillez remplir correctement le revenu en attente.");
+          return;
+        }
+        window.revenusAttente.push({ description: description, montant: montant });
+        window.saveFinance();
+        renderFinanceSummary();
+        this.reset();
+      });
+      
+      document.getElementById("form-depense").addEventListener("submit", function(e) {
+        e.preventDefault();
+        var description = document.getElementById("depense-description").value.trim();
+        var montant = parseFloat(document.getElementById("depense-montant").value);
+        if(description === "" || isNaN(montant)) {
+          alert("Veuillez remplir correctement la dépense.");
+          return;
+        }
+        window.depenses.push({ description: description, montant: montant });
+        window.saveFinance();
+        renderFinanceSummary();
+        this.reset();
+      });
+      
+      document.getElementById("form-depense-prevue").addEventListener("submit", function(e) {
+        e.preventDefault();
+        var description = document.getElementById("depense-prevue-description").value.trim();
+        var montant = parseFloat(document.getElementById("depense-prevue-montant").value);
+        if(description === "" || isNaN(montant)) {
+          alert("Veuillez remplir correctement la dépense prévue.");
+          return;
+        }
+        window.depensesPrevues.push({ description: description, montant: montant });
         window.saveFinance();
         renderFinanceSummary();
         this.reset();
