@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <title>Koloral Sheqiri – Gestion d'Entreprise</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="apple-mobile-web-app-capable" content="yes">
   <!-- Manifest -->
   <link rel="manifest" href="manifest.json">
   <!-- Google Fonts -->
@@ -120,6 +121,7 @@
       margin: 10px auto;
       max-width: 90%;
       box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      position: relative;
     }
     .section.active { display: block; }
     form input, form select, form button {
@@ -181,7 +183,7 @@
       border-radius: 4px;
       transition: width 0.3s;
     }
-    /* Options Supplémentaires */
+    /* Options Supplémentaires & Nouveaux détails */
     .options-list {
       list-style: none;
       padding: 0;
@@ -253,6 +255,54 @@
     }
     .modal-buttons button:hover { background: #0a9396; }
     .spacer { height: 60px; }
+    /* Boutons Voir plus et panneaux détails */
+    .voir-plus-btn {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: #005f73;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    .voir-plus-btn:hover { background: #0a9396; }
+    .details-section {
+      margin-top: 10px;
+      display: none;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+      font-size: 0.9rem;
+    }
+    /* Nouveaux éléments pour la section Finance */
+    #finance-options {
+      margin-top: 10px;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      align-items: center;
+    }
+    #finance-options label {
+      font-size: 0.9rem;
+    }
+    #voir-plus-finance {
+      margin-top: 10px;
+      padding: 8px 12px;
+      background: #005f73;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #voir-plus-finance:hover { background: #0a9396; }
+    #details-finance {
+      margin-top: 10px;
+      display: none;
+      border-top: 1px solid #ccc;
+      padding-top: 10px;
+      font-size: 0.9rem;
+    }
     @media (max-width: 600px) {
       header h1 { font-size: 1.6rem; }
       #nav-dropdown { width: 95%; }
@@ -261,7 +311,7 @@
     }
   </style>
   <script>
-    /* Définition des wrappers pour les options supplémentaires */
+    /* Fonctions globales pour options supplémentaires et finance rapide */
     window.calculerMargeBeneficiaire = function() {
       if(typeof window._calculerMargeBeneficiaire === "function") {
         window._calculerMargeBeneficiaire();
@@ -351,6 +401,338 @@
         content.style.display = (content.style.display === "block") ? "none" : "block";
       }
     };
+
+    /* Finance rapide : si montant positif, ajouter revenu, sinon dépense */
+    window.ajusterFinance = function(montant) {
+      if(montant > 0) {
+        window.revenus.push({
+          description: "Revenu rapide (" + montant + " €)",
+          montant: montant,
+          chantier: false
+        });
+        alert("Revenu de " + montant + " € enregistré.");
+      } else {
+        var dep = Math.abs(montant);
+        window.depenses.push({
+          description: "Dépense rapide (" + dep + " €)",
+          montant: dep
+        });
+        alert("Dépense de " + dep + " € enregistrée.");
+      }
+      window.saveFinance();
+      window.renderFinanceSummary();
+    };
+
+    /* Fonctions de voir plus pour les sections Ouvriers et Chantiers déjà présentes */
+    function toggleOuvriersDetails() {
+      var details = document.getElementById("details-ouvriers");
+      var btn = document.getElementById("voir-plus-ouvriers-btn");
+      if(details.style.display === "none" || details.style.display === "") {
+        details.innerHTML = renderOuvriersDetails();
+        details.style.display = "block";
+        btn.innerText = "Voir moins";
+      } else {
+        details.style.display = "none";
+        btn.innerText = "Voir plus";
+      }
+    }
+    function renderOuvriersDetails() {
+      var count = window.ouvriers.length;
+      var totalCost = window.ouvriers.reduce(function(acc, o) {
+        return acc + (o.tarif * o.jours);
+      }, 0);
+      return "Nombre total d'ouvriers : " + count + "<br>Total des coûts : " + totalCost.toFixed(2) + " €";
+    }
+    
+    function toggleBaseOuvriersDetails() {
+      var details = document.getElementById("details-baseouvriers");
+      var btn = document.getElementById("voir-plus-baseouvriers-btn");
+      if(details.style.display === "none" || details.style.display === "") {
+        details.innerHTML = renderBaseOuvriersDetails();
+        details.style.display = "block";
+        btn.innerText = "Voir moins";
+      } else {
+        details.style.display = "none";
+        btn.innerText = "Voir plus";
+      }
+    }
+    function renderBaseOuvriersDetails() {
+      var count = window.baseOuvriers.length;
+      var totalCost = window.baseOuvriers.reduce(function(acc, o) {
+        return acc + (o.tarif * o.jours);
+      }, 0);
+      return "Nombre total d'ouvriers de base : " + count + "<br>Total des coûts : " + totalCost.toFixed(2) + " €";
+    }
+    
+    function toggleChantiersDetails() {
+      var details = document.getElementById("details-chantier");
+      var btn = document.getElementById("voir-plus-chantier-btn");
+      if(details.style.display === "none" || details.style.display === "") {
+        details.innerHTML = renderChantiersDetails();
+        details.style.display = "block";
+        btn.innerText = "Voir moins";
+      } else {
+        details.style.display = "none";
+        btn.innerText = "Voir plus";
+      }
+    }
+    function renderChantiersDetails() {
+      var count = window.chantiers.length;
+      var totalPrix = window.chantiers.reduce(function(acc, c) {
+        return acc + c.prix;
+      }, 0);
+      var avgProgress = count > 0 ? window.chantiers.reduce(function(acc, c) { return acc + c.progress; }, 0) / count : 0;
+      return "Nombre total de chantiers actifs : " + count + "<br>Total des prix : " + totalPrix.toFixed(2) + " €<br>Progression moyenne : " + avgProgress.toFixed(0) + " %";
+    }
+    
+    function toggleBaseChantiersDetails() {
+      var details = document.getElementById("details-basechantier");
+      var btn = document.getElementById("voir-plus-basechantier-btn");
+      if(details.style.display === "none" || details.style.display === "") {
+        details.innerHTML = renderBaseChantiersDetails();
+        details.style.display = "block";
+        btn.innerText = "Voir moins";
+      } else {
+        details.style.display = "none";
+        btn.innerText = "Voir plus";
+      }
+    }
+    function renderBaseChantiersDetails() {
+      var activeCount = window.chantiers.length;
+      var finishedCount = window.travauxFinis.length;
+      return "Chantiers actifs : " + activeCount + "<br>Chantiers terminés : " + finishedCount;
+    }
+    
+    function toggleProjetDetails() {
+      var details = document.getElementById("details-projet");
+      var btn = document.getElementById("voir-plus-projet-btn");
+      if(details.style.display === "none" || details.style.display === "") {
+        details.innerHTML = renderProjetDetails();
+        details.style.display = "block";
+        btn.innerText = "Voir moins";
+      } else {
+        details.style.display = "none";
+        btn.innerText = "Voir plus";
+      }
+    }
+    function renderProjetDetails() {
+      var count = window.projets.length;
+      var totalBudget = window.projets.reduce(function(acc, p) {
+        return acc + p.budgetTotal;
+      }, 0);
+      var avgDuration = count > 0 ? window.projets.reduce(function(acc, p) { return acc + p.duree; }, 0) / count : 0;
+      return "Nombre de projets : " + count + "<br>Total du budget : " + totalBudget.toFixed(2) + " €<br>Durée moyenne : " + avgDuration.toFixed(1) + " mois";
+    }
+    
+    /* ---------- Nouveaux toggle pour afficher chaque finance individuelle ---------- */
+    function toggleRevenusManuels() {
+      var details = document.getElementById("details-revenu");
+      var btn = document.getElementById("voir-plus-revenu-btn");
+      if(details.style.display === "none" || details.style.display === "") {
+        var html = "<h4>Détails Revenus Manuels</h4>";
+        window.revenus.forEach(function(r) {
+          html += "<p>" + r.description + " : " + parseFloat(r.montant).toFixed(2) + " €</p>";
+        });
+        details.innerHTML = html;
+        details.style.display = "block";
+        btn.innerText = "Voir moins";
+      } else {
+        details.style.display = "none";
+        btn.innerText = "Voir plus";
+      }
+    }
+    function toggleRevenusAttente() {
+      var details = document.getElementById("details-revenu-attente");
+      var btn = document.getElementById("voir-plus-revenu-attente-btn");
+      if(details.style.display === "none" || details.style.display === "") {
+        var html = "<h4>Détails Revenus en Attente</h4>";
+        window.revenusAttente.forEach(function(r) {
+          html += "<p>" + r.description + " : " + parseFloat(r.montant).toFixed(2) + " €</p>";
+        });
+        details.innerHTML = html;
+        details.style.display = "block";
+        btn.innerText = "Voir moins";
+      } else {
+        details.style.display = "none";
+        btn.innerText = "Voir plus";
+      }
+    }
+    function toggleDepensesManuelles() {
+      var details = document.getElementById("details-depense");
+      var btn = document.getElementById("voir-plus-depense-btn");
+      if(details.style.display === "none" || details.style.display === "") {
+        var html = "<h4>Détails Dépenses Manuelles</h4>";
+        window.depenses.forEach(function(d) {
+          html += "<p>" + d.description + " : " + parseFloat(d.montant).toFixed(2) + " €</p>";
+        });
+        details.innerHTML = html;
+        details.style.display = "block";
+        btn.innerText = "Voir moins";
+      } else {
+        details.style.display = "none";
+        btn.innerText = "Voir plus";
+      }
+    }
+    function toggleDepensesPrevues() {
+      var details = document.getElementById("details-depense-prevue");
+      var btn = document.getElementById("voir-plus-depense-prevue-btn");
+      if(details.style.display === "none" || details.style.display === "") {
+        var html = "<h4>Détails Dépenses Prévues</h4>";
+        window.depensesPrevues.forEach(function(d) {
+          html += "<p>" + d.description + " : " + parseFloat(d.montant).toFixed(2) + " €</p>";
+        });
+        details.innerHTML = html;
+        details.style.display = "block";
+        btn.innerText = "Voir moins";
+      } else {
+        details.style.display = "none";
+        btn.innerText = "Voir plus";
+      }
+    }
+    
+    /* Sauvegarde de sections depuis Utilitaires */
+    function backupSection() {
+      var section = prompt("Entrez la section à sauvegarder (finance, chantier, ouvrier) :");
+      if(!section) return;
+      section = section.toLowerCase();
+      if(section !== "finance" && section !== "chantier" && section !== "ouvrier") {
+        alert("Section invalide.");
+        return;
+      }
+      var backupName = prompt("Entrez un nom pour cette sauvegarde :");
+      if(!backupName) {
+        alert("Nom de sauvegarde invalide.");
+        return;
+      }
+      var backupData = {};
+      if(section === "finance") {
+        backupData = {
+          revenus: window.revenus,
+          depenses: window.depenses,
+          depensesPrevues: window.depensesPrevues,
+          revenusAttente: window.revenusAttente
+        };
+      } else if(section === "chantier") {
+        backupData = {
+          chantiers: window.chantiers,
+          travauxFinis: window.travauxFinis
+        };
+      } else if(section === "ouvrier") {
+        backupData = {
+          ouvriers: window.ouvriers,
+          baseOuvriers: window.baseOuvriers
+        };
+      }
+      var backupObj = {
+        name: backupName,
+        date: new Date().toLocaleString(),
+        data: backupData
+      };
+      var backups = JSON.parse(localStorage.getItem("section_backups") || "{}");
+      if(!backups[section]) backups[section] = [];
+      backups[section].push(backupObj);
+      localStorage.setItem("section_backups", JSON.stringify(backups));
+      alert("Sauvegarde effectuée pour la section " + section);
+    }
+    
+    // Version révisée de viewBackups() affichant uniquement les infos principales (valeur €, unité, nom)
+    function viewBackups() {
+      var backups = JSON.parse(localStorage.getItem("section_backups") || "{}");
+      var container = document.getElementById("backups-list");
+      container.innerHTML = "";
+      for (var sec in backups) {
+        if (backups.hasOwnProperty(sec)) {
+          var secHeader = document.createElement("h4");
+          secHeader.innerText = "Section " + sec;
+          container.appendChild(secHeader);
+          backups[sec].forEach(function(bk, index) {
+            var bkDiv = document.createElement("div");
+            bkDiv.style.border = "1px solid #ccc";
+            bkDiv.style.padding = "5px";
+            bkDiv.style.marginBottom = "5px";
+
+            // Affichage du nom et de la date de la sauvegarde
+            var headerDiv = document.createElement("div");
+            headerDiv.innerHTML = "<strong>Nom:</strong> " + bk.name + " - <strong>Date:</strong> " + bk.date;
+            bkDiv.appendChild(headerDiv);
+
+            // Création du tableau synthétique
+            var table = document.createElement("table");
+            table.style.width = "100%";
+            table.style.borderCollapse = "collapse";
+
+            // Ligne d'en-tête avec les colonnes "€", "Unité" et "Nom"
+            var headerRow = document.createElement("tr");
+            ["€", "Unité", "Nom"].forEach(function(colName) {
+              var th = document.createElement("th");
+              th.innerText = colName;
+              th.style.border = "1px solid #ddd";
+              th.style.padding = "4px";
+              headerRow.appendChild(th);
+            });
+            table.appendChild(headerRow);
+
+            // Pour chaque clé (tableau) contenu dans bk.data
+            for (var key in bk.data) {
+              if (bk.data.hasOwnProperty(key) && Array.isArray(bk.data[key])) {
+                bk.data[key].forEach(function(item) {
+                  var row = document.createElement("tr");
+                  var simplified = { value: "", unit: "", name: "" };
+
+                  if (sec === "finance") {
+                    simplified.name = item.description || "";
+                    simplified.value = item.montant ? parseFloat(item.montant).toFixed(2) + " €" : "";
+                    simplified.unit = "";
+                  } else if (sec === "chantier") {
+                    simplified.name = item.nom || "";
+                    simplified.unit = item.duree ? item.duree + " j" : "";
+                    simplified.value = item.prix ? parseFloat(item.prix).toFixed(2) + " €" : "";
+                  } else if (sec === "ouvrier") {
+                    simplified.name = item.nom || "";
+                    simplified.unit = item.jours ? item.jours + " j" : "";
+                    if (item.tarif && item.jours) {
+                      var total = item.tarif * item.jours;
+                      simplified.value = total.toFixed(2) + " €";
+                    } else {
+                      simplified.value = item.tarif ? parseFloat(item.tarif).toFixed(2) + " €" : "";
+                    }
+                  } else {
+                    simplified.name = JSON.stringify(item);
+                  }
+
+                  var cellValue = document.createElement("td");
+                  cellValue.innerText = simplified.value;
+                  cellValue.style.border = "1px solid #ddd";
+                  cellValue.style.padding = "4px";
+                  row.appendChild(cellValue);
+
+                  var cellUnit = document.createElement("td");
+                  cellUnit.innerText = simplified.unit;
+                  cellUnit.style.border = "1px solid #ddd";
+                  cellUnit.style.padding = "4px";
+                  row.appendChild(cellUnit);
+
+                  var cellName = document.createElement("td");
+                  cellName.innerText = simplified.name;
+                  cellName.style.border = "1px solid #ddd";
+                  cellName.style.padding = "4px";
+                  row.appendChild(cellName);
+
+                  table.appendChild(row);
+                });
+              }
+            }
+            bkDiv.appendChild(table);
+            container.appendChild(bkDiv);
+          });
+        }
+      }
+      if (container.innerHTML === "") {
+        container.innerText = "Aucune sauvegarde trouvée.";
+      }
+    }
+    
+    /* ---------- Fonctions globales pour export/import et autres dans DOMContentLoaded plus bas ---------- */
   </script>
 </head>
 <body>
@@ -360,13 +742,14 @@
   <!-- En-tête fixe -->
   <header>
     <h1>Koloral Sheqiri</h1>
-    <div class="quick-menu" id="quick-menu-btn" onclick="toggleQuickMenu()">€ Dépenses</div>
+    <!-- Quick Menu Finance Rapide -->
+    <div class="quick-menu" id="quick-menu-btn" onclick="toggleQuickMenu()">€ Finance</div>
     <div class="quick-menu-container" id="quick-menu">
-      <button onclick="ajusterDepense(-20)">-20 €</button>
-      <button onclick="ajusterDepense(-50)">-50 €</button>
-      <button onclick="ajusterDepense(-100)">-100 €</button>
-      <button onclick="ajusterDepense(50)">+50 €</button>
-      <button onclick="ajusterDepense(100)">+100 €</button>
+      <button onclick="ajusterFinance(-20)">-20 €</button>
+      <button onclick="ajusterFinance(-50)">-50 €</button>
+      <button onclick="ajusterFinance(-100)">-100 €</button>
+      <button onclick="ajusterFinance(50)">+50 €</button>
+      <button onclick="ajusterFinance(100)">+100 €</button>
     </div>
   </header>
   
@@ -412,6 +795,8 @@
           <tbody></tbody>
         </table>
       </div>
+      <button class="voir-plus-btn" id="voir-plus-ouvriers-btn" onclick="toggleOuvriersDetails()">Voir plus</button>
+      <div class="details-section" id="details-ouvriers"></div>
     </section>
     
     <!-- Section Base Ouvriers -->
@@ -430,6 +815,8 @@
           <tbody></tbody>
         </table>
       </div>
+      <button class="voir-plus-btn" id="voir-plus-baseouvriers-btn" onclick="toggleBaseOuvriersDetails()">Voir plus</button>
+      <div class="details-section" id="details-baseouvriers"></div>
     </section>
     
     <!-- Section Chantiers -->
@@ -467,6 +854,8 @@
           <tbody></tbody>
         </table>
       </div>
+      <button class="voir-plus-btn" id="voir-plus-chantier-btn" onclick="toggleChantiersDetails()">Voir plus</button>
+      <div class="details-section" id="details-chantier"></div>
     </section>
     
     <!-- Section Base Chantiers -->
@@ -501,23 +890,28 @@
           <tbody></tbody>
         </table>
       </div>
+      <button class="voir-plus-btn" id="voir-plus-basechantier-btn" onclick="toggleBaseChantiersDetails()">Voir plus</button>
+      <div class="details-section" id="details-basechantier"></div>
     </section>
     
     <!-- Section Finance -->
     <section id="finance" class="section">
       <h2>Finance</h2>
       <!-- Revenus Manuels -->
-      <div>
+      <div id="revenus-manuels">
         <h3>Revenus Manuels</h3>
         <form id="form-revenu">
           <input type="text" id="revenu-description" placeholder="Description du revenu" required>
           <input type="number" id="revenu-montant" placeholder="Montant (€)" step="0.01" required>
+          <label><input type="checkbox" id="revenu-chantier"> Revenu lié au chantier</label>
           <button type="submit">Ajouter revenu</button>
         </form>
         <div id="revenus-list"></div>
+        <button class="voir-plus-btn" id="voir-plus-revenu-btn" onclick="toggleRevenusManuels()">Voir plus</button>
+        <div class="details-section" id="details-revenu"></div>
       </div>
       <!-- Revenus en Attente -->
-      <div>
+      <div id="revenus-attente">
         <h3>Revenus en Attente</h3>
         <form id="form-revenu-attente">
           <input type="text" id="revenu-attente-description" placeholder="Description du revenu en attente" required>
@@ -525,9 +919,11 @@
           <button type="submit">Ajouter revenu en attente</button>
         </form>
         <div id="revenus-attente-list"></div>
+        <button class="voir-plus-btn" id="voir-plus-revenu-attente-btn" onclick="toggleRevenusAttente()">Voir plus</button>
+        <div class="details-section" id="details-revenu-attente"></div>
       </div>
       <!-- Dépenses Manuelles -->
-      <div>
+      <div id="depenses-manuelles">
         <h3>Dépenses Manuelles</h3>
         <form id="form-depense">
           <input type="text" id="depense-description" placeholder="Description de la dépense" required>
@@ -535,9 +931,11 @@
           <button type="submit">Ajouter dépense</button>
         </form>
         <div id="depenses-list"></div>
+        <button class="voir-plus-btn" id="voir-plus-depense-btn" onclick="toggleDepensesManuelles()">Voir plus</button>
+        <div class="details-section" id="details-depense"></div>
       </div>
       <!-- Dépenses Prévues -->
-      <div>
+      <div id="depenses-prevues">
         <h3>Dépenses Prévues</h3>
         <form id="form-depense-prevue">
           <input type="text" id="depense-prevue-description" placeholder="Description de la dépense prévue" required>
@@ -545,6 +943,8 @@
           <button type="submit">Ajouter dépense prévue</button>
         </form>
         <div id="depenses-prevues-list"></div>
+        <button class="voir-plus-btn" id="voir-plus-depense-prevue-btn" onclick="toggleDepensesPrevues()">Voir plus</button>
+        <div class="details-section" id="details-depense-prevue"></div>
       </div>
       <!-- Récapitulatif Finance -->
       <div id="finance-summary">
@@ -554,6 +954,13 @@
         <p id="depenses-prevues">Dépenses prévues : 0 €</p>
         <p id="global-balance">Solde global : 0 €</p>
       </div>
+      <!-- Nouveaux contrôles pour la Finance -->
+      <div id="finance-options">
+        <label><input type="checkbox" id="appliquer-urssaf" onchange="renderFinanceSummary()"> Appliquer -22% Urssaf sur revenus chantier</label>
+        <label><input type="checkbox" id="afficher-dettes" onchange="renderFinanceSummary()"> Afficher dettes envers les ouvriers</label>
+      </div>
+      <button class="voir-plus-btn" id="voir-plus-finance" onclick="toggleFinanceDetails()">Voir plus</button>
+      <div class="details-section" id="details-finance"></div>
     </section>
     
     <!-- Section Projet -->
@@ -581,7 +988,7 @@
         </select>
         <button type="button" onclick="calculateProjet()">Calculer Projet</button>
       </form>
-      <!-- Section Achats & Groupement -->
+      <!-- Section Achats & Groupement (inchangée) -->
       <div id="projet-achats">
         <h3>Liste d'Achats</h3>
         <form id="form-achat">
@@ -611,6 +1018,8 @@
         <div class="collapsible-header" onclick="toggleGroupedAchats()">Groupes d'Achats</div>
         <div class="collapsible-content" id="grouped-achats-table"></div>
       </div>
+      <button class="voir-plus-btn" id="voir-plus-projet-btn" onclick="toggleProjetDetails()">Voir plus</button>
+      <div class="details-section" id="details-projet"></div>
       <div id="projet-resultat"></div>
     </section>
     
@@ -653,6 +1062,10 @@
       <button onclick="clearAllData()">Tout réinitialiser</button>
       <button onclick="showHelp()">Afficher aide</button>
       <button onclick="viewSummary()">Afficher Synthèse</button>
+      <!-- Nouveaux boutons pour sauvegarde de sections -->
+      <button onclick="backupSection()">Sauvegarder une section</button>
+      <button onclick="viewBackups()">Voir sauvegardes</button>
+      <div id="backups-list"></div>
     </section>
     
     <div class="spacer"></div>
@@ -718,6 +1131,123 @@
       };
       window.saveProjets = function() { localStorage.setItem('gestion_projets', JSON.stringify(window.projets)); };
 
+      /* ---------- Fonctions pour la section Projet ---------- */
+      window.toggleLienProjet = function() {
+        var checkbox = document.getElementById("projet-ajout-lien");
+        var lienInput = document.getElementById("projet-lien");
+        if (checkbox.checked) {
+          lienInput.style.display = "block";
+        } else {
+          lienInput.style.display = "none";
+        }
+      };
+
+      window.calculateProjet = function() {
+        var nom = document.getElementById("projet-nom").value.trim();
+        var modeInverse = document.getElementById("projet-mode-inverse").checked;
+        var priorite = document.getElementById("projet-priorite").value;
+        var lien = "";
+        if(document.getElementById("projet-ajout-lien").checked) {
+          lien = document.getElementById("projet-lien").value.trim();
+        }
+        var projet = { nom: nom, modeInverse: modeInverse, priorite: priorite, lien: lien };
+
+        if(nom === "") {
+          alert("Veuillez saisir le nom du projet.");
+          return;
+        }
+
+        var message = "";
+        if(modeInverse) {
+          var budgetMensuel = parseFloat(document.getElementById("projet-mensuel").value);
+          var moisObjectif = parseInt(document.getElementById("projet-mois-objectif").value);
+          if(isNaN(budgetMensuel) || isNaN(moisObjectif)) {
+            alert("Veuillez remplir correctement le budget mensuel et le nombre de mois pour l'objectif.");
+            return;
+          }
+          var calculatedTotal = budgetMensuel * moisObjectif;
+          projet.budgetTotal = calculatedTotal;
+          projet.duree = moisObjectif;
+          projet.budgetMensuel = budgetMensuel;
+          projet.moisObjectif = moisObjectif;
+          projet.calculMensuel = budgetMensuel;
+          message = "Projet en mode inverse: Budget mensuel de " + budgetMensuel.toFixed(2) + " €, soit un budget total estimé de " + calculatedTotal.toFixed(2) + " € sur " + moisObjectif + " mois.";
+        } else {
+          var budgetTotal = parseFloat(document.getElementById("projet-prix").value);
+          var duree = parseFloat(document.getElementById("projet-duree").value);
+          if(isNaN(budgetTotal) || isNaN(duree)) {
+            alert("Veuillez remplir correctement le budget total et la durée.");
+            return;
+          }
+          var monthlyResult = budgetTotal / duree;
+          projet.budgetTotal = budgetTotal;
+          projet.duree = duree;
+          projet.calculMensuel = monthlyResult;
+          message = "Projet classique: Budget total de " + budgetTotal.toFixed(2) + " € sur " + duree + " mois, soit un coût mensuel de " + monthlyResult.toFixed(2) + " €.";
+        }
+
+        window.projets.push(projet);
+        window.saveProjets();
+        document.getElementById("projet-resultat").innerHTML = "<p>" + message + "</p>";
+        document.getElementById("form-projet").reset();
+        document.getElementById("projet-lien").style.display = "none";
+      };
+
+      /* ---------- Fonction de mise à jour du résumé financier ---------- */
+      function renderFinanceSummary() {
+        var totalRevenus = 0;
+        window.revenus.forEach(function(r) {
+          if(document.getElementById("appliquer-urssaf").checked && r.chantier) {
+            totalRevenus += parseFloat(r.montant) * 0.78;
+          } else {
+            totalRevenus += parseFloat(r.montant);
+          }
+        });
+        var totalDepenses = window.depenses.reduce(function(acc, d) {
+          return acc + parseFloat(d.montant || 0);
+        }, 0);
+        var totalDepensesPrevues = window.depensesPrevues.reduce(function(acc, d) {
+          return acc + parseFloat(d.montant || 0);
+        }, 0);
+        var balance = totalRevenus - totalDepenses - totalDepensesPrevues;
+        document.getElementById("manual-revenus").innerText = "Revenus manuels : " + totalRevenus.toFixed(2) + " €";
+        document.getElementById("manual-depenses").innerText = "Dépenses manuelles : " + totalDepenses.toFixed(2) + " €";
+        document.getElementById("depenses-prevues").innerText = "Dépenses prévues : " + totalDepensesPrevues.toFixed(2) + " €";
+        document.getElementById("global-balance").innerText = "Solde global : " + balance.toFixed(2) + " €";
+        
+        var depList = document.getElementById("depenses-list");
+        depList.innerHTML = "";
+        window.depenses.forEach(function(d) {
+          var div = document.createElement("div");
+          div.innerText = d.description + " : " + parseFloat(d.montant).toFixed(2) + " €";
+          depList.appendChild(div);
+        });
+        
+        var totalDettes = 0;
+        window.ouvriers.forEach(function(o) {
+          if(!o.paye) { totalDettes += o.tarif * o.jours; }
+        });
+        
+        if(document.getElementById("afficher-dettes").checked) {
+          var dettesElem = document.createElement("p");
+          dettesElem.innerText = "Dettes envers les ouvriers : " + totalDettes.toFixed(2) + " €";
+          document.getElementById("global-balance").insertAdjacentElement("afterend", dettesElem);
+        }
+        
+        var detailsHTML = "<p>Total Revenus : " + totalRevenus.toFixed(2) + " €</p>";
+        detailsHTML += "<p>Total Dépenses : " + totalDepenses.toFixed(2) + " €</p>";
+        detailsHTML += "<p>Total Dépenses Prévues : " + totalDepensesPrevues.toFixed(2) + " €</p>";
+        if(document.getElementById("appliquer-urssaf").checked) {
+          detailsHTML += "<p>Revenus après Urssaf (-22% sur revenus chantier) : " + totalRevenus.toFixed(2) + " €</p>";
+        }
+        if(document.getElementById("afficher-dettes").checked) {
+          detailsHTML += "<p>Dettes ouvriers : " + totalDettes.toFixed(2) + " €</p>";
+        }
+        document.getElementById("details-finance").innerHTML = detailsHTML;
+      }
+      
+      window.renderFinanceSummary = renderFinanceSummary;
+      
       /* ---------- Navigation ---------- */
       window.showSection = function(sectionId) {
         document.querySelectorAll(".section").forEach(function(sec) { sec.classList.remove("active"); });
@@ -925,11 +1455,13 @@
       };
       window.editChantierSteps = function(idx) {
         window.currentEditingChantier = idx;
-        window.currentEtapesModal = window.chantiers[idx].etapes.slice();
+        window.currentEtapesModal = (window.chantiers[idx].etapes && window.chantiers[idx].etapes.length) ? window.chantiers[idx].etapes.slice() : [];
         showStepsModal();
       };
-      var currentEditingChantier = null;
-      var currentEtapesModal = [];
+      window.toggleModalEtape = function(i) {
+        window.currentEtapesModal[i].done = !window.currentEtapesModal[i].done;
+        populateStepsModal();
+      };
       function showStepsModal() {
         populateStepsModal();
         document.getElementById("steps-modal").style.display = "flex";
@@ -937,20 +1469,16 @@
       function populateStepsModal() {
         var content = document.getElementById("steps-modal-content");
         content.innerHTML = "";
-        currentEtapesModal.forEach(function(etape, i) {
+        window.currentEtapesModal.forEach(function(etape, i) {
           content.innerHTML += "<div style='margin-bottom:5px;'>" +
             "<label><input type='checkbox' onchange='toggleModalEtape(" + i + ")' " + (etape.done ? "checked" : "") + "> " + etape.description + "</label>" +
             "</div>";
         });
       }
-      window.toggleModalEtape = function(i) {
-        currentEtapesModal[i].done = !currentEtapesModal[i].done;
-        populateStepsModal();
-      };
       window.saveChantierSteps = function() {
-        if(currentEditingChantier !== null) {
-          window.chantiers[currentEditingChantier].etapes = currentEtapesModal.slice();
-          window.chantiers[currentEditingChantier].progress = updateChantierProgress(currentEtapesModal);
+        if(window.currentEditingChantier !== null) {
+          window.chantiers[window.currentEditingChantier].etapes = window.currentEtapesModal.slice();
+          window.chantiers[window.currentEditingChantier].progress = updateChantierProgress(window.currentEtapesModal);
           window.saveChantiers();
           renderChantiers();
           renderBaseChantiers();
@@ -959,7 +1487,7 @@
       };
       function closeStepsModal() {
         document.getElementById("steps-modal").style.display = "none";
-        currentEditingChantier = null;
+        window.currentEditingChantier = null;
       }
       function renderBaseChantiers() {
         var tbodyActif = document.querySelector("#table-base-chantier-actif tbody");
@@ -1024,7 +1552,7 @@
         if(!projet) { alert("Projet non trouvé."); return; }
         var revenuEstime = parseFloat(prompt("Revenu estimé pour ce projet (€) :"));
         if(isNaN(revenuEstime)) { alert("Valeur invalide."); return; }
-        var roi = ((revenuEstime - projet.prix) / projet.prix) * 100;
+        var roi = ((revenuEstime - projet.budgetTotal) / projet.budgetTotal) * 100;
         document.getElementById("plusoptions-output").innerText = "ROI pour le projet '" + projet.nom + "' : " + roi.toFixed(2) + " %";
       };
       window._genererEcheancier = function() {
@@ -1147,14 +1675,14 @@
             if(importedData.projets) {
               window.projets = importedData.projets;
               window.saveProjets();
-              window.renderProjets();
+              window.renderProjets && window.renderProjets();
             }
             if(importedData.travauxFinis) {
               window.travauxFinis = importedData.travauxFinis;
               window.saveTravauxFinis();
             }
-            if(importedData.achats) { window.achats = importedData.achats; window.renderAchats(); }
-            if(importedData.groupedAchats) { window.groupedAchats = importedData.groupedAchats; renderGroupedAchats(); }
+            if(importedData.achats) { window.achats = importedData.achats; window.renderAchats && window.renderAchats(); }
+            if(importedData.groupedAchats) { window.groupedAchats = importedData.groupedAchats; renderGroupedAchats && renderGroupedAchats(); }
             renderFinanceSummary();
             alert("Importation réussie !");
           } catch(error) {
@@ -1179,7 +1707,7 @@
         reportHTML += "</ul><h4>Travaux Terminés</h4><ul>";
         window.travauxFinis.forEach(function(c) { reportHTML += "<li>" + c.nom + " – Durée: " + c.duree + " j, Prix: " + c.prix + " €</li>"; });
         reportHTML += "</ul><h4>Projets</h4><ul>";
-        window.projets.forEach(function(p) { reportHTML += "<li>" + p.nom + " – Budget: " + p.prix + ", Délai: " + p.duree + " mois</li>"; });
+        window.projets.forEach(function(p) { reportHTML += "<li>" + p.nom + " – Budget: " + p.budgetTotal + ", Délai: " + p.duree + " mois</li>"; });
         reportHTML += "</ul><h4>Finance</h4>";
         reportHTML += "<p>" + document.getElementById("manual-revenus").innerText + "</p>";
         reportHTML += "<p>" + document.getElementById("revenus-attente").innerText + "</p>";
@@ -1201,16 +1729,16 @@
       window.downloadReportCSV = function() {
         var csvContent = "data:text/csv;charset=utf-8,";
         csvContent += "Type,Description,Montant\n";
-        window.revenus.forEach(function(r) { csvContent += "Revenu," + r.description + "," + r.amount + "\n"; });
-        window.revenusAttente.forEach(function(r) { csvContent += "Revenu en attente," + r.description + "," + r.amount + "\n"; });
-        window.depenses.forEach(function(d) { csvContent += "Dépense," + d.description + "," + d.amount + "\n"; });
-        window.depensesPrevues.forEach(function(d) { csvContent += "Dépense prévue," + d.description + "," + d.amount + "\n"; });
+        window.revenus.forEach(function(r) { csvContent += "Revenu," + r.description + "," + r.montant + "\n"; });
+        window.revenusAttente.forEach(function(r) { csvContent += "Revenu en attente," + r.description + "," + r.montant + "\n"; });
+        window.depenses.forEach(function(d) { csvContent += "Dépense," + d.description + "," + d.montant + "\n"; });
+        window.depensesPrevues.forEach(function(d) { csvContent += "Dépense prévue," + d.description + "," + d.montant + "\n"; });
         window.ouvriers.forEach(function(o) {
           var total = o.tarif * o.jours;
           csvContent += "Ouvrier," + o.nom + " – Tarif: " + o.tarif + ", Total: " + total.toFixed(2) + "\n";
         });
         window.chantiers.forEach(function(c) { csvContent += "Chantier," + c.nom + " – Durée: " + c.duree + " j, " + c.prix + "\n"; });
-        window.projets.forEach(function(p) { csvContent += "Projet," + p.nom + " – Budget: " + p.prix + ", Délai: " + p.duree + " mois\n"; });
+        window.projets.forEach(function(p) { csvContent += "Projet," + p.nom + " – Budget: " + p.budgetTotal + ", Délai: " + p.duree + " mois\n"; });
         var encodedUri = encodeURI(csvContent);
         var link = document.createElement("a");
         link.setAttribute("href", encodedUri);
@@ -1220,7 +1748,23 @@
         document.body.removeChild(link);
       };
       
-      /* ---------- Définition des Fonctions Globales pour être appelées depuis le HTML ---------- */
+      /* ---------- Événements pour le formulaire Revenus ---------- */
+      document.getElementById("form-revenu").addEventListener("submit", function(e) {
+        e.preventDefault();
+        var description = document.getElementById("revenu-description").value.trim();
+        var montant = parseFloat(document.getElementById("revenu-montant").value);
+        var estChantier = document.getElementById("revenu-chantier").checked;
+        if(description === "" || isNaN(montant)) {
+          alert("Veuillez remplir correctement le revenu.");
+          return;
+        }
+        window.revenus.push({ description: description, montant: montant, chantier: estChantier });
+        window.saveFinance();
+        renderFinanceSummary();
+        this.reset();
+      });
+      
+      /* ---------- Fonctions Globales pour être appelées depuis le HTML ---------- */
       window.refreshAll = function() {
         window.renderOuvriers();
         populateOuvrierSelect();
@@ -1229,7 +1773,7 @@
         renderBaseChantiers();
         renderFinanceSummary();
       };
-      // On appelle refreshAll pour initialiser les vues
+      // Initialisation des vues
       window.refreshAll();
     });
   </script>
