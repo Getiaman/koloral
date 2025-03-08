@@ -267,13 +267,15 @@
       transition: background 0.3s;
     }
     .voir-plus-btn:hover { background: #0a9396; }
-    .details-section {
-      margin-top: 10px;
-      display: none;
-      border-top: 1px solid #ccc;
-      padding-top: 10px;
-      font-size: 0.9rem;
-    }
+   .details-section {
+  margin-top: 10px;
+  display: none;
+  border-top: 1px solid #ccc;
+  padding-top: 10px;
+  font-size: 0.9rem;
+  max-height: 300px; /* Ajuste cette valeur selon tes besoins */
+  overflow-y: auto;
+}
     /* Nouveaux éléments pour la section Finance */
     #finance-options {
       margin-top: 10px;
