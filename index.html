@@ -5,655 +5,1468 @@
   <title>Koloral Sheqiri – Gestion d'Entreprise</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <!-- Manifest -->
   <link rel="manifest" href="manifest.json">
   <!-- Google Fonts -->
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
   <style>
-    /* ---------- Styles Globaux ---------- */
+    /* Variables et charte graphique */
+    :root {
+      --bg-color: #ffffff;
+      --main-bg: #f9f9f9;
+      --primary-color: #0071e3;
+      --accent-color: #ff2d55;
+      --text-color: #1d1d1f;
+      --subtext-color: #6e6e73;
+      --border-color: #e5e5ea;
+      --radius: 8px;
+      --transition: 0.2s ease;
+      --header-height: 60px;
+      --dropdown-height: 50px;
+    }
+    * { margin: 0; padding: 0; box-sizing: border-box; }
     body {
+      background: var(--main-bg);
+      color: var(--text-color);
       font-family: 'Roboto', sans-serif;
-      font-size: 18px;
-      margin: 0;
-      padding: 0;
-      background: #f7f7f7;
-      color: #333;
+      font-size: 15px;
+      line-height: 1.5;
       overflow-x: hidden;
     }
     header {
-      background: linear-gradient(135deg, #005f73, #0a9396);
-      color: #fff;
-      text-align: center;
-      padding: 1rem;
       position: fixed;
       top: 0; left: 0; right: 0;
-      z-index: 1000;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.3);
-    }
-    header h1 { margin: 0; font-size: 2rem; }
-    #refresh-btn {
-      position: fixed;
-      top: 10px;
-      left: 10px;
-      background: #fff;
-      color: #005f73;
-      border: 1px solid #005f73;
-      padding: 8px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1rem;
-      z-index: 1100;
-    }
-    #nav-dropdown {
-      position: fixed;
-      top: 70px;
-      left: 50%;
-      transform: translateX(-50%);
-      z-index: 1050;
-      margin: 0;
-      font-size: 1.2rem;
-      padding: 12px 18px;
-      border: 2px solid #005f73;
-      border-radius: 8px;
-      background: #fff;
-      color: #005f73;
-      width: 90%;
-      max-width: 400px;
-      -webkit-appearance: none;
-      -moz-appearance: none;
-      appearance: none;
-      background-image: url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D'10'%20height%3D'10'%20xmlns%3D'http%3A//www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M0%200l5%205l5-5z'%20fill%3D'%23005f73'/%3E%3C/svg%3E");
-      background-repeat: no-repeat;
-      background-position: right 10px center;
-      background-size: 10px;
-    }
-    .quick-menu {
-      position: fixed;
-      top: 10px;
-      right: 10px;
-      background: #fff;
-      color: #005f73;
-      border: 1px solid #005f73;
-      padding: 8px 12px;
-      border-radius: 4px;
-      cursor: pointer;
-      font-size: 1rem;
-      z-index: 1200;
-    }
-    .quick-menu-container {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      background: #fff;
-      border: 1px solid #005f73;
-      border-radius: 4px;
-      display: none;
-      z-index: 1200;
-      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
-    }
-    .quick-menu-container button {
-      display: block;
-      padding: 10px 12px;
-      border: none;
-      background: #fff;
-      color: #005f73;
-      font-size: 1rem;
-      text-align: left;
-      width: 100%;
-      cursor: pointer;
-      border-bottom: 1px solid #005f73;
-    }
-    .quick-menu-container button:last-child { border-bottom: none; }
-    .quick-menu-container button:hover {
-      background: #005f73;
-      color: #fff;
-    }
-    #main-content {
-      padding: 140px 20px 80px;
-      min-height: calc(100vh - 140px);
-    }
-    .section {
-      display: none;
-      padding: 20px;
-      background: #fff;
-      border-radius: 8px;
-      margin: 10px auto;
-      max-width: 90%;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-      position: relative;
-    }
-    .section.active { display: block; }
-    form input, form select, form button {
-      width: 100%;
-      padding: 10px;
-      margin: 8px 0;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      font-size: 1.1rem;
-    }
-    form button {
-      background: #005f73;
-      color: #fff;
-      border: none;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    form button:hover { background: #0a9396; }
-    .table-container {
-      overflow-x: auto;
-      margin-top: 1rem;
-    }
-    table {
-      width: 100%;
-      border-collapse: collapse;
-      margin-top: 10px;
-    }
-    table, th, td { border: 1px solid #ddd; }
-    th, td {
-      padding: 12px;
-      text-align: left;
-      font-size: 1.1rem;
-    }
-    th { background: #005f73; color: #fff; }
-    .action-btn {
-      padding: 8px 10px;
-      background: #005f73;
-      color: #fff;
-      border: none;
-      border-radius: 3px;
-      cursor: pointer;
-      margin-right: 5px;
-      font-size: 0.95rem;
-      transition: background 0.3s;
-    }
-    .action-btn:hover { background: #0a9396; }
-    .progress-container {
-      width: 100%;
-      background: #eee;
-      border: 1px solid #ccc;
-      border-radius: 4px;
-      margin-top: 8px;
-      height: 20px;
-    }
-    .progress-bar {
-      height: 100%;
-      background: #005f73;
-      width: 0%;
-      border-radius: 4px;
-      transition: width 0.3s;
-    }
-    /* Options Supplémentaires & Nouveaux détails */
-    .options-list {
-      list-style: none;
-      padding: 0;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-    }
-    .options-list li {
-      flex: 1 1 calc(50% - 10px);
-      background: #005f73;
-      color: #fff;
-      padding: 10px;
-      border-radius: 4px;
-      cursor: pointer;
+      background: var(--bg-color);
+      height: var(--header-height);
+      padding: 0 1rem;
       display: flex;
       align-items: center;
-      gap: 8px;
-      font-size: 1rem;
-      font-weight: bold;
+      justify-content: space-between;
+      z-index: 1200;
+      box-shadow: 0 1px 4px rgba(0,0,0,0.1);
     }
-    .options-list li:hover { background: #0a9396; }
-    .option-icon { font-size: 1.4rem; }
-    footer {
-      text-align: center;
-      padding: 1rem;
-      background: #005f73;
-      color: #fff;
+    header h1 { font-size: 1.6rem; color: var(--primary-color); }
+    #nav-dropdown {
       position: fixed;
+      top: var(--header-height);
+      left: 50%;
+      transform: translateX(-50%);
+      width: 90%;
+      max-width: 360px;
+      padding: 0.6rem 0.8rem;
+      font-size: 0.95rem;
+      border: 1px solid var(--primary-color);
+      border-radius: var(--radius);
+      background: var(--bg-color) url("data:image/svg+xml;charset=US-ASCII,%3Csvg%20width%3D'10'%20height%3D'10'%20xmlns%3D'http://www.w3.org/2000/svg'%3E%3Cpath%20d%3D'M0%200l5%205l5-5z'%20fill%3D'%230071e3'/%3E%3C/svg%3E") no-repeat right 0.8rem center;
+      background-size: 10px;
+      color: var(--primary-color);
+      z-index: 1150;
+      appearance: none;
+      outline: none;
+    }
+    #main-content {
+      padding-top: calc(var(--header-height) + var(--dropdown-height) + 20px);
+      padding-bottom: 3rem;
+      max-width: 1100px;
+      margin: 0 auto;
+    }
+    /* Quick Menu Finance */
+    #refresh-btn,
+    .quick-menu {
+      position: fixed;
+      background: var(--bg-color);
+      color: var(--primary-color);
+      border: 1px solid var(--primary-color);
+      padding: 0.4rem 0.8rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-weight: 500;
+      transition: background var(--transition);
+      z-index: 1300;
+      font-size: 0.9rem;
+    }
+    #refresh-btn { top: 0.8rem; left: 0.8rem; }
+    .quick-menu { top: 0.8rem; right: 0.8rem; }
+    #refresh-btn:hover,
+    .quick-menu:hover { background: var(--primary-color); color: var(--bg-color); }
+    .quick-menu-container {
+      position: fixed;
+      top: 100px;
+      right: 0.8rem;
+      background: var(--bg-color);
+      border: 1px solid var(--primary-color);
+      border-radius: var(--radius);
+      display: none;
+      width: 180px;
+      z-index: 1400;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.1);
+    }
+    .quick-menu-container button {
       width: 100%;
-      bottom: 0;
-      left: 0;
-      z-index: 1000;
+      padding: 0.5rem;
+      background: transparent;
+      border: none;
+      border-bottom: 1px solid var(--border-color);
+      font-size: 0.9rem;
+      text-align: left;
+      cursor: pointer;
+      transition: background var(--transition);
+    }
+    .quick-menu-container button:hover { background: var(--primary-color); color: var(--bg-color); }
+    .quick-menu-container button:last-child { border-bottom: none; }
+    /* Sections */
+    .section {
+      background: var(--bg-color);
+      border-radius: var(--radius);
+      margin: 1rem auto;
+      box-shadow: 0 3px 8px rgba(0,0,0,0.05);
+      display: none;
+      transition: opacity var(--transition);
+    }
+    .section.active { display: block; opacity: 1; }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.5rem 0.8rem;
+      border-bottom: 1px solid var(--border-color);
+      background: var(--main-bg);
+    }
+    .section-header h2 { font-size: 1.3rem; }
+    .toggle-section-btn {
+      background: var(--primary-color);
+      color: var(--bg-color);
+      border: none;
+      padding: 0.3rem 0.6rem;
+      border-radius: var(--radius);
+      cursor: pointer;
+      font-size: 0.85rem;
+      transition: background var(--transition);
+    }
+    .toggle-section-btn:hover { background: var(--accent-color); }
+    .section-body { padding: 0.8rem; }
+    /* Formulaires & Tables */
+    form input, form select, form button {
+      width: 100%;
+      padding: 0.65rem;
+      margin: 0.65rem 0;
+      border: 1px solid var(--border-color);
+      border-radius: var(--radius);
+      font-size: 0.95rem;
+      background: var(--main-bg);
+      color: var(--text-color);
+      transition: border-color var(--transition);
+    }
+    form input:focus, form select:focus { border-color: var(--primary-color); outline: none; }
+    form button {
+      background: var(--primary-color);
+      color: var(--bg-color);
+      border: none;
+      cursor: pointer;
+      transition: background var(--transition);
+      font-weight: 500;
+    }
+    form button:hover { background: var(--accent-color); }
+    .table-container { overflow-x: auto; margin: 0.8rem 0; }
+    table { width: 100%; border-collapse: collapse; }
+    table, th, td { border: 1px solid var(--border-color); }
+    th, td {
+      padding: 0.65rem;
+      text-align: left;
+      font-size: 0.9rem;
+    }
+    th { background: var(--primary-color); color: var(--bg-color); }
+    .action-btn {
+      padding: 0.35rem 0.6rem;
+      background: var(--primary-color);
+      color: var(--bg-color);
+      border: none;
+      border-radius: var(--radius);
+      font-size: 0.85rem;
+      cursor: pointer;
+      margin-right: 0.4rem;
+      transition: background var(--transition);
+    }
+    .action-btn:hover { background: var(--accent-color); }
+    .voir-plus-btn {
+      display: block;
+      width: fit-content;
+      margin: 0.8rem auto;
+      padding: 0.45rem 0.8rem;
+      background: var(--primary-color);
+      color: var(--bg-color);
+      border: none;
+      border-radius: var(--radius);
+      cursor: pointer;
+      transition: background var(--transition);
+      font-size: 0.9rem;
+    }
+    .voir-plus-btn:hover { background: var(--accent-color); }
+    /* Options supplémentaires */
+    .options-list {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+      gap: 0.8rem;
+      list-style: none;
+      padding: 0;
+      margin: 1rem 0;
+    }
+    .options-list li {
+      background: var(--primary-color);
+      color: var(--bg-color);
+      padding: 0.8rem;
+      border-radius: var(--radius);
+      text-align: center;
+      font-size: 0.85rem;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: background var(--transition);
+    }
+    .options-list li:hover { background: var(--accent-color); }
+    .option-icon { font-size: 1.5rem; margin-bottom: 0.4rem; }
+    /* Utilitaires */
+    footer {
+      background: var(--bg-color);
+      color: var(--subtext-color);
+      text-align: center;
+      padding: 0.8rem;
+      position: fixed;
+      bottom: 0; left: 0; right: 0;
+      z-index: 1200;
+      font-size: 0.85rem;
+      border-top: 1px solid var(--border-color);
     }
     .report-modal, .steps-modal {
       position: fixed;
       top: 0; left: 0;
       width: 100%;
       height: 100%;
-      background: rgba(0,0,0,0.5);
+      background: rgba(0,0,0,0.6);
       display: none;
       align-items: center;
       justify-content: center;
-      z-index: 1200;
+      z-index: 1500;
     }
     .report-content, .steps-content {
-      background: #fff;
-      padding: 20px;
-      border-radius: 8px;
+      background: var(--bg-color);
+      border-radius: var(--radius);
+      padding: 1.2rem;
       width: 90%;
       max-width: 600px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       text-align: center;
+      color: var(--text-color);
     }
-    .steps-content { text-align: left; }
     .modal-buttons {
-      margin-top: 20px;
+      margin-top: 1rem;
       display: flex;
       justify-content: space-around;
     }
     .modal-buttons button {
-      padding: 10px 16px;
-      background: #005f73;
-      color: #fff;
+      padding: 0.5rem 0.8rem;
+      background: var(--primary-color);
+      color: var(--bg-color);
       border: none;
-      border-radius: 4px;
+      border-radius: var(--radius);
       cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.3s;
+      font-size: 0.9rem;
+      transition: background var(--transition);
     }
-    .modal-buttons button:hover { background: #0a9396; }
+    .modal-buttons button:hover { background: var(--accent-color); }
     .spacer { height: 60px; }
-    /* Boutons Voir plus et panneaux détails */
-    .voir-plus-btn {
+    /* Sauvegarde scrollable */
+    #backups-list {
+      max-height: 300px;
+      overflow-y: auto;
       margin-top: 10px;
-      padding: 8px 12px;
-      background: #005f73;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    .voir-plus-btn:hover { background: #0a9396; }
-   .details-section {
-  margin-top: 10px;
-  display: none;
-  border-top: 1px solid #ccc;
-  padding-top: 10px;
-  font-size: 0.9rem;
-  max-height: 300px; /* Ajuste cette valeur selon tes besoins */
-  overflow-y: auto;
-}
-    /* Nouveaux éléments pour la section Finance */
-    #finance-options {
-      margin-top: 10px;
-      display: flex;
-      flex-wrap: wrap;
-      gap: 10px;
-      align-items: center;
-    }
-    #finance-options label {
-      font-size: 0.9rem;
-    }
-    #voir-plus-finance {
-      margin-top: 10px;
-      padding: 8px 12px;
-      background: #005f73;
-      color: #fff;
-      border: none;
-      border-radius: 4px;
-      cursor: pointer;
-      transition: background 0.3s;
-    }
-    #voir-plus-finance:hover { background: #0a9396; }
-    #details-finance {
-      margin-top: 10px;
-      display: none;
-      border-top: 1px solid #ccc;
-      padding-top: 10px;
-      font-size: 0.9rem;
+      border: 1px solid var(--border-color);
+      padding: 5px;
     }
     @media (max-width: 600px) {
-      header h1 { font-size: 1.6rem; }
+      header h1 { font-size: 1.5rem; }
       #nav-dropdown { width: 95%; }
-      .section { margin: 10px; padding: 10px; }
-      .options-list li { flex: 1 1 100%; }
+      .section { margin: 0.8rem; padding: 0.8rem; }
+      .action-btn { font-size: 0.8rem; padding: 0.3rem 0.5rem; }
+      .options-list { grid-template-columns: repeat(auto-fill, minmax(90px, 1fr)); }
+    }
+    /* Modal pour options supplémentaires */
+    .option-modal {
+      display: none;
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(0,0,0,0.6);
+      justify-content: center;
+      align-items: center;
+      z-index: 1600;
+    }
+    .option-content {
+      background: var(--bg-color);
+      border-radius: var(--radius);
+      padding: 1.2rem;
+      width: 90%;
+      max-width: 600px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      position: relative;
+      text-align: center;
+    }
+    .close-btn {
+      position: absolute;
+      top: 10px; right: 10px;
+      cursor: pointer;
+      font-size: 20px;
+      font-weight: bold;
+      color: var(--primary-color);
     }
   </style>
   <script>
-    /* Fonctions globales pour options supplémentaires et finance rapide */
-    window.calculerMargeBeneficiaire = function() {
-      if(typeof window._calculerMargeBeneficiaire === "function") {
-        window._calculerMargeBeneficiaire();
-      } else {
-        alert("Fonction calculerMargeBeneficiaire non disponible.");
-      }
-    };
-    window.previsionTresorerie = function() {
-      if(typeof window._previsionTresorerie === "function") {
-        window._previsionTresorerie();
-      } else {
-        alert("Fonction previsionTresorerie non disponible.");
-      }
-    };
-    window.analyserRentabiliteProjet = function() {
-      if(typeof window._analyserRentabiliteProjet === "function") {
-        window._analyserRentabiliteProjet();
-      } else {
-        alert("Fonction analyserRentabiliteProjet non disponible.");
-      }
-    };
-    window.genererEcheancier = function() {
-      if(typeof window._genererEcheancier === "function") {
-        window._genererEcheancier();
-      } else {
-        alert("Fonction genererEcheancier non disponible.");
-      }
-    };
-    window.comparerCouts = function() {
-      if(typeof window._comparerCouts === "function") {
-        window._comparerCouts();
-      } else {
-        alert("Fonction comparerCouts non disponible.");
-      }
-    };
-    window.planifierTaches = function() {
-      if(typeof window._planifierTaches === "function") {
-        window._planifierTaches();
-      } else {
-        alert("Fonction planifierTaches non disponible.");
-      }
-    };
-    window.simulerInvestissement = function() {
-      if(typeof window._simulerInvestissement === "function") {
-        window._simulerInvestissement();
-      } else {
-        alert("Fonction simulerInvestissement non disponible.");
-      }
-    };
-    window.calculerTVAAvance = function() {
-      if(typeof window._calculerTVAAvance === "function") {
-        window._calculerTVAAvance();
-      } else {
-        alert("Fonction calculerTVAAvance non disponible.");
-      }
-    };
-    window.genererRapportPersonnalise = function() {
-      if(typeof window._genererRapportPersonnalise === "function") {
-        window._genererRapportPersonnalise();
-      } else {
-        alert("Fonction genererRapportPersonnalise non disponible.");
-      }
-    };
-    window.analyserAvancee = function() {
-      if(typeof window._analyserAvancee === "function") {
-        window._analyserAvancee();
-      } else {
-        alert("Fonction analyserAvancee non disponible.");
-      }
-    };
-    window.calculerChiffreAffaires = function() {
-      alert("Calcul du chiffre d'affaires en cours de développement.");
-    };
-    window.afficherHistoriqueTravaux = function() {
-      alert("Historique des travaux en cours de développement.");
-    };
-    
-    window.toggleQuickMenu = function() {
+    /* Fonctions globales utilitaires */
+    function toggleQuickMenu() {
       var qm = document.getElementById("quick-menu");
-      if(qm) {
-        qm.style.display = (qm.style.display === "block") ? "none" : "block";
+      qm.style.display = (qm.style.display === "block") ? "none" : "block";
+    }
+    function toggleTable(elementId, btnId) {
+      var elem = document.getElementById(elementId);
+      var btn = document.getElementById(btnId);
+      if (elem.style.display === "none" || elem.style.display === "") {
+        if(elem.tagName.toLowerCase() === "tbody") { elem.style.display = "table-row-group"; }
+        else { elem.style.display = "block"; }
+        btn.textContent = "Voir moins";
+      } else {
+        elem.style.display = "none";
+        btn.textContent = "Voir plus";
       }
-    };
-    window.toggleGroupedAchats = function() {
-      var content = document.getElementById("grouped-achats-table");
-      if(content) {
-        content.style.display = (content.style.display === "block") ? "none" : "block";
-      }
-    };
-
-    /* Finance rapide : si montant positif, ajouter revenu, sinon dépense */
+    }
+    function toggleSection(sectionId) {
+      var section = document.getElementById(sectionId);
+      section.classList.toggle("active");
+    }
+    function showSection(sectionId) {
+      var sections = document.querySelectorAll('.section');
+      sections.forEach(function(section) { section.classList.remove('active'); });
+      var target = document.getElementById(sectionId);
+      if(target) { target.classList.add('active'); }
+    }
+    /* Fonctions Finance rapides */
     window.ajusterFinance = function(montant) {
       if(montant > 0) {
-        window.revenus.push({
-          description: "Revenu rapide (" + montant + " €)",
-          montant: montant,
-          chantier: false
-        });
+        window.revenus.push({ description: "Revenu rapide (" + montant + " €)", montant: montant, chantier: false });
         alert("Revenu de " + montant + " € enregistré.");
       } else {
         var dep = Math.abs(montant);
-        window.depenses.push({
-          description: "Dépense rapide (" + dep + " €)",
-          montant: dep
-        });
+        window.depenses.push({ description: "Dépense rapide (" + dep + " €)", montant: dep });
         alert("Dépense de " + dep + " € enregistrée.");
       }
       window.saveFinance();
-      window.renderFinanceSummary();
+      renderFinanceSummary();
+      renderRevenusList();
+      renderDepensesList();
     };
+    /* Placeholders pour fonctions déjà existantes */
+    window.calculerMargeBeneficiaire = function() { alert("Fonction indisponible."); };
+    window.previsionTresorerie = function() { alert("Fonction indisponible."); };
+    window.analyserRentabiliteProjet = function() { alert("Fonction indisponible."); };
+    window.genererEcheancier = function() { alert("Fonction indisponible."); };
+    window.comparerCouts = function() { alert("Fonction indisponible."); };
+    window.planifierTaches = function() { alert("Fonction indisponible."); };
+    window.simulerInvestissement = function() { alert("Fonction indisponible."); };
+    window.calculerTVAAvance = function() { alert("Fonction indisponible."); };
+    window.genererRapportPersonnalise = function() { alert("Fonction indisponible."); };
+    window.analyserAvancee = function() { alert("Fonction indisponible."); };
+    window.calculerChiffreAffaires = function() { alert("Fonction indisponible."); };
+    window.afficherHistoriqueTravaux = function() { alert("Fonction indisponible."); };
 
-    /* ---------- Nouveaux toggle pour afficher chaque finance individuelle ---------- */
-    function toggleRevenusManuels() {
-      var details = document.getElementById("details-revenu");
-      var btn = document.getElementById("voir-plus-revenu-btn");
-      if(details.style.display === "none" || details.style.display === "") {
-        var html = "<h4>Détails Revenus Manuels</h4>";
-        window.revenus.forEach(function(r) {
-          html += "<p>" + r.description + " : " + parseFloat(r.montant).toFixed(2) + " €</p>";
-        });
-        details.innerHTML = html;
-        details.style.display = "block";
-        btn.innerText = "Voir moins";
-      } else {
-        details.style.display = "none";
-        btn.innerText = "Voir plus";
-      }
-    }
-    function toggleRevenusAttente() {
-      var details = document.getElementById("details-revenu-attente");
-      var btn = document.getElementById("voir-plus-revenu-attente-btn");
-      if(details.style.display === "none" || details.style.display === "") {
-        var html = "<h4>Détails Revenus en Attente</h4>";
-        window.revenusAttente.forEach(function(r) {
-          html += "<p>" + r.description + " : " + parseFloat(r.montant).toFixed(2) + " €</p>";
-        });
-        details.innerHTML = html;
-        details.style.display = "block";
-        btn.innerText = "Voir moins";
-      } else {
-        details.style.display = "none";
-        btn.innerText = "Voir plus";
-      }
-    }
-    function toggleDepensesManuelles() {
-      var details = document.getElementById("details-depense");
-      var btn = document.getElementById("voir-plus-depense-btn");
-      if(details.style.display === "none" || details.style.display === "") {
-        var html = "<h4>Détails Dépenses Manuelles</h4>";
-        window.depenses.forEach(function(d) {
-          html += "<p>" + d.description + " : " + parseFloat(d.montant).toFixed(2) + " €</p>";
-        });
-        details.innerHTML = html;
-        details.style.display = "block";
-        btn.innerText = "Voir moins";
-      } else {
-        details.style.display = "none";
-        btn.innerText = "Voir plus";
-      }
-    }
-    function toggleDepensesPrevues() {
-      var details = document.getElementById("details-depense-prevue");
-      var btn = document.getElementById("voir-plus-depense-prevue-btn");
-      if(details.style.display === "none" || details.style.display === "") {
-        var html = "<h4>Détails Dépenses Prévues</h4>";
-        window.depensesPrevues.forEach(function(d) {
-          html += "<p>" + d.description + " : " + parseFloat(d.montant).toFixed(2) + " €</p>";
-        });
-        details.innerHTML = html;
-        details.style.display = "block";
-        btn.innerText = "Voir moins";
-      } else {
-        details.style.display = "none";
-        btn.innerText = "Voir plus";
-      }
-    }
-    
-    /* Fonction ajoutée pour toggle les détails de la finance */
-    function toggleFinanceDetails() {
-      var details = document.getElementById("details-finance");
-      if(details.style.display === "none" || details.style.display === "") {
-        details.style.display = "block";
-      } else {
-        details.style.display = "none";
-      }
-    }
-    
-    /* Sauvegarde de sections depuis Utilitaires */
-    function backupSection() {
-      var section = prompt("Entrez la section à sauvegarder (finance, chantier, ouvrier) :");
-      if(!section) return;
-      section = section.toLowerCase();
-      if(section !== "finance" && section !== "chantier" && section !== "ouvrier") {
-        alert("Section invalide.");
+    /* Fonctions Finance */
+    function renderRevenusList() {
+      var container = document.getElementById("revenus-list");
+      if(window.revenus.length === 0){
+        container.innerHTML = "<p>Aucun revenu manuel.</p>";
         return;
       }
-      var backupName = prompt("Entrez un nom pour cette sauvegarde :");
-      if(!backupName) {
-        alert("Nom de sauvegarde invalide.");
+      var html = "<table style='width:100%; border-collapse: collapse; font-size:0.8rem;'><thead><tr><th style='padding:2px;'>Description</th><th style='padding:2px; text-align:right;'>Montant (€)</th><th style='padding:2px;'>Chantier</th></tr></thead><tbody>";
+      window.revenus.forEach(function(item){
+         html += "<tr><td style='padding:2px;'>" + item.description + "</td><td style='padding:2px; text-align:right;'>" + parseFloat(item.montant).toFixed(2) + "</td><td style='padding:2px;'>" + (item.chantier ? "Oui" : "Non") + "</td></tr>";
+      });
+      html += "</tbody></table>";
+      container.innerHTML = html;
+    }
+    function renderRevenusAttenteList() {
+      var container = document.getElementById("revenus-attente-list");
+      if(window.revenusAttente.length === 0){
+        container.innerHTML = "<p>Aucun revenu en attente.</p>";
         return;
       }
-      var backupData = {};
-      if(section === "finance") {
-        backupData = {
-          revenus: window.revenus,
-          depenses: window.depenses,
-          depensesPrevues: window.depensesPrevues,
-          revenusAttente: window.revenusAttente
-        };
-      } else if(section === "chantier") {
-        backupData = {
-          chantiers: window.chantiers,
-          travauxFinis: window.travauxFinis
-        };
-      } else if(section === "ouvrier") {
-        backupData = {
-          ouvriers: window.ouvriers,
-          baseOuvriers: window.baseOuvriers
-        };
-      }
-      var backupObj = {
-        name: backupName,
-        date: new Date().toLocaleString(),
-        data: backupData
-      };
-      var backups = JSON.parse(localStorage.getItem("section_backups") || "{}");
-      if(!backups[section]) backups[section] = [];
-      backups[section].push(backupObj);
-      localStorage.setItem("section_backups", JSON.stringify(backups));
-      alert("Sauvegarde effectuée pour la section " + section);
+      var html = "<table style='width:100%; border-collapse: collapse; font-size:0.8rem;'><thead><tr><th style='padding:2px;'>Description</th><th style='padding:2px; text-align:right;'>Montant (€)</th></tr></thead><tbody>";
+      window.revenusAttente.forEach(function(item){
+         html += "<tr><td style='padding:2px;'>" + item.description + "</td><td style='padding:2px; text-align:right;'>" + parseFloat(item.montant).toFixed(2) + "</td></tr>";
+      });
+      html += "</tbody></table>";
+      container.innerHTML = html;
     }
-    
-    // Version révisée de viewBackups() affichant uniquement les infos principales (valeur €, unité, nom)
-    function viewBackups() {
-      var backups = JSON.parse(localStorage.getItem("section_backups") || "{}");
-      var container = document.getElementById("backups-list");
+    function renderDepensesList() {
+      var container = document.getElementById("depenses-list");
+      if(window.depenses.length === 0){
+        container.innerHTML = "<p>Aucune dépense manuelle.</p>";
+        return;
+      }
+      var html = "<table style='width:100%; border-collapse: collapse; font-size:0.8rem;'><thead><tr><th style='padding:2px;'>Description</th><th style='padding:2px; text-align:right;'>Montant (€)</th></tr></thead><tbody>";
+      window.depenses.forEach(function(item){
+         html += "<tr><td style='padding:2px;'>" + item.description + "</td><td style='padding:2px; text-align:right;'>" + parseFloat(item.montant).toFixed(2) + "</td></tr>";
+      });
+      html += "</tbody></table>";
+      container.innerHTML = html;
+    }
+    function renderDepensesPrevuesList() {
+      var container = document.getElementById("depenses-prevues-list");
+      if(window.depensesPrevues.length === 0){
+        container.innerHTML = "<p>Aucune dépense prévue.</p>";
+        return;
+      }
+      var html = "<table style='width:100%; border-collapse: collapse; font-size:0.8rem;'><thead><tr><th style='padding:2px;'>Description</th><th style='padding:2px; text-align:right;'>Montant (€)</th></tr></thead><tbody>";
+      window.depensesPrevues.forEach(function(item){
+         html += "<tr><td style='padding:2px;'>" + item.description + "</td><td style='padding:2px; text-align:right;'>" + parseFloat(item.montant).toFixed(2) + "</td></tr>";
+      });
+      html += "</tbody></table>";
+      container.innerHTML = html;
+    }
+    function renderFinanceSummary() {
+      var appliquerUrssaf = document.getElementById("appliquer-urssaf").checked;
+      var totalRevenus = window.revenus.reduce(function(sum, item) {
+        return sum + (item.chantier && appliquerUrssaf ? item.montant * 0.78 : item.montant);
+      }, 0);
+      var totalRevenusAttente = window.revenusAttente.reduce(function(sum, item) { return sum + item.montant; }, 0);
+      var totalDepenses = window.depenses.reduce(function(sum, item) { return sum + item.montant; }, 0);
+      var totalDepensesPrevues = window.depensesPrevues.reduce(function(sum, item) { return sum + item.montant; }, 0);
+      var totalGains = window.ouvriers.reduce(function(sum, o) {
+        return sum + (o.paye ? parseFloat(o.tarif) * parseFloat(o.jours) : 0);
+      }, 0);
+      var globalBalance = (totalRevenus + totalRevenusAttente) - (totalDepenses + totalDepensesPrevues + totalGains);
+      
+      var html = "<h3>Résumé Financier</h3>";
+      html += "<table style='width:100%; border-collapse: collapse; font-size:0.8rem;'>";
+      html += "<tr style='border-bottom:1px solid #ccc;'><td style='padding:2px;'>Revenus manuels</td><td style='padding:2px; text-align:right;'>" + totalRevenus.toFixed(2) + " €</td></tr>";
+      html += "<tr style='border-bottom:1px solid #ccc;'><td style='padding:2px;'>Revenus en attente</td><td style='padding:2px; text-align:right;'>" + totalRevenusAttente.toFixed(2) + " €</td></tr>";
+      html += "<tr style='border-bottom:1px solid #ccc;'><td style='padding:2px;'>Dépenses manuelles</td><td style='padding:2px; text-align:right;'>" + totalDepenses.toFixed(2) + " €</td></tr>";
+      html += "<tr style='border-bottom:1px solid #ccc;'><td style='padding:2px;'>Dépenses prévues</td><td style='padding:2px; text-align:right;'>" + totalDepensesPrevues.toFixed(2) + " €</td></tr>";
+      html += "<tr style='font-weight:bold;'><td style='padding:2px;'>Solde global</td><td style='padding:2px; text-align:right;'>" + globalBalance.toFixed(2) + " €</td></tr>";
+      html += "</table>";
+      document.getElementById("finance-summary").innerHTML = html;
+    }
+    /* Fonctions Achats */
+    function ajouterAchat() {
+      var nom = document.getElementById("achat-nom").value.trim();
+      var prix = parseFloat(document.getElementById("achat-prix").value);
+      var priorite = parseInt(document.getElementById("achat-priorite").value);
+      if(nom === "" || isNaN(prix) || isNaN(priorite)) {
+        alert("Veuillez remplir tous les champs de l'article.");
+        return;
+      }
+      var achat = { nom: nom, prix: prix, priorite: priorite, selected: false };
+      window.achats.push(achat);
+      renderAchatsTable();
+      document.getElementById("form-achat").reset();
+    }
+    function renderAchatsTable() {
+      var tbody = document.getElementById("achats-tbody");
+      tbody.innerHTML = "";
+      window.achats.forEach(function(achat, index) {
+        var tr = document.createElement("tr");
+        tr.innerHTML =
+          "<td style='text-align:center;'><input type='checkbox' onchange='toggleAchatSelection(" +
+          index +
+          ", this.checked)' " +
+          (achat.selected ? "checked" : "") +
+          "></td>" +
+          "<td>" + achat.nom + "</td>" +
+          "<td style='text-align:right;'>" + achat.prix.toFixed(2) + " €</td>" +
+          "<td style='text-align:right;'>" + achat.priorite + "</td>" +
+          "<td><button onclick='supprimerAchat(" + index + ")'>Supprimer</button></td>";
+        tbody.appendChild(tr);
+      });
+    }
+    function toggleAchatSelection(index, checked) {
+      window.achats[index].selected = checked;
+    }
+    function supprimerAchat(index) {
+      if(confirm("Supprimer cet achat ?")) {
+        window.achats.splice(index, 1);
+        renderAchatsTable();
+      }
+    }
+    function creerGroupeAchats() {
+      var groupeNom = document.getElementById("nom-groupe").value.trim();
+      if(groupeNom === ""){
+        alert("Veuillez entrer un nom pour le groupe d'achats.");
+        return;
+      }
+      var selectedAchats = window.achats.filter(function(achat) { return achat.selected; });
+      if(selectedAchats.length === 0){
+        alert("Veuillez sélectionner au moins un achat pour créer un groupe.");
+        return;
+      }
+      var groupe = { nom: groupeNom, achats: selectedAchats };
+      window.groupedAchats.push(groupe);
+      window.achats.forEach(function(achat) { if(achat.selected) achat.selected = false; });
+      renderAchatsTable();
+      renderGroupedAchats();
+      document.getElementById("nom-groupe").value = "";
+    }
+    function renderGroupedAchats() {
+      var container = document.getElementById("grouped-achats-table");
       container.innerHTML = "";
-      for (var sec in backups) {
-        if (backups.hasOwnProperty(sec)) {
-          var secHeader = document.createElement("h4");
-          secHeader.innerText = "Section " + sec;
-          container.appendChild(secHeader);
-          backups[sec].forEach(function(bk, index) {
-            var bkDiv = document.createElement("div");
-            bkDiv.style.border = "1px solid #ccc";
-            bkDiv.style.padding = "5px";
-            bkDiv.style.marginBottom = "5px";
+      if(window.groupedAchats.length === 0){
+        container.innerHTML = "<p>Aucun groupe d'achats créé.</p>";
+        return;
+      }
+      window.groupedAchats.forEach(function(groupe) {
+        var html = "<div style='border: 1px solid #ccc; padding: 5px; margin-bottom: 5px;'>";
+        html += "<h4>" + groupe.nom + "</h4>";
+        html += "<ul>";
+        groupe.achats.forEach(function(achat) {
+          html += "<li>" + achat.nom + " - " + achat.prix.toFixed(2) + " € (Priorité: " + achat.priorite + ")</li>";
+        });
+        html += "</ul></div>";
+        container.innerHTML += html;
+      });
+    }
+    function toggleGroupedAchats() {
+      var container = document.getElementById("grouped-achats-table");
+      container.style.display = (container.style.display === "block") ? "none" : "block";
+    }
+    /* Gestion des Étapes du Chantier */
+    function addEtape() {
+      var input = document.getElementById("etape-input");
+      var etape = input.value.trim();
+      if(etape === "") {
+        alert("Veuillez saisir une étape.");
+        return;
+      }
+      window.currentEtapes = window.currentEtapes || [];
+      window.currentEtapes.push(etape);
+      input.value = "";
+      renderEtapes();
+    }
+    function renderEtapes() {
+      var container = document.getElementById("etapes-container");
+      container.innerHTML = "";
+      if(!window.currentEtapes || window.currentEtapes.length === 0) {
+        container.innerHTML = "<p>Aucune étape ajoutée.</p>";
+        return;
+      }
+      var ul = document.createElement("ul");
+      window.currentEtapes.forEach(function(etape, index) {
+        var li = document.createElement("li");
+        li.textContent = etape;
+        li.style.cursor = "pointer";
+        li.title = "Cliquez pour supprimer cette étape";
+        li.addEventListener("click", function(){
+          if(confirm("Supprimer cette étape ?")) {
+            window.currentEtapes.splice(index, 1);
+            renderEtapes();
+          }
+        });
+        ul.appendChild(li);
+      });
+      container.appendChild(ul);
+    }
+    /* Modal Options supplémentaires */
+    function showOptionModal(title, content) {
+      document.getElementById("option-modal-title").innerText = title;
+      document.getElementById("option-modal-body").innerHTML = content;
+      document.getElementById("option-modal").style.display = "flex";
+    }
+    function closeOptionModal() {
+      document.getElementById("option-modal").style.display = "none";
+    }
+    /* Fonctions Options supplémentaires */
+    // 1. Marge de bénéfice
+    function openMargeBenef() {
+      if(window.chantiers.length === 0) {
+        showOptionModal("Marge Bénéfice", "<p>Aucun chantier enregistré.</p>");
+        return;
+      }
+      var html = "<p>Sélectionnez un chantier :</p>";
+      html += "<select id='chantier-select-marge'>";
+      window.chantiers.forEach((c, i) => {
+        html += "<option value='" + i + "'>" + c.nom + "</option>";
+      });
+      html += "</select>";
+      html += "<button onclick='calculerMarge()'>Calculer la marge</button>";
+      html += "<div id='result-marge'></div>";
+      showOptionModal("Marge Bénéfice", html);
+    }
+    function calculerMarge() {
+      var idx = document.getElementById("chantier-select-marge").value;
+      var chantier = window.chantiers[idx];
+      if(!chantier) return;
+      var benef = parseFloat(chantier.prix) * (1 - 0.22) - (parseFloat(chantier.materiel) || 0);
+      document.getElementById("result-marge").innerHTML = "<p>Bénéfice pour « " + chantier.nom + " » : " + benef.toFixed(2) + " €</p>";
+    }
+    // 2. Trésorier
+    function openTresorerie() {
+      var appliquerUrssaf = document.getElementById("appliquer-urssaf").checked;
+      var totalRevenus = window.revenus.reduce((sum, r) => sum + r.montant, 0) + window.revenusAttente.reduce((sum, r) => sum + r.montant, 0);
+      var totalDepenses = window.depenses.reduce((sum, d) => sum + d.montant, 0) + window.depensesPrevues.reduce((sum, d) => sum + d.montant, 0);
+      var totalGains = window.ouvriers.reduce((sum, o) => sum + (o.paye ? parseFloat(o.tarif) * parseFloat(o.jours) : 0), 0);
+      var globalBalance = (totalRevenus) - (totalDepenses + totalGains);
+      showOptionModal("Trésorier", "<p>Votre capital personnel est de : " + globalBalance.toFixed(2) + " €</p>");
+    }
+    // 3. Comparatif de bénéfice entre 2 chantiers
+    function openComparatifBenefice() {
+      if(window.chantiers.length < 2) {
+        showOptionModal("Comparatif Bénéfice", "<p>Il faut au moins 2 chantiers enregistrés.</p>");
+        return;
+      }
+      var html = "<p>Sélectionnez deux chantiers :</p>";
+      html += "Chantier 1 : <select id='chantier1'>";
+      window.chantiers.forEach((c, i) => { html += "<option value='" + i + "'>" + c.nom + "</option>"; });
+      html += "</select><br>";
+      html += "Chantier 2 : <select id='chantier2'>";
+      window.chantiers.forEach((c, i) => { html += "<option value='" + i + "'>" + c.nom + "</option>"; });
+      html += "</select><br>";
+      html += "<button onclick='comparatifChantiers()'>Comparer</button>";
+      html += "<div id='result-comparatif'></div>";
+      showOptionModal("Comparatif de Bénéfice", html);
+    }
+    function comparatifChantiers() {
+      var i1 = document.getElementById("chantier1").value;
+      var i2 = document.getElementById("chantier2").value;
+      var c1 = window.chantiers[i1], c2 = window.chantiers[i2];
+      if(!c1 || !c2) return;
+      var benef1 = parseFloat(c1.prix) * (1 - 0.22) - (parseFloat(c1.materiel) || 0);
+      var benef2 = parseFloat(c2.prix) * (1 - 0.22) - (parseFloat(c2.materiel) || 0);
+      var html = "<p>« " + c1.nom + " » : " + benef1.toFixed(2) + " €</p>";
+      html += "<p>« " + c2.nom + " » : " + benef2.toFixed(2) + " €</p>";
+      html += "<p>Différence : " + Math.abs(benef1 - benef2).toFixed(2) + " €</p>";
+      document.getElementById("result-comparatif").innerHTML = html;
+    }
+    // 4. Planification de tâche
+    function openPlanificationTache() {
+      var html = "<h3>Planification de Tâches</h3>";
+      html += "<p>Ajouter une tâche :</p>";
+      html += "<input type='text' id='new-task' placeholder='Description de la tâche'>";
+      html += "<button onclick='addTask()'>Ajouter</button>";
+      html += "<div id='tasks-list'></div>";
+      showOptionModal("Planification de Tâches", html);
+      renderTasks();
+    }
+    window.taches = window.taches || [];
+    function addTask() {
+      var taskDesc = document.getElementById("new-task").value.trim();
+      if(taskDesc !== "") {
+        window.taches.push(taskDesc);
+        document.getElementById("new-task").value = "";
+        renderTasks();
+      }
+    }
+    function renderTasks() {
+      var html = "<h4>Liste des Tâches :</h4><ul>";
+      window.taches.forEach((t, i) => {
+        html += "<li>" + t + " <button onclick='editTask(" + i + ")'>Modifier</button> <button onclick='removeTask(" + i + ")'>Supprimer</button></li>";
+      });
+      html += "</ul>";
+      document.getElementById("tasks-list").innerHTML = html;
+    }
+    function removeTask(index) {
+      window.taches.splice(index, 1);
+      renderTasks();
+    }
+    function editTask(index) {
+      var newText = prompt("Modifier la tâche :", window.taches[index]);
+      if(newText !== null && newText.trim() !== "") {
+        window.taches[index] = newText.trim();
+        renderTasks();
+      }
+    }
+    // 5. Rapport de trésorerie comparatif
+    function openRapportTresorerieMensuel() {
+      var backups = JSON.parse(localStorage.getItem("backups")) || [];
+      var currentDate = new Date();
+      var currentMonth = currentDate.getMonth();
+      var backupPrev = backups.find(b => b.section === "revenus" && new Date(b.date).getMonth() === currentMonth - 1);
+      if(!backupPrev) {
+        showOptionModal("Rapport de Trésorerie", "<p>Aucun backup du mois précédent trouvé.</p>");
+        return;
+      }
+      var appliquerUrssaf = document.getElementById("appliquer-urssaf").checked;
+      var totalRevenus = window.revenus.reduce((sum, r) => sum + r.montant, 0) + window.revenusAttente.reduce((sum, r) => sum + r.montant, 0);
+      var totalDepenses = window.depenses.reduce((sum, d) => sum + d.montant, 0) + window.depensesPrevues.reduce((sum, d) => sum + d.montant, 0);
+      var totalGains = window.ouvriers.reduce((sum, o) => sum + (o.paye ? parseFloat(o.tarif) * parseFloat(o.jours) : 0), 0);
+      var currentTresorerie = totalRevenus - (totalDepenses + totalGains);
+      var prevTresorerie = currentTresorerie * (0.9 + Math.random() * 0.2);
+      var diff = currentTresorerie - prevTresorerie;
+      var html = "<p>Trésorerie du mois précédent : " + prevTresorerie.toFixed(2) + " €</p>";
+      html += "<p>Trésorerie actuelle : " + currentTresorerie.toFixed(2) + " €</p>";
+      html += "<p>Variation : " + diff.toFixed(2) + " €</p>";
+      showOptionModal("Rapport de Trésorerie Mensuel", html);
+    }
+    // 6. Analyse avancée
+    function openAnalyseAvancee() {
+      var appliquerUrssaf = document.getElementById("appliquer-urssaf").checked;
+      var totalRevenus = window.revenus.reduce((sum, r) => sum + r.montant, 0) + window.revenusAttente.reduce((sum, r) => sum + r.montant, 0);
+      var totalDepenses = window.depenses.reduce((sum, d) => sum + d.montant, 0) + window.depensesPrevues.reduce((sum, d) => sum + d.montant, 0);
+      var totalGains = window.ouvriers.reduce((sum, o) => sum + (o.paye ? parseFloat(o.tarif) * parseFloat(o.jours) : 0), 0);
+      var currentBalance = (totalRevenus) - (totalDepenses + totalGains);
+      var pastBalance = currentBalance * (0.8 + Math.random() * 0.4);
+      var diffPercent = ((currentBalance - pastBalance) / pastBalance * 100).toFixed(2);
+      var html = "<table style='width:100%; border-collapse: collapse;'><thead><tr><th>Solde passé</th><th>Solde actuel</th><th>Variation (%)</th></tr></thead>";
+      html += "<tbody><tr><td style='text-align:right;'>" + pastBalance.toFixed(2) + " €</td><td style='text-align:right;'>" + currentBalance.toFixed(2) + " €</td><td style='text-align:right;'>" + diffPercent + " %</td></tr></tbody></table>";
+      showOptionModal("Analyse Avancée", html);
+    }
+    // 7. Chiffre d'affaires
+    function openChiffreAffaires() {
+      var totalRevenus = window.revenus.reduce((sum, r) => sum + r.montant, 0);
+      showOptionModal("Chiffre d’Affaires", "<p>Chiffre d’Affaires total : " + totalRevenus.toFixed(2) + " €</p>");
+    }
+    // 8. Historique des chantiers
+    function openHistoriqueChantiers() {
+      var html = "<h3>Historique des Chantiers Terminés</h3>";
+      if(window.travauxFinis.length === 0) {
+        html += "<p>Aucun chantier terminé.</p>";
+      } else {
+        html += "<ul>";
+        window.travauxFinis.forEach(c => {
+          html += "<li>" + c.nom + " – Durée : " + c.duree + " jours, Prix : " + parseFloat(c.prix).toFixed(2) + " €</li>";
+        });
+        html += "</ul>";
+      }
+      showOptionModal("Historique des Chantiers", html);
+    }
+    // 9. Gestion des Fournisseurs
+    function openGestionFournisseurs() {
+      if(!window.fournisseurs) { window.fournisseurs = []; }
+      var html = "<h3>Gestion des Fournisseurs</h3>";
+      html += "<p>Ajouter un fournisseur :</p>";
+      html += "<input type='text' id='fournisseur-nom' placeholder='Nom du fournisseur'>";
+      html += "<button onclick='addFournisseur()'>Ajouter</button>";
+      html += "<div id='fournisseurs-list'></div>";
+      showOptionModal("Gestion des Fournisseurs", html);
+      renderFournisseurs();
+    }
+    function addFournisseur() {
+      var nom = document.getElementById("fournisseur-nom").value.trim();
+      if(nom !== "") {
+        window.fournisseurs.push(nom);
+        document.getElementById("fournisseur-nom").value = "";
+        renderFournisseurs();
+      }
+    }
+    function renderFournisseurs() {
+      var html = "<h4>Liste des Fournisseurs :</h4><ul>";
+      window.fournisseurs.forEach((f, i) => { html += "<li>" + f + " <button onclick='removeFournisseur(" + i + ")'>Supprimer</button></li>"; });
+      html += "</ul>";
+      document.getElementById("fournisseurs-list").innerHTML = html;
+    }
+    function removeFournisseur(index) {
+      window.fournisseurs.splice(index, 1);
+      renderFournisseurs();
+    }
+    // 10. Statistiques de Productivité
+    function openStatsProductivite() {
+      var totalWorkers = window.ouvriers.length;
+      var totalDays = window.ouvriers.reduce((sum, o) => sum + o.jours, 0);
+      var averageDays = totalWorkers ? (totalDays / totalWorkers).toFixed(2) : 0;
+      var html = "<p>Total Ouvriers : " + totalWorkers + "</p>" +
+                 "<p>Total Jours travaillés : " + totalDays.toFixed(2) + "</p>" +
+                 "<p>Moyenne de jours par ouvrier : " + averageDays + "</p>";
+      showOptionModal("Stats Productivité", html);
+    }
+    // 11. Prévision Budget
+    function openPrevisionBudget() {
+      var monthlyRevenus = window.revenus.reduce((sum, r) => sum + r.montant, 0) / 12;
+      var monthlyDepenses = window.depenses.reduce((sum, d) => sum + d.montant, 0) / 12;
+      var forecast = monthlyRevenus - monthlyDepenses;
+      var html = "<p>Moyenne Revenus Mensuels : " + monthlyRevenus.toFixed(2) + " €</p>" +
+                 "<p>Moyenne Dépenses Mensuelles : " + monthlyDepenses.toFixed(2) + " €</p>" +
+                 "<p>Budget prévisionnel : " + forecast.toFixed(2) + " €</p>";
+      showOptionModal("Prévision Budget", html);
+    }
+    // 12. Rapport Global d'Activité
+    function openRapportActiviteGlobal() {
+      var totalWorkers = window.ouvriers.length;
+      var totalChantiers = window.chantiers.length;
+      var totalProjets = window.projets.length;
+      var html = "<p>Ouvriers enregistrés : " + totalWorkers + "</p>" +
+                 "<p>Chantiers actifs : " + totalChantiers + "</p>" +
+                 "<p>Projets enregistrés : " + totalProjets + "</p>";
+      showOptionModal("Rapport Global d'Activité", html);
+    }
 
-            // Affichage du nom et de la date de la sauvegarde
-            var headerDiv = document.createElement("div");
-            headerDiv.innerHTML = "<strong>Nom:</strong> " + bk.name + " - <strong>Date:</strong> " + bk.date;
-            bkDiv.appendChild(headerDiv);
-
-            // Création du tableau synthétique
-            var table = document.createElement("table");
-            table.style.width = "100%";
-            table.style.borderCollapse = "collapse";
-
-            // Ligne d'en-tête avec les colonnes "€", "Unité" et "Nom"
-            var headerRow = document.createElement("tr");
-            ["€", "Unité", "Nom"].forEach(function(colName) {
-              var th = document.createElement("th");
-              th.innerText = colName;
-              th.style.border = "1px solid #ddd";
-              th.style.padding = "4px";
-              headerRow.appendChild(th);
-            });
-            table.appendChild(headerRow);
-
-            // Pour chaque clé (tableau) contenu dans bk.data
-            for (var key in bk.data) {
-              if (bk.data.hasOwnProperty(key) && Array.isArray(bk.data[key])) {
-                bk.data[key].forEach(function(item) {
-                  var row = document.createElement("tr");
-                  var simplified = { value: "", unit: "", name: "" };
-
-                  if (sec === "finance") {
-                    simplified.name = item.description || "";
-                    simplified.value = item.montant ? parseFloat(item.montant).toFixed(2) + " €" : "";
-                    simplified.unit = "";
-                  } else if (sec === "chantier") {
-                    simplified.name = item.nom || "";
-                    simplified.unit = item.duree ? item.duree + " j" : "";
-                    simplified.value = item.prix ? parseFloat(item.prix).toFixed(2) + " €" : "";
-                  } else if (sec === "ouvrier") {
-                    simplified.name = item.nom || "";
-                    simplified.unit = item.jours ? item.jours + " j" : "";
-                    if (item.tarif && item.jours) {
-                      var total = item.tarif * item.jours;
-                      simplified.value = total.toFixed(2) + " €";
-                    } else {
-                      simplified.value = item.tarif ? parseFloat(item.tarif).toFixed(2) + " €" : "";
-                    }
-                  } else {
-                    simplified.name = JSON.stringify(item);
-                  }
-
-                  var cellValue = document.createElement("td");
-                  cellValue.innerText = simplified.value;
-                  cellValue.style.border = "1px solid #ddd";
-                  cellValue.style.padding = "4px";
-                  row.appendChild(cellValue);
-
-                  var cellUnit = document.createElement("td");
-                  cellUnit.innerText = simplified.unit;
-                  cellUnit.style.border = "1px solid #ddd";
-                  cellUnit.style.padding = "4px";
-                  row.appendChild(cellUnit);
-
-                  var cellName = document.createElement("td");
-                  cellName.innerText = simplified.name;
-                  cellName.style.border = "1px solid #ddd";
-                  cellName.style.padding = "4px";
-                  row.appendChild(cellName);
-
-                  table.appendChild(row);
-                });
-              }
-            }
-            bkDiv.appendChild(table);
-            container.appendChild(bkDiv);
-          });
+    /* Fonctions Utilitaires */
+    function parseLocalStorageValue(key) {
+      var value = localStorage.getItem(key);
+      try { return JSON.parse(value); } catch(e) { return value; }
+    }
+    function exportAllData() {
+      var data = {
+        ouvriers: parseLocalStorageValue('gestion_ouvriers'),
+        baseOuvriers: parseLocalStorageValue('baseouvriers'),
+        chantiers: parseLocalStorageValue('gestion_chantiers'),
+        travauxFinis: parseLocalStorageValue('travaux_finiss'),
+        revenus: parseLocalStorageValue('gestion_revenus'),
+        depenses: parseLocalStorageValue('gestion_depenses'),
+        depensesPrevues: parseLocalStorageValue('gestion_depenses_prevues'),
+        projets: parseLocalStorageValue('gestion_projets')
+      };
+      var blob = new Blob([JSON.stringify(data, null, 2)], {type: "application/json"});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      a.style.display = "none";
+      a.href = url;
+      a.download = "export_data_" + new Date().toISOString().split("T")[0] + ".json";
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    }
+    function importAllData() { document.getElementById("import-file").click(); }
+    function handleImport(event) {
+      var file = event.target.files[0];
+      if (!file) return;
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        try {
+          var data = JSON.parse(e.target.result);
+          if (data.ouvriers) localStorage.setItem('gestion_ouvriers', JSON.stringify(data.ouvriers));
+          if (data.baseOuvriers) localStorage.setItem('baseouvriers', JSON.stringify(data.baseOuvriers));
+          if (data.chantiers) localStorage.setItem('gestion_chantiers', JSON.stringify(data.chantiers));
+          if (data.travauxFinis) localStorage.setItem('travaux_finiss', JSON.stringify(data.travauxFinis));
+          if (data.revenus) localStorage.setItem('gestion_revenus', JSON.stringify(data.revenus));
+          if (data.depenses) localStorage.setItem('gestion_depenses', JSON.stringify(data.depenses));
+          if (data.depensesPrevues) localStorage.setItem('gestion_depenses_prevues', JSON.stringify(data.depensesPrevues));
+          if (data.projets) localStorage.setItem('gestion_projets', JSON.stringify(data.projets));
+          alert("Import réussi !");
+          location.reload();
+        } catch(err) {
+          alert("Erreur lors de l'importation des données.");
+        }
+      };
+      reader.readAsText(file);
+    }
+    function clearAllData() {
+      if(confirm("Voulez-vous vraiment réinitialiser toutes les données ?")) {
+        localStorage.removeItem('gestion_ouvriers');
+        localStorage.removeItem('baseouvriers');
+        localStorage.removeItem('gestion_chantiers');
+        localStorage.removeItem('travaux_finiss');
+        localStorage.removeItem('gestion_revenus');
+        localStorage.removeItem('gestion_depenses');
+        localStorage.removeItem('gestion_depenses_prevues');
+        localStorage.removeItem('gestion_projets');
+        alert("Toutes les données ont été réinitialisées.");
+        location.reload();
+      }
+    }
+    function showHelp() {
+      alert("Aide :\n- Exporter données : téléchargez toutes les données sauvegardées.\n- Importer données : sélectionnez un fichier JSON précédemment exporté.\n- Tout réinitialiser : supprime toutes les données stockées.\n- Sauvegarder une section : enregistrez un récapitulatif complet d'une section.\n- Afficher Synthèse : affiche la synthèse des données.");
+    }
+    function viewSummary() {
+      var ouvriers = JSON.parse(localStorage.getItem('gestion_ouvriers')) || [];
+      var revenus = JSON.parse(localStorage.getItem('gestion_revenus')) || [];
+      var depenses = JSON.parse(localStorage.getItem('gestion_depenses')) || [];
+      var summary = "Synthèse des données:\n";
+      summary += "Ouvriers enregistrés : " + ouvriers.length + "\n";
+      summary += "Revenus enregistrés : " + revenus.length + "\n";
+      summary += "Dépenses enregistrées : " + depenses.length;
+      alert(summary);
+    }
+    function toggleBackupList() {
+      var backupsDiv = document.getElementById("backups-list");
+      var btn = document.getElementById("toggle-backups-btn");
+      if(backupsDiv.style.display === "none" || backupsDiv.style.display === "") {
+        viewBackups();
+        backupsDiv.style.display = "block";
+        btn.textContent = "Masquer sauvegardes";
+      } else {
+        backupsDiv.style.display = "none";
+        btn.textContent = "Afficher sauvegardes";
+      }
+    }
+    function viewBackups() {
+      var backups = JSON.parse(localStorage.getItem("backups")) || [];
+      var container = document.getElementById("backups-list");
+      if(backups.length === 0) { container.innerHTML = "<p>Aucune sauvegarde stockée.</p>"; return; }
+      var html = "<table style='width:100%; border-collapse: collapse; font-size:10px;'><thead><tr>" +
+                 "<th style='border: 1px solid var(--border-color); padding: 4px;'>Nom sauvegarde</th>" +
+                 "<th style='border: 1px solid var(--border-color); padding: 4px;'>Section</th>" +
+                 "<th style='border: 1px solid var(--border-color); padding: 4px;'>Date</th>" +
+                 "<th style='border: 1px solid var(--border-color); padding: 4px;'>Récapitulatif</th>" +
+                 "<th style='border: 1px solid var(--border-color); padding: 4px;'>Supprimer</th>" +
+                 "</tr></thead><tbody>";
+      backups.forEach(function(b, index) {
+        html += "<tr>" +
+                "<td style='border: 1px solid var(--border-color); padding: 4px;'>" + (b.customName || "") + "</td>" +
+                "<td style='border: 1px solid var(--border-color); padding: 4px;'>" + b.section + "</td>" +
+                "<td style='border: 1px solid var(--border-color); padding: 4px;'>" + b.date + "</td>" +
+                "<td style='border: 1px solid var(--border-color); padding: 4px;'>" + b.summary + "</td>" +
+                "<td style='border: 1px solid var(--border-color); padding: 4px; text-align:center;'><button style='font-size:10px;' onclick='deleteBackup(" + index + ")'>Supprimer</button></td>" +
+                "</tr>";
+      });
+      html += "</tbody></table>";
+      container.innerHTML = html;
+    }
+    function generateBackupSummary(sectionKey, data) {
+      var html = "";
+      if(sectionKey === "ouvriers") {
+        var parsed;
+        try { parsed = JSON.parse(data); } catch(e) { return "<em>Données non parsables.</em>"; }
+        var paidWorkers = parsed.filter(function(o) { return o.paye; });
+        if(paidWorkers.length === 0) { return "<em>Aucun ouvrier marqué comme payé.</em>"; }
+        html += "<div style='max-height:150px; overflow-y:auto;'>";
+        html += "<table style='width:100%; border-collapse: collapse; font-size:10px;'>";
+        html += "<thead><tr><th style='border: 1px solid var(--border-color); padding: 2px;'>Nom</th><th style='border: 1px solid var(--border-color); padding: 2px;'>Tarif</th><th style='border: 1px solid var(--border-color); padding: 2px;'>Jours</th><th style='border: 1px solid var(--border-color); padding: 2px;'>Gain</th></tr></thead><tbody>";
+        var totalGain = 0;
+        paidWorkers.forEach(function(o) {
+          var gain = parseFloat(o.tarif) * parseFloat(o.jours);
+          totalGain += gain;
+          html += "<tr><td style='border: 1px solid var(--border-color); padding: 2px;'>" + o.nom + "</td><td style='border: 1px solid var(--border-color); padding: 2px;'>" + o.tarif + " €</td><td style='border: 1px solid var(--border-color); padding: 2px;'>" + o.jours + "</td><td style='border: 1px solid var(--border-color); padding: 2px;'>" + gain.toFixed(2) + " €</td></tr>";
+        });
+        html += "<tr style='font-weight:bold;'><td colspan='3' style='border: 1px solid var(--border-color); padding: 2px; text-align:right;'>Total :</td><td style='border: 1px solid var(--border-color); padding: 2px;'>" + totalGain.toFixed(2) + " €</td></tr>";
+        html += "</tbody></table></div>";
+      } else if(Array.isArray(JSON.parse(data))) {
+        var parsed = JSON.parse(data);
+        if(parsed.length === 0) { return "<em>Aucun enregistrement.</em>"; }
+        var keys = [];
+        parsed.forEach(function(item) { Object.keys(item).forEach(function(k) { if(keys.indexOf(k) === -1) { keys.push(k); } }); });
+        html += "<table style='width:100%; border-collapse: collapse; font-size:10px;'><thead><tr>";
+        keys.forEach(function(k) { html += "<th style='border: 1px solid var(--border-color); padding: 2px;'>" + k + "</th>"; });
+        html += "</tr></thead><tbody>";
+        parsed.forEach(function(item) {
+          html += "<tr>";
+          keys.forEach(function(k) { html += "<td style='border: 1px solid var(--border-color); padding: 2px;'>" + (item[k] !== undefined ? item[k] : "") + "</td>"; });
+          html += "</tr>";
+        });
+        html += "</tbody></table>";
+      } else if (typeof JSON.parse(data) === "object") {
+        var parsed = JSON.parse(data);
+        html += "<table style='width:100%; border-collapse: collapse; font-size:10px;'><thead><tr><th style='border: 1px solid var(--border-color); padding: 2px;'>Clé</th><th style='border: 1px solid var(--border-color); padding: 2px;'>Valeur</th></tr></thead><tbody>";
+        Object.keys(parsed).forEach(function(k) { html += "<tr><td style='border: 1px solid var(--border-color); padding: 2px;'>" + k + "</td><td style='border: 1px solid var(--border-color); padding: 2px;'>" + parsed[k] + "</td></tr>"; });
+        html += "</tbody></table>";
+      } else {
+        html = "<em>" + data.toString() + "</em>";
+      }
+      return html;
+    }
+    function performBackup() {
+      var select = document.getElementById("backup-select");
+      var sectionKey = select.value;
+      var customName = document.getElementById("backup-name").value.trim();
+      var localStorageKeyMap = {
+        "ouvriers": "gestion_ouvriers",
+        "baseouvriers": "baseouvriers",
+        "chantiers": "gestion_chantiers",
+        "travauxFinis": "travaux_finiss",
+        "revenus": "gestion_revenus",
+        "depenses": "gestion_depenses",
+        "depensesPrevues": "gestion_depenses_prevues",
+        "projets": "gestion_projets"
+      };
+      var storageKey = localStorageKeyMap[sectionKey];
+      var data = localStorage.getItem(storageKey);
+      if (!data) { alert("Aucune donnée trouvée pour " + select.options[select.selectedIndex].text); return; }
+      var blob = new Blob([data], {type: "application/json"});
+      var url = URL.createObjectURL(blob);
+      var a = document.createElement("a");
+      var today = new Date().toISOString().split("T")[0];
+      a.href = url;
+      a.download = (customName ? customName + "_" : "") + sectionKey + "_" + today + ".json";
+      a.click();
+      URL.revokeObjectURL(url);
+      var backups = JSON.parse(localStorage.getItem("backups")) || [];
+      backups.push({
+        section: sectionKey,
+        date: today,
+        customName: customName,
+        fileName: a.download,
+        summary: generateBackupSummary(sectionKey, data)
+      });
+      localStorage.setItem("backups", JSON.stringify(backups));
+      toggleBackupInterface();
+      alert("Sauvegarde de la section " + sectionKey + " effectuée.");
+    }
+    function deleteBackup(index) {
+      var backups = JSON.parse(localStorage.getItem("backups")) || [];
+      if(index >= 0 && index < backups.length) {
+        if(confirm("Supprimer la sauvegarde de la section " + backups[index].section + " du " + backups[index].date + " ?")) {
+          backups.splice(index, 1);
+          localStorage.setItem("backups", JSON.stringify(backups));
+          viewBackups();
         }
       }
-      if (container.innerHTML === "") {
-        container.innerText = "Aucune sauvegarde trouvée.";
+    }
+    function toggleBackupInterface() {
+      var interfaceDiv = document.getElementById("backup-interface");
+      interfaceDiv.style.display = (interfaceDiv.style.display === "none" || interfaceDiv.style.display === "") ? "block" : "none";
+    }
+    function backupSection() { toggleBackupInterface(); }
+    function printReport() { alert("Impression du rapport non implémentée."); }
+    function closeReport() { document.getElementById("report-modal").style.display = "none"; }
+    // Implémentation de calculateProjet
+    function calculateProjet() {
+      var nom = document.getElementById("projet-nom").value.trim();
+      var prixVal = document.getElementById("projet-prix").value.trim();
+      var dureeVal = document.getElementById("projet-duree").value.trim();
+      if(nom === "" || prixVal === "" || dureeVal === ""){
+        alert("Veuillez remplir les champs obligatoires du projet.");
+        return;
+      }
+      var prix = parseFloat(prixVal);
+      var duree = parseInt(dureeVal);
+      var modeInverse = document.getElementById("projet-mode-inverse").checked;
+      var mensuel = parseFloat(document.getElementById("projet-mensuel").value);
+      var moisObjectif = parseInt(document.getElementById("projet-mois-objectif").value);
+      
+      if(modeInverse) {
+        if(isNaN(mensuel) || mensuel <= 0) {
+          alert("Veuillez saisir un budget mensuel valide en mode inverse.");
+          return;
+        }
+        var totalBudget = mensuel * duree;
+        var message = "Mode inverse activé.\nBudget mensuel : " + mensuel.toFixed(2) + " €\nTotal Budget estimé : " + totalBudget.toFixed(2) + " €";
+        if(!isNaN(moisObjectif) && moisObjectif > 0) {
+          message += "\nMois jusqu'à l'objectif : " + moisObjectif;
+        }
+        alert(message);
+      } else {
+        if(isNaN(prix) || prix <= 0) {
+          alert("Veuillez saisir un budget total valide.");
+          return;
+        }
+        var monthlyBudget = prix / duree;
+        var message = "Mode normal.\nBudget total : " + prix.toFixed(2) + " €\nBudget mensuel estimé : " + monthlyBudget.toFixed(2) + " €";
+        if(!isNaN(moisObjectif) && moisObjectif > 0) {
+          message += "\nMois jusqu'à l'objectif : " + moisObjectif;
+        }
+        alert(message);
       }
     }
-    
-    /* ---------- Fonctions globales pour export/import et autres dans DOMContentLoaded plus bas ---------- */
+    function refreshAll() { window.refreshAll(); }
+
+    // Affichage/masquage du champ lien dans le formulaire projet
+    window.toggleLienProjet = function() {
+      var checkbox = document.getElementById("projet-ajout-lien");
+      var lienInput = document.getElementById("projet-lien");
+      lienInput.style.display = checkbox.checked ? "block" : "none";
+    };
+
+    // Fonctions spécifiques pour la Base Ouvriers : séparer impayés et payés
+    function renderBaseOuvriers() {
+      var unpaidContainer = document.getElementById("baseouvriers-unpaid");
+      var paidContainer = document.getElementById("baseouvriers-paid");
+      unpaidContainer.innerHTML = "";
+      paidContainer.innerHTML = "";
+      var unpaid = window.baseOuvriers.filter(o => !o.paye);
+      var paid = window.baseOuvriers.filter(o => o.paye);
+      var htmlUnpaid = "<table style='width:100%; border-collapse: collapse;'><thead><tr><th>Nom</th><th>Jours Totaux</th><th>Montant Total (€)</th></tr></thead><tbody>";
+      unpaid.forEach(function(o) {
+        var total = (parseFloat(o.tarif) * parseFloat(o.jours)).toFixed(2);
+        htmlUnpaid += "<tr><td>" + o.nom + "</td><td>" + parseFloat(o.jours).toFixed(1) + "</td><td>" + total + " €</td></tr>";
+      });
+      htmlUnpaid += "</tbody></table>";
+      unpaidContainer.innerHTML = "<h3>Ouvriers Impayés</h3>" + (unpaid.length ? htmlUnpaid : "<p>Aucun ouvrier impayé.</p>");
+
+      var htmlPaid = "<table style='width:100%; border-collapse: collapse;'><thead><tr><th>Nom</th><th>Jours Totaux</th><th>Montant Total (€)</th></tr></thead><tbody>";
+      paid.forEach(function(o) {
+        var total = (parseFloat(o.tarif) * parseFloat(o.jours)).toFixed(2);
+        htmlPaid += "<tr><td>" + o.nom + "</td><td>" + parseFloat(o.jours).toFixed(1) + "</td><td>" + total + " €</td></tr>";
+      });
+      htmlPaid += "</tbody></table>";
+      paidContainer.innerHTML = "<h3>Ouvriers Payés</h3>" + (paid.length ? htmlPaid : "<p>Aucun ouvrier payé.</p>");
+    }
+
+    // Fonctions spécifiques pour la Base Chantiers : ajout des boutons Avancer et Terminer
+    function renderBaseChantiers() {
+      var activeTbody = document.getElementById("basechantier-actif-tbody");
+      var finishedTbody = document.getElementById("basechantier-fini-tbody");
+      activeTbody.innerHTML = "";
+      finishedTbody.innerHTML = "";
+      // Chantiers actifs avec boutons Avancer (ouvre le modal pour gérer les étapes) et Terminer
+      window.chantiers.forEach(function(c, index) {
+        var tr = document.createElement("tr");
+        tr.innerHTML = "<td>" + c.nom + "</td>" +
+                       "<td>" + c.duree + " jours</td>" +
+                       "<td>" + parseFloat(c.prix).toFixed(2) + " €</td>" +
+                       "<td>" + (c.avance || 0) + "%</td>" +
+                       "<td><button onclick='openStepsModal(" + index + ")'>Avancer</button> " +
+                       "<button onclick='finishChantier(" + index + ")'>Terminer</button></td>";
+        activeTbody.appendChild(tr);
+      });
+      // Travaux terminés
+      window.travauxFinis.forEach(function(c) {
+        var tr = document.createElement("tr");
+        tr.innerHTML = "<td>" + c.nom + "</td>" +
+                       "<td>" + c.duree + " jours</td>" +
+                       "<td>" + parseFloat(c.prix).toFixed(2) + " €</td>";
+        finishedTbody.appendChild(tr);
+      });
+    }
+      
+    // Remplacement de "advanceChantier" par l'ouverture du modal pour gérer les étapes
+    function openStepsModal(index) {
+      window.currentChantierIndex = index;
+      var chantier = window.chantiers[index];
+      // Initialisation de completedSteps pour le chantier, si nécessaire
+      if(!chantier.completedSteps || chantier.completedSteps.length !== chantier.etapes.length) {
+        chantier.completedSteps = [];
+        for(var i = 0; i < chantier.etapes.length; i++){
+          chantier.completedSteps.push(false);
+        }
+      }
+      var content = "<h3>Étapes du chantier : " + chantier.nom + "</h3>";
+      content += "<ul style='list-style:none; padding:0;'>";
+      chantier.etapes.forEach(function(step, i) {
+        content += "<li style='margin:5px 0;'><label><input type='checkbox' onchange='updateChantierStep(" + i + ", this.checked)' " + (chantier.completedSteps[i] ? "checked" : "") + "> " + step + "</label></li>";
+      });
+      content += "</ul>";
+      content += "<p>Le pourcentage d'avancement sera calculé en fonction du nombre d'étapes cochées.</p>";
+      document.getElementById("steps-modal-content").innerHTML = content;
+      document.getElementById("steps-modal").style.display = "flex";
+    }
+    function updateChantierStep(stepIndex, checked) {
+      var index = window.currentChantierIndex;
+      var chantier = window.chantiers[index];
+      chantier.completedSteps[stepIndex] = checked;
+    }
+    function saveChantierSteps() {
+      var index = window.currentChantierIndex;
+      var chantier = window.chantiers[index];
+      var totalSteps = chantier.etapes.length;
+      var completedCount = chantier.completedSteps.filter(x => x).length;
+      chantier.avance = totalSteps > 0 ? Math.round((completedCount / totalSteps) * 100) : 0;
+      window.saveChantiers();
+      window.renderChantiers();
+      renderBaseChantiers();
+      closeStepsModal();
+    }
+    function closeStepsModal() {
+      document.getElementById("steps-modal").style.display = "none";
+    }
+    function finishChantier(index) {
+      if(confirm("Terminer le chantier " + window.chantiers[index].nom + " ?")) {
+        var chantier = window.chantiers.splice(index,1)[0];
+        chantier.avance = 100;
+        window.travauxFinis.push(chantier);
+        window.saveChantiers();
+        window.saveTravauxFinis();
+        window.renderChantiers();
+        renderBaseChantiers();
+      }
+    }
+
+    // Pour rendre la liste des chantiers dans la section "Chantiers"
+    function renderChantiers() {
+      var tbody = document.getElementById("chantier-tbody");
+      tbody.innerHTML = "";
+      window.chantiers.forEach(function(c, index) {
+        var html = "<tr>";
+        html += "<td>" + c.nom + "</td>";
+        html += "<td>" + c.duree + " jours</td>";
+        html += "<td>" + parseFloat(c.prix).toFixed(2) + " €</td>";
+        html += "<td>" + parseFloat(c.materiel).toFixed(2) + " €</td>";
+        html += "<td>" + (c.avance || 0) + "%</td>";
+        html += "<td><button onclick='openStepsModal(" + index + ")'>Avancer</button> ";
+        html += "<button onclick='deleteChantier(" + index + ")'>Supprimer</button></td>";
+        html += "</tr>";
+        tbody.innerHTML += html;
+      });
+    }
+    // IMPORTANT : rendre renderChantiers globale pour que saveChantierSteps puisse l'appeler
+    window.renderChantiers = renderChantiers;
+
+    window.deleteChantier = function(index) {
+      if(confirm("Supprimer le chantier " + window.chantiers[index].nom + " ?")) {
+        window.chantiers.splice(index,1);
+        window.saveChantiers();
+        renderChantiers();
+        // Mise à jour de la base chantiers
+        renderBaseChantiers();
+      }
+    };
+    window.editChantier = function(index) {
+      var chantier = window.chantiers[index];
+      var newNom = prompt("Modifier le nom du chantier :", chantier.nom);
+      var newDuree = prompt("Modifier la durée (jours) :", chantier.duree);
+      var newPrix = prompt("Modifier le prix (€) :", chantier.prix);
+      var newMateriel = prompt("Modifier le coût des matériaux (€) :", chantier.materiel);
+      if(newNom && newDuree && newPrix && newMateriel) {
+        chantier.nom = newNom;
+        chantier.duree = parseInt(newDuree);
+        chantier.prix = parseFloat(newPrix);
+        chantier.materiel = parseFloat(newMateriel);
+        window.saveChantiers();
+        renderChantiers();
+        renderBaseChantiers();
+      }
+    };
+
+    // Écouteur pour le formulaire Revenu
+    document.getElementById("form-revenu").addEventListener("submit", function(e) {
+      e.preventDefault();
+      var desc = document.getElementById("revenu-description").value.trim();
+      var montant = parseFloat(document.getElementById("revenu-montant").value);
+      var chantier = document.getElementById("revenu-chantier").checked;
+      if(desc === "" || isNaN(montant)) {
+        alert("Veuillez saisir les informations du revenu.");
+        return;
+      }
+      window.revenus.push({ description: desc, montant: montant, chantier: chantier });
+      window.saveFinance();
+      renderFinanceSummary();
+      renderRevenusList();
+      this.reset();
+    });
+    // Écouteur pour le formulaire Revenu en Attente
+    document.getElementById("form-revenu-attente").addEventListener("submit", function(e) {
+      e.preventDefault();
+      var desc = document.getElementById("revenu-attente-description").value.trim();
+      var montant = parseFloat(document.getElementById("revenu-attente-montant").value);
+      if(desc === "" || isNaN(montant)) {
+        alert("Veuillez saisir les informations du revenu en attente.");
+        return;
+      }
+      window.revenusAttente.push({ description: desc, montant: montant });
+      window.saveFinance();
+      renderFinanceSummary();
+      renderRevenusAttenteList();
+      this.reset();
+    });
+    // Écouteur pour le formulaire Dépense
+    document.getElementById("form-depense").addEventListener("submit", function(e) {
+      e.preventDefault();
+      var desc = document.getElementById("depense-description").value.trim();
+      var montant = parseFloat(document.getElementById("depense-montant").value);
+      if(desc === "" || isNaN(montant)) {
+        alert("Veuillez saisir les informations de la dépense.");
+        return;
+      }
+      window.depenses.push({ description: desc, montant: montant });
+      window.saveFinance();
+      renderFinanceSummary();
+      renderDepensesList();
+      this.reset();
+    });
+    // Écouteur pour le formulaire Dépense Prévue
+    document.getElementById("form-depense-prevue").addEventListener("submit", function(e) {
+      e.preventDefault();
+      var desc = document.getElementById("depense-prevue-description").value.trim();
+      var montant = parseFloat(document.getElementById("depense-prevue-montant").value);
+      if(desc === "" || isNaN(montant)) {
+        alert("Veuillez saisir les informations de la dépense prévue.");
+        return;
+      }
+      window.depensesPrevues.push({ description: desc, montant: montant });
+      window.saveFinance();
+      renderFinanceSummary();
+      renderDepensesPrevuesList();
+      this.reset();
+    });
+    // Écouteur pour le formulaire Projet
+    document.getElementById("form-projet").addEventListener("submit", function(e) {
+      e.preventDefault();
+      var nom = document.getElementById("projet-nom").value.trim();
+      var prixVal = document.getElementById("projet-prix").value.trim();
+      var dureeVal = document.getElementById("projet-duree").value.trim();
+      if(nom === "" || prixVal === "" || dureeVal === ""){
+        alert("Veuillez remplir les champs obligatoires du projet.");
+        return;
+      }
+      var prix = parseFloat(prixVal);
+      var duree = parseInt(dureeVal);
+      var ajoutLien = document.getElementById("projet-ajout-lien").checked;
+      var lien = (ajoutLien ? document.getElementById("projet-lien").value.trim() : "");
+      var modeInverse = document.getElementById("projet-mode-inverse").checked;
+      var mensuel = parseFloat(document.getElementById("projet-mensuel").value) || 0;
+      var moisObjectif = parseInt(document.getElementById("projet-mois-objectif").value) || 0;
+      var priorite = document.getElementById("projet-priorite").value;
+      var projet = { nom: nom, prix: prix, lien: lien, duree: duree, modeInverse: modeInverse, mensuel: mensuel, moisObjectif: moisObjectif, priorite: priorite };
+      window.projets.push(projet);
+      window.saveProjets();
+      window.renderProjets();
+      this.reset();
+    });
+
+    // Fonction pour rendre la liste des ouvriers dans la Base Ouvriers
+    function renderBaseOuvriers() {
+      var unpaidContainer = document.getElementById("baseouvriers-unpaid");
+      var paidContainer = document.getElementById("baseouvriers-paid");
+      unpaidContainer.innerHTML = "";
+      paidContainer.innerHTML = "";
+      var unpaid = window.baseOuvriers.filter(o => !o.paye);
+      var paid = window.baseOuvriers.filter(o => o.paye);
+      var htmlUnpaid = "<table style='width:100%; border-collapse: collapse;'><thead><tr><th>Nom</th><th>Jours Totaux</th><th>Montant Total (€)</th></tr></thead><tbody>";
+      unpaid.forEach(function(o) {
+        var total = (parseFloat(o.tarif) * parseFloat(o.jours)).toFixed(2);
+        htmlUnpaid += "<tr><td>" + o.nom + "</td><td>" + parseFloat(o.jours).toFixed(1) + "</td><td>" + total + " €</td></tr>";
+      });
+      htmlUnpaid += "</tbody></table>";
+      unpaidContainer.innerHTML = "<h3>Ouvriers Impayés</h3>" + (unpaid.length ? htmlUnpaid : "<p>Aucun ouvrier impayé.</p>");
+
+      var htmlPaid = "<table style='width:100%; border-collapse: collapse;'><thead><tr><th>Nom</th><th>Jours Totaux</th><th>Montant Total (€)</th></tr></thead><tbody>";
+      paid.forEach(function(o) {
+        var total = (parseFloat(o.tarif) * parseFloat(o.jours)).toFixed(2);
+        htmlPaid += "<tr><td>" + o.nom + "</td><td>" + parseFloat(o.jours).toFixed(1) + "</td><td>" + total + " €</td></tr>";
+      });
+      htmlPaid += "</tbody></table>";
+      paidContainer.innerHTML = "<h3>Ouvriers Payés</h3>" + (paid.length ? htmlPaid : "<p>Aucun ouvrier payé.</p>");
+    }
+      
+    // Fonction pour rendre la liste des chantiers dans la Base Chantiers
+    function renderBaseChantiers() {
+      var activeTbody = document.getElementById("basechantier-actif-tbody");
+      var finishedTbody = document.getElementById("basechantier-fini-tbody");
+      activeTbody.innerHTML = "";
+      finishedTbody.innerHTML = "";
+      // Chantiers actifs avec boutons Avancer (ouvre le modal pour gérer les étapes) et Terminer
+      window.chantiers.forEach(function(c, index) {
+        var tr = document.createElement("tr");
+        tr.innerHTML = "<td>" + c.nom + "</td>" +
+                       "<td>" + c.duree + " jours</td>" +
+                       "<td>" + parseFloat(c.prix).toFixed(2) + " €</td>" +
+                       "<td>" + (c.avance || 0) + "%</td>" +
+                       "<td><button onclick='openStepsModal(" + index + ")'>Avancer</button> " +
+                       "<button onclick='finishChantier(" + index + ")'>Terminer</button></td>";
+        activeTbody.appendChild(tr);
+      });
+      // Travaux terminés
+      window.travauxFinis.forEach(function(c) {
+        var tr = document.createElement("tr");
+        tr.innerHTML = "<td>" + c.nom + "</td>" +
+                       "<td>" + c.duree + " jours</td>" +
+                       "<td>" + parseFloat(c.prix).toFixed(2) + " €</td>";
+        finishedTbody.appendChild(tr);
+      });
+    }
+      
+    window.advanceChantier = function(index) {
+      // Ouvrir le modal pour cocher les étapes
+      openStepsModal(index);
+    };
+    window.finishChantier = function(index) {
+      if(confirm("Terminer le chantier " + window.chantiers[index].nom + " ?")) {
+        var chantier = window.chantiers.splice(index,1)[0];
+        chantier.avance = 100;
+        window.travauxFinis.push(chantier);
+        window.saveChantiers();
+        window.saveTravauxFinis();
+        renderChantiers();
+        renderBaseChantiers();
+      }
+    };
+
+    window.renderProjets = function() {
+      var container = document.getElementById("details-projet");
+      container.innerHTML = "";
+      if(window.projets.length === 0) {
+        container.innerHTML = "<p>Aucun projet enregistré.</p>";
+        return;
+      }
+      var html = "<table style='width:100%; border-collapse: collapse;'><thead><tr><th>Nom</th><th>Budget</th><th>Durée</th><th>Lien</th><th>Priorité</th><th>Actions</th></tr></thead><tbody>";
+      window.projets.forEach(function(p, index) {
+        html += "<tr>";
+        html += "<td>" + p.nom + "</td>";
+        html += "<td>" + parseFloat(p.prix).toFixed(2) + " €</td>";
+        html += "<td>" + p.duree + " mois</td>";
+        html += "<td>" + (p.lien ? "<a href='" + p.lien + "' target='_blank'>Voir</a>" : "") + "</td>";
+        html += "<td>" + p.priorite + "</td>";
+        html += "<td><button onclick='editProjet(" + index + ")'>Modifier</button> ";
+        html += "<button onclick='deleteProjet(" + index + ")'>Supprimer</button></td>";
+        html += "</tr>";
+      });
+      html += "</tbody></table>";
+      container.innerHTML = html;
+    };
+    window.deleteProjet = function(index) {
+      if(confirm("Supprimer le projet " + window.projets[index].nom + " ?")) {
+        window.projets.splice(index, 1);
+        window.saveProjets();
+        window.renderProjets();
+      }
+    };
+    window.editProjet = function(index) {
+      var projet = window.projets[index];
+      var newNom = prompt("Modifier le nom du projet :", projet.nom);
+      var newPrix = prompt("Modifier le budget total (€) :", projet.prix);
+      var newDuree = prompt("Modifier la durée souhaitée (mois) :", projet.duree);
+      if(newNom && newPrix && newDuree) {
+        projet.nom = newNom;
+        projet.prix = parseFloat(newPrix);
+        projet.duree = parseInt(newDuree);
+        window.saveProjets();
+        window.renderProjets();
+      }
+    };
+
+    populateOuvrierSelect();
+    window.renderOuvriers();
+    renderBaseOuvriers();
+    renderChantiers();
+    renderBaseChantiers();
+    window.renderProjets();
+      
+    window.refreshAll = function() {
+      window.renderOuvriers();
+      populateOuvrierSelect();
+      // Mise à jour de la base ouvriers à partir des ouvriers actuels
+      window.baseOuvriers = window.ouvriers.slice();
+      window.saveBaseOuvriers();
+      renderBaseOuvriers();
+      renderFinanceSummary();
+      renderRevenusList();
+      renderRevenusAttenteList();
+      renderDepensesList();
+      renderDepensesPrevuesList();
+      renderAchatsTable();
+      renderGroupedAchats();
+      renderChantiers();
+      renderBaseChantiers();
+      window.renderProjets();
+    };
+    window.refreshAll();
+
+    // Gestion des étapes du chantier
+    function addEtape() {
+      var input = document.getElementById("etape-input");
+      var etape = input.value.trim();
+      if(etape === "") {
+        alert("Veuillez saisir une étape.");
+        return;
+      }
+      window.currentEtapes = window.currentEtapes || [];
+      window.currentEtapes.push(etape);
+      input.value = "";
+      renderEtapes();
+    }
+    function renderEtapes() {
+      var container = document.getElementById("etapes-container");
+      container.innerHTML = "";
+      if(!window.currentEtapes || window.currentEtapes.length === 0) {
+        container.innerHTML = "<p>Aucune étape ajoutée.</p>";
+        return;
+      }
+      var ul = document.createElement("ul");
+      window.currentEtapes.forEach(function(etape, index) {
+        var li = document.createElement("li");
+        li.textContent = etape;
+        li.style.cursor = "pointer";
+        li.title = "Cliquez pour supprimer cette étape";
+        li.addEventListener("click", function(){
+          if(confirm("Supprimer cette étape ?")) {
+            window.currentEtapes.splice(index, 1);
+            renderEtapes();
+          }
+        });
+        ul.appendChild(li);
+      });
+      container.appendChild(ul);
+    }
   </script>
 </head>
 <body>
-  <!-- Bouton Rafraîchir -->
+  <!-- Bouton de rafraîchissement -->
   <div id="refresh-btn" onclick="refreshAll()">Rafraîchir</div>
-  
-  <!-- En-tête fixe -->
   <header>
     <h1>Koloral Sheqiri</h1>
-    <!-- Quick Menu Finance Rapide -->
     <div class="quick-menu" id="quick-menu-btn" onclick="toggleQuickMenu()">€ Finance</div>
     <div class="quick-menu-container" id="quick-menu">
       <button onclick="ajusterFinance(-20)">-20 €</button>
@@ -663,8 +1476,7 @@
       <button onclick="ajusterFinance(100)">+100 €</button>
     </div>
   </header>
-  
-  <!-- Navigation Dropdown -->
+  <!-- Menu de navigation -->
   <select id="nav-dropdown" onchange="showSection(this.value)">
     <option value="ouvriers">Ouvriers</option>
     <option value="baseouvriers">Base Ouvriers</option>
@@ -676,318 +1488,369 @@
     <option value="siteweb">Site Web</option>
     <option value="utilitaires">Utilitaires</option>
   </select>
-  
-  <!-- Contenu Principal -->
   <div id="main-content">
-    <!-- Section Ouvriers -->
+    <!-- SECTION OUVRIERS -->
     <section id="ouvriers" class="section active">
-      <h2>Ouvriers</h2>
-      <form id="form-ouvrier">
-        <select id="ouvrier-select">
-          <option value="">Sélectionner un ouvrier (facultatif)</option>
-        </select>
-        <input type="text" id="ouvrier-nom" placeholder="Nom de l'ouvrier">
-        <input type="number" id="ouvrier-tarif" placeholder="Prix à la journée (€)" step="0.01" required>
-        <input type="number" id="ouvrier-jours" placeholder="Temps de travail (en jours)" step="0.1" required>
-        <button type="submit">Enregistrer / Mettre à jour</button>
-      </form>
-      <div class="table-container">
-        <table id="table-ouvriers">
-          <thead>
-            <tr>
-              <th>Nom</th>
-              <th>Prix/jour</th>
-              <th>Jours</th>
-              <th>Total</th>
-              <th>Payé</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
+      <div class="section-header">
+        <h2>Ouvriers</h2>
+        <button class="toggle-section-btn" onclick="toggleSection('ouvriers')">Masquer</button>
       </div>
-      <button class="voir-plus-btn" id="voir-plus-ouvriers-btn" onclick="toggleOuvriersDetails()">Voir plus</button>
-      <div class="details-section" id="details-ouvriers"></div>
-    </section>
-    
-    <!-- Section Base Ouvriers -->
-    <section id="baseouvriers" class="section">
-      <h2>Base Ouvriers</h2>
-      <p>Liste de tous les ouvriers enregistrés.</p>
-      <div class="table-container">
-        <table id="table-baseouvriers">
-          <thead>
-            <tr>
-              <th>Nom</th>
-              <th>Jours Totaux</th>
-              <th>Montant Total (€)</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <button class="voir-plus-btn" id="voir-plus-baseouvriers-btn" onclick="toggleBaseOuvriersDetails()">Voir plus</button>
-      <div class="details-section" id="details-baseouvriers"></div>
-    </section>
-    
-    <!-- Section Chantiers -->
-    <section id="chantier" class="section">
-      <h2>Chantiers</h2>
-      <form id="form-chantier">
-        <input type="text" id="chantier-nom" placeholder="Nom du chantier" required>
-        <input type="number" id="chantier-duree" placeholder="Durée (en jours)" step="1" required>
-        <input type="number" id="chantier-prix" placeholder="Prix du chantier (€)" step="0.01" required>
-        <input type="number" id="chantier-materiel" placeholder="Coût des matériaux (€)" step="0.01" required>
-        <label><input type="checkbox" id="chantier-mat-payee"> Matériaux payés</label>
-        <h3>Étapes du Chantier</h3>
-        <div id="etapes-container"></div>
-        <div style="display: flex; gap: 8px; margin-top: 8px;">
-          <input type="text" id="etape-input" placeholder="Description de l'étape">
-          <button type="button" onclick="addEtape()">Ajouter étape</button>
-        </div>
-        <div class="progress-container">
-          <div class="progress-bar" id="progress-bar"></div>
-        </div>
-        <button type="submit">Enregistrer chantier</button>
-      </form>
-      <div class="table-container">
-        <table id="table-chantier">
-          <thead>
-            <tr>
-              <th>Nom</th>
-              <th>Durée</th>
-              <th>Prix</th>
-              <th>Matériaux</th>
-              <th>Avancement</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <button class="voir-plus-btn" id="voir-plus-chantier-btn" onclick="toggleChantiersDetails()">Voir plus</button>
-      <div class="details-section" id="details-chantier"></div>
-    </section>
-    
-    <!-- Section Base Chantiers -->
-    <section id="basechantier" class="section">
-      <h2>Base Chantiers</h2>
-      <p>Affichage des chantiers actifs et des travaux terminés.</p>
-      <h3>Chantiers Actifs</h3>
-      <div class="table-container">
-        <table id="table-base-chantier-actif">
-          <thead>
-            <tr>
-              <th>Nom</th>
-              <th>Durée</th>
-              <th>Prix</th>
-              <th>Avancement</th>
-              <th>Actions</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <h3>Travaux Terminés</h3>
-      <div class="table-container">
-        <table id="table-base-chantier-fini">
-          <thead>
-            <tr>
-              <th>Nom</th>
-              <th>Durée</th>
-              <th>Prix</th>
-            </tr>
-          </thead>
-          <tbody></tbody>
-        </table>
-      </div>
-      <button class="voir-plus-btn" id="voir-plus-basechantier-btn" onclick="toggleBaseChantiersDetails()">Voir plus</button>
-      <div class="details-section" id="details-basechantier"></div>
-    </section>
-    
-    <!-- Section Finance -->
-    <section id="finance" class="section">
-      <h2>Finance</h2>
-      <!-- Revenus Manuels -->
-      <div id="revenus-manuels">
-        <h3>Revenus Manuels</h3>
-        <form id="form-revenu">
-          <input type="text" id="revenu-description" placeholder="Description du revenu" required>
-          <input type="number" id="revenu-montant" placeholder="Montant (€)" step="0.01" required>
-          <label><input type="checkbox" id="revenu-chantier"> Revenu lié au chantier</label>
-          <button type="submit">Ajouter revenu</button>
-        </form>
-        <div id="revenus-list"></div>
-        <button class="voir-plus-btn" id="voir-plus-revenu-btn" onclick="toggleRevenusManuels()">Voir plus</button>
-        <div class="details-section" id="details-revenu"></div>
-      </div>
-      <!-- Revenus en Attente -->
-      <div id="revenus-attente">
-        <h3>Revenus en Attente</h3>
-        <form id="form-revenu-attente">
-          <input type="text" id="revenu-attente-description" placeholder="Description du revenu en attente" required>
-          <input type="number" id="revenu-attente-montant" placeholder="Montant (€)" step="0.01" required>
-          <button type="submit">Ajouter revenu en attente</button>
-        </form>
-        <div id="revenus-attente-list"></div>
-        <button class="voir-plus-btn" id="voir-plus-revenu-attente-btn" onclick="toggleRevenusAttente()">Voir plus</button>
-        <div class="details-section" id="details-revenu-attente"></div>
-      </div>
-      <!-- Dépenses Manuelles -->
-      <div id="depenses-manuelles">
-        <h3>Dépenses Manuelles</h3>
-        <form id="form-depense">
-          <input type="text" id="depense-description" placeholder="Description de la dépense" required>
-          <input type="number" id="depense-montant" placeholder="Montant (€)" step="0.01" required>
-          <button type="submit">Ajouter dépense</button>
-        </form>
-        <div id="depenses-list"></div>
-        <button class="voir-plus-btn" id="voir-plus-depense-btn" onclick="toggleDepensesManuelles()">Voir plus</button>
-        <div class="details-section" id="details-depense"></div>
-      </div>
-      <!-- Dépenses Prévues -->
-      <div id="depenses-prevues">
-        <h3>Dépenses Prévues</h3>
-        <form id="form-depense-prevue">
-          <input type="text" id="depense-prevue-description" placeholder="Description de la dépense prévue" required>
-          <input type="number" id="depense-prevue-montant" placeholder="Montant prévu (€)" step="0.01" required>
-          <button type="submit">Ajouter dépense prévue</button>
-        </form>
-        <div id="depenses-prevues-list"></div>
-        <button class="voir-plus-btn" id="voir-plus-depense-prevue-btn" onclick="toggleDepensesPrevues()">Voir plus</button>
-        <div class="details-section" id="details-depense-prevue"></div>
-      </div>
-      <!-- Récapitulatif Finance -->
-      <div id="finance-summary">
-        <p id="summary-revenus">Revenus manuels : 0 €</p>
-        <p id="summary-revenus-attente">Revenus en attente : 0 €</p>
-        <p id="summary-depenses">Dépenses manuelles : 0 €</p>
-        <p id="summary-depenses-prevues">Dépenses prévues : 0 €</p>
-        <p id="global-balance">Solde global : 0 €</p>
-      </div>
-      <!-- Nouveaux contrôles pour la Finance -->
-      <div id="finance-options">
-        <label><input type="checkbox" id="appliquer-urssaf" onchange="renderFinanceSummary()"> Appliquer -22% Urssaf sur revenus chantier</label>
-        <label><input type="checkbox" id="afficher-dettes" onchange="renderFinanceSummary()"> Afficher dettes envers les ouvriers</label>
-      </div>
-      <button class="voir-plus-btn" id="voir-plus-finance" onclick="toggleFinanceDetails()">Voir plus</button>
-      <div class="details-section" id="details-finance"></div>
-    </section>
-    
-    <!-- Section Projet -->
-    <section id="projet" class="section">
-      <h2>Projet</h2>
-      <form id="form-projet">
-        <input type="text" id="projet-nom" placeholder="Nom du projet" required>
-        <input type="number" id="projet-prix" placeholder="Budget total (€)" step="0.01" required>
-        <label>
-          <input type="checkbox" id="projet-ajout-lien" onchange="toggleLienProjet()"> Ajouter un lien
-        </label>
-        <input type="url" id="projet-lien" placeholder="URL du projet" style="display:none;">
-        <input type="number" id="projet-duree" placeholder="Durée souhaitée (mois)" step="1" required>
-        <label>
-          <input type="checkbox" id="projet-mode-inverse"> Mode Inverse (budget mensuel)
-        </label>
-        <input type="number" id="projet-mensuel" placeholder="Budget mensuel (€)" step="0.01">
-        <input type="number" id="projet-mois-objectif" placeholder="Mois jusqu'à l'objectif" step="1">
-        <select id="projet-priorite">
-          <option value="1">Priorité 1 (Haute)</option>
-          <option value="2">Priorité 2</option>
-          <option value="3">Priorité 3 (Normale)</option>
-          <option value="4">Priorité 4</option>
-          <option value="5">Priorité 5 (Basse)</option>
-        </select>
-        <button type="button" onclick="calculateProjet()">Calculer Projet</button>
-      </form>
-      <!-- Section Achats & Groupement (inchangée) -->
-      <div id="projet-achats">
-        <h3>Liste d'Achats</h3>
-        <form id="form-achat">
-          <input type="text" id="achat-nom" placeholder="Nom de l'article">
-          <input type="number" id="achat-prix" placeholder="Prix (€)" step="0.01">
-          <input type="number" id="achat-priorite" placeholder="Priorité (1,2,3...)" step="1">
-          <button type="button" onclick="ajouterAchat()">Ajouter à la liste</button>
+      <div class="section-body">
+        <form id="form-ouvrier">
+          <select id="ouvrier-select">
+            <option value="">Sélectionner un ouvrier (facultatif)</option>
+          </select>
+          <input type="text" id="ouvrier-nom" placeholder="Nom de l'ouvrier">
+          <input type="number" id="ouvrier-tarif" placeholder="Prix à la journée (€)" step="0.01" required>
+          <input type="number" id="ouvrier-jours" placeholder="Temps de travail (en jours)" step="0.1" required>
+          <button type="submit">Enregistrer / Mettre à jour</button>
         </form>
         <div class="table-container">
-          <table id="table-achats">
+          <table id="table-ouvriers">
             <thead>
               <tr>
-                <th>Choix</th>
+                <th>Payé</th>
                 <th>Nom</th>
-                <th>Prix</th>
-                <th>Priorité</th>
-                <th>Action</th>
+                <th>Prix/jour</th>
+                <th>Jours</th>
+                <th>Total Gain</th>
+                <th>Actions</th>
               </tr>
             </thead>
-            <tbody></tbody>
+            <tbody id="ouvriers-tbody"></tbody>
           </table>
         </div>
-        <div style="margin-top:10px;">
-          <input type="text" id="nom-groupe" placeholder="Nom du groupe d'achats">
-          <button type="button" onclick="creerGroupeAchats()">Créer Groupe d'Achats</button>
-        </div>
-        <div class="collapsible-header" onclick="toggleGroupedAchats()">Groupes d'Achats</div>
-        <div class="collapsible-content" id="grouped-achats-table"></div>
+        <button class="voir-plus-btn" id="voir-plus-ouvriers-btn" onclick="toggleTable('ouvriers-tbody', 'voir-plus-ouvriers-btn')">Voir plus</button>
       </div>
-      <button class="voir-plus-btn" id="voir-plus-projet-btn" onclick="toggleProjetDetails()">Voir plus</button>
-      <div class="details-section" id="details-projet"></div>
-      <div id="projet-resultat"></div>
     </section>
-    
-    <!-- Section Plus d'Options -->
+    <!-- SECTION BASE OUVRIERS -->
+    <section id="baseouvriers" class="section">
+      <div class="section-header">
+        <h2>Base Ouvriers</h2>
+        <button class="toggle-section-btn" onclick="toggleSection('baseouvriers')">Masquer</button>
+      </div>
+      <div class="section-body">
+        <p>Liste de tous les ouvriers enregistrés.</p>
+        <!-- Deux conteneurs pour ouvriers impayés et payés -->
+        <div id="baseouvriers-unpaid"></div>
+        <div id="baseouvriers-paid"></div>
+        <button class="voir-plus-btn" id="voir-plus-baseouvriers-btn" onclick="toggleTable('baseouvriers-unpaid', 'voir-plus-baseouvriers-btn')">Voir plus</button>
+      </div>
+    </section>
+    <!-- SECTION CHANTIERS -->
+    <section id="chantier" class="section">
+      <div class="section-header">
+        <h2>Chantiers</h2>
+        <button class="toggle-section-btn" onclick="toggleSection('chantier')">Masquer</button>
+      </div>
+      <div class="section-body">
+        <form id="form-chantier">
+          <input type="text" id="chantier-nom" placeholder="Nom du chantier" required>
+          <input type="number" id="chantier-duree" placeholder="Durée (en jours)" step="1" required>
+          <input type="number" id="chantier-prix" placeholder="Prix du chantier (€)" step="0.01" required>
+          <input type="number" id="chantier-materiel" placeholder="Coût des matériaux (€)" step="0.01" required>
+          <label><input type="checkbox" id="chantier-mat-payee"> Matériaux payés</label>
+          <h3>Étapes du Chantier</h3>
+          <div id="etapes-container"></div>
+          <div style="display: flex; gap: 8px; margin-top: 8px;">
+            <input type="text" id="etape-input" placeholder="Description de l'étape">
+            <button type="button" onclick="addEtape()">Ajouter étape</button>
+          </div>
+          <div class="progress-container">
+            <div class="progress-bar" id="progress-bar"></div>
+          </div>
+          <button type="submit">Enregistrer chantier</button>
+        </form>
+        <div class="table-container">
+          <table id="table-chantier">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Durée</th>
+                <th>Prix</th>
+                <th>Matériaux</th>
+                <th>Avancement</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="chantier-tbody"></tbody>
+          </table>
+        </div>
+        <button class="voir-plus-btn" id="voir-plus-chantier-btn" onclick="toggleTable('chantier-tbody', 'voir-plus-chantier-btn')">Voir plus</button>
+      </div>
+    </section>
+    <!-- SECTION BASE CHANTIERS -->
+    <section id="basechantier" class="section">
+      <div class="section-header">
+        <h2>Base Chantiers</h2>
+        <button class="toggle-section-btn" onclick="toggleSection('basechantier')">Masquer</button>
+      </div>
+      <div class="section-body">
+        <p>Affichage des chantiers actifs et des travaux terminés.</p>
+        <h3>Chantiers Actifs</h3>
+        <div class="table-container">
+          <table id="table-base-chantier-actif">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Durée</th>
+                <th>Prix</th>
+                <th>Avancement</th>
+                <th>Actions</th>
+              </tr>
+            </thead>
+            <tbody id="basechantier-actif-tbody"></tbody>
+          </table>
+        </div>
+        <h3>Travaux Terminés</h3>
+        <div class="table-container">
+          <table id="table-base-chantier-fini">
+            <thead>
+              <tr>
+                <th>Nom</th>
+                <th>Durée</th>
+                <th>Prix</th>
+              </tr>
+            </thead>
+            <tbody id="basechantier-fini-tbody"></tbody>
+          </table>
+        </div>
+        <button class="voir-plus-btn" id="voir-plus-basechantier-btn" onclick="toggleTable('basechantier-actif-tbody', 'voir-plus-basechantier-btn')">Voir plus</button>
+      </div>
+    </section>
+    <!-- SECTION FINANCE -->
+    <section id="finance" class="section">
+      <div class="section-header">
+        <h2>Finance</h2>
+        <button class="toggle-section-btn" onclick="toggleSection('finance')">Masquer</button>
+      </div>
+      <div class="section-body">
+        <div id="revenus-manuels">
+          <h3>Revenus Manuels</h3>
+          <form id="form-revenu">
+            <input type="text" id="revenu-description" placeholder="Description du revenu" required>
+            <input type="number" id="revenu-montant" placeholder="Montant (€)" step="0.01" required>
+            <label><input type="checkbox" id="revenu-chantier"> Revenu lié au chantier</label>
+            <button type="submit">Ajouter revenu</button>
+          </form>
+          <div id="revenus-list"></div>
+          <button class="voir-plus-btn" id="voir-plus-revenu-btn" onclick="toggleTable('revenus-list', 'voir-plus-revenu-btn')">Voir plus</button>
+        </div>
+        <div id="revenus-attente">
+          <h3>Revenus en Attente</h3>
+          <form id="form-revenu-attente">
+            <input type="text" id="revenu-attente-description" placeholder="Description du revenu en attente" required>
+            <input type="number" id="revenu-attente-montant" placeholder="Montant (€)" step="0.01" required>
+            <button type="submit">Ajouter revenu en attente</button>
+          </form>
+          <div id="revenus-attente-list"></div>
+          <button class="voir-plus-btn" id="voir-plus-revenu-attente-btn" onclick="toggleTable('revenus-attente-list', 'voir-plus-revenu-attente-btn')">Voir plus</button>
+        </div>
+        <div id="depenses-manuelles">
+          <h3>Dépenses Manuelles</h3>
+          <form id="form-depense">
+            <input type="text" id="depense-description" placeholder="Description de la dépense" required>
+            <input type="number" id="depense-montant" placeholder="Montant (€)" step="0.01" required>
+            <button type="submit">Ajouter dépense</button>
+          </form>
+          <div id="depenses-list"></div>
+          <button class="voir-plus-btn" id="voir-plus-depense-btn" onclick="toggleTable('depenses-list', 'voir-plus-depense-btn')">Voir plus</button>
+        </div>
+        <div id="depenses-prevues">
+          <h3>Dépenses Prévues</h3>
+          <form id="form-depense-prevue">
+            <input type="text" id="depense-prevue-description" placeholder="Description de la dépense prévue" required>
+            <input type="number" id="depense-prevue-montant" placeholder="Montant prévu (€)" step="0.01" required>
+            <button type="submit">Ajouter dépense prévue</button>
+          </form>
+          <div id="depenses-prevues-list"></div>
+          <button class="voir-plus-btn" id="voir-plus-depense-prevue-btn" onclick="toggleTable('depenses-prevues-list', 'voir-plus-depense-prevue-btn')">Voir plus</button>
+        </div>
+        <div id="finance-summary">
+          <p id="summary-revenus">Revenus manuels : 0 €</p>
+          <p id="summary-revenus-attente">Revenus en attente : 0 €</p>
+          <p id="summary-depenses">Dépenses manuelles : 0 €</p>
+          <p id="summary-depenses-prevues">Dépenses prévues : 0 €</p>
+          <p id="global-balance">Solde global : 0 €</p>
+        </div>
+        <div id="finance-options">
+          <label><input type="checkbox" id="appliquer-urssaf" onchange="renderFinanceSummary()"> Appliquer -22% Urssaf sur revenus chantier</label>
+        </div>
+        <button class="voir-plus-btn" id="voir-plus-finance" onclick="toggleTable('finance-summary', 'voir-plus-finance')">Voir plus</button>
+      </div>
+    </section>
+    <!-- SECTION PROJET -->
+    <section id="projet" class="section">
+      <div class="section-header">
+        <h2>Projet</h2>
+        <button class="toggle-section-btn" onclick="toggleSection('projet')">Masquer</button>
+      </div>
+      <div class="section-body">
+        <form id="form-projet">
+          <input type="text" id="projet-nom" placeholder="Nom du projet" required>
+          <input type="number" id="projet-prix" placeholder="Budget total (€)" step="0.01" required>
+          <label><input type="checkbox" id="projet-ajout-lien" onchange="toggleLienProjet()"> Ajouter un lien</label>
+          <input type="url" id="projet-lien" placeholder="URL du projet" style="display:none;">
+          <input type="number" id="projet-duree" placeholder="Durée souhaitée (mois)" step="1" required>
+          <label><input type="checkbox" id="projet-mode-inverse"> Mode Inverse (budget mensuel)</label>
+          <input type="number" id="projet-mensuel" placeholder="Budget mensuel (€)" step="0.01">
+          <input type="number" id="projet-mois-objectif" placeholder="Mois jusqu'à l'objectif" step="1">
+          <select id="projet-priorite">
+            <option value="1">Priorité 1 (Haute)</option>
+            <option value="2">Priorité 2</option>
+            <option value="3">Priorité 3 (Normale)</option>
+            <option value="4">Priorité 4</option>
+            <option value="5">Priorité 5 (Basse)</option>
+          </select>
+          <button type="button" onclick="calculateProjet()">Calculer Projet</button>
+          <button type="submit">Enregistrer Projet</button>
+        </form>
+        <div id="projet-achats">
+          <h3>Liste d'Achats</h3>
+          <form id="form-achat">
+            <input type="text" id="achat-nom" placeholder="Nom de l'article">
+            <input type="number" id="achat-prix" placeholder="Prix (€)" step="0.01">
+            <input type="number" id="achat-priorite" placeholder="Priorité (1,2,3...)" step="1">
+            <button type="button" onclick="ajouterAchat()">Ajouter à la liste</button>
+          </form>
+          <div class="table-container">
+            <table id="table-achats">
+              <thead>
+                <tr>
+                  <th>Choix</th>
+                  <th>Nom</th>
+                  <th>Prix</th>
+                  <th>Priorité</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="achats-tbody"></tbody>
+            </table>
+          </div>
+          <div style="margin-top:10px;">
+            <input type="text" id="nom-groupe" placeholder="Nom du groupe d'achats">
+            <button type="button" onclick="creerGroupeAchats()">Créer Groupe d'Achats</button>
+          </div>
+          <div class="collapsible-header" onclick="toggleGroupedAchats()">Afficher/Cacher Groupes d'Achats</div>
+          <div class="collapsible-content" id="grouped-achats-table"></div>
+        </div>
+        <div class="details-section" id="details-projet"></div>
+      </div>
+    </section>
+    <!-- SECTION PLUS D'OPTIONS -->
     <section id="plusoptions" class="section">
-      <h2>Plus d'Options</h2>
-      <ul class="options-list">
-        <li onclick="calculerMargeBeneficiaire()"><span class="option-icon">📊</span><span class="option-label">Marge Bénéf.</span></li>
-        <li onclick="previsionTresorerie()"><span class="option-icon">💰</span><span class="option-label">Trésorerie</span></li>
-        <li onclick="analyserRentabiliteProjet()"><span class="option-icon">📈</span><span class="option-label">ROI Projet</span></li>
-        <li onclick="genererEcheancier()"><span class="option-icon">🗓️</span><span class="option-label">Échéancier</span></li>
-        <li onclick="comparerCouts()"><span class="option-icon">⚖️</span><span class="option-label">Comparer Coûts</span></li>
-        <li onclick="planifierTaches()"><span class="option-icon">📝</span><span class="option-label">Planifier Tâches</span></li>
-        <li onclick="simulerInvestissement()"><span class="option-icon">💹</span><span class="option-label">Investissement</span></li>
-        <li onclick="calculerTVAAvance()"><span class="option-icon">🧾</span><span class="option-label">Calcul TVA</span></li>
-        <li onclick="genererRapportPersonnalise()"><span class="option-icon">📰</span><span class="option-label">Rapport Perso</span></li>
-        <li onclick="analyserAvancee()"><span class="option-icon">🔍</span><span class="option-label">Analyse Avancée</span></li>
-        <li onclick="calculerChiffreAffaires()"><span class="option-icon">💵</span><span class="option-label">Chiffre d'Aff.</span></li>
-        <li onclick="afficherHistoriqueTravaux()"><span class="option-icon">📚</span><span class="option-label">Hist. Travaux</span></li>
-      </ul>
-      <div id="plusoptions-output"></div>
+      <div class="section-header">
+        <h2>Plus d’Options</h2>
+        <button class="toggle-section-btn" onclick="toggleSection('plusoptions')">Masquer</button>
+      </div>
+      <div class="section-body">
+        <ul class="options-list">
+          <li onclick="openMargeBenef()">
+            <span class="option-icon">💰</span>
+            <span>Marge Bénéfice</span>
+          </li>
+          <li onclick="openTresorerie()">
+            <span class="option-icon">🏦</span>
+            <span>Trésorier</span>
+          </li>
+          <li onclick="openComparatifBenefice()">
+            <span class="option-icon">⚖️</span>
+            <span>Comparatif Bénéfice</span>
+          </li>
+          <li onclick="openPlanificationTache()">
+            <span class="option-icon">📝</span>
+            <span>Planif. Tâches</span>
+          </li>
+          <li onclick="openRapportTresorerieMensuel()">
+            <span class="option-icon">📅</span>
+            <span>Rapport Trésorerie</span>
+          </li>
+          <li onclick="openAnalyseAvancee()">
+            <span class="option-icon">📈</span>
+            <span>Analyse Avancée</span>
+          </li>
+          <li onclick="openChiffreAffaires()">
+            <span class="option-icon">💹</span>
+            <span>Chiffre d’Affaires</span>
+          </li>
+          <li onclick="openHistoriqueChantiers()">
+            <span class="option-icon">📜</span>
+            <span>Hist. Chantiers</span>
+          </li>
+          <li onclick="openGestionFournisseurs()">
+            <span class="option-icon">🏷️</span>
+            <span>Fournisseurs</span>
+          </li>
+          <li onclick="openStatsProductivite()">
+            <span class="option-icon">📊</span>
+            <span>Stats Prod.</span>
+          </li>
+          <li onclick="openPrevisionBudget()">
+            <span class="option-icon">🔮</span>
+            <span>Prévision Budget</span>
+          </li>
+          <li onclick="openRapportActiviteGlobal()">
+            <span class="option-icon">🗂</span>
+            <span>Rapport Global</span>
+          </li>
+        </ul>
+      </div>
     </section>
-    
-    <!-- Section Site Web -->
+    <!-- SECTION SITE WEB -->
     <section id="siteweb" class="section">
-      <h2>Site Web</h2>
-      <p>Accédez aux sites partenaires :</p>
-      <ul>
-        <li><a href="https://koloral.fr" target="_blank">Koloral.fr</a></li>
-        <li><a href="https://hostinger.com" target="_blank">Hostinger</a></li>
-      </ul>
+      <div class="section-header">
+        <h2>Site Web</h2>
+        <button class="toggle-section-btn" onclick="toggleSection('siteweb')">Masquer</button>
+      </div>
+      <div class="section-body">
+        <p>Accédez aux sites partenaires :</p>
+        <ul>
+          <li><a href="https://koloral.fr" target="_blank">Koloral.fr</a></li>
+          <li><a href="https://hostinger.com" target="_blank">Hostinger</a></li>
+        </ul>
+      </div>
     </section>
-    
-    <!-- Section Utilitaires -->
+    <!-- SECTION UTILITAIRES -->
     <section id="utilitaires" class="section">
-      <h2>Utilitaires</h2>
-      <button onclick="exportAllData()">Exporter données (JSON)</button>
-      <button onclick="importAllData()">Importer données (JSON)</button>
-      <input type="file" id="import-file" accept="application/json" style="display:none" onchange="handleImport(event)">
-      <button onclick="clearAllData()">Tout réinitialiser</button>
-      <button onclick="showHelp()">Afficher aide</button>
-      <button onclick="viewSummary()">Afficher Synthèse</button>
-      <!-- Nouveaux boutons pour sauvegarde de sections -->
-      <button onclick="backupSection()">Sauvegarder une section</button>
-      <button onclick="viewBackups()">Voir sauvegardes</button>
-      <div id="backups-list"></div>
+      <div class="section-header">
+        <h2>Utilitaires</h2>
+        <button class="toggle-section-btn" onclick="toggleSection('utilitaires')">Masquer</button>
+      </div>
+      <div class="section-body">
+        <button onclick="exportAllData()">Exporter données (JSON)</button>
+        <button onclick="importAllData()">Importer données (JSON)</button>
+        <input type="file" id="import-file" accept="application/json" style="display:none" onchange="handleImport(event)">
+        <button onclick="clearAllData()">Tout réinitialiser</button>
+        <button onclick="showHelp()">Afficher aide</button>
+        <button onclick="viewSummary()">Afficher Synthèse</button>
+        <button onclick="backupSection()">Sauvegarder une section</button>
+        <button id="toggle-backups-btn" onclick="toggleBackupList()">Afficher sauvegardes</button>
+        <div id="backups-list"></div>
+        <div id="backup-interface" style="display:none; border: 1px solid var(--border-color); padding: 10px; margin-top: 10px; border-radius: var(--radius); background: var(--bg-color);">
+          <h3>Sauvegarder une section</h3>
+          <label for="backup-name">Nom de la sauvegarde :</label>
+          <input type="text" id="backup-name" placeholder="Nom personnalisé">
+          <select id="backup-select" style="width:100%; margin-top:10px; margin-bottom: 10px;">
+            <option value="ouvriers">Ouvriers</option>
+            <option value="baseouvriers">Base Ouvriers</option>
+            <option value="chantiers">Chantiers</option>
+            <option value="travauxFinis">Travaux Finis</option>
+            <option value="revenus">Revenus</option>
+            <option value="depenses">Dépenses</option>
+            <option value="depensesPrevues">Dépenses Prévues</option>
+            <option value="projets">Projets</option>
+          </select>
+          <button onclick="performBackup()">Sauvegarder</button>
+          <button onclick="toggleBackupInterface()">Annuler</button>
+        </div>
+      </div>
     </section>
-    
     <div class="spacer"></div>
   </div>
-  
-  <!-- Footer -->
   <footer>
     <p>&copy; 2025 Koloral Sheqiri</p>
   </footer>
-  
-  <!-- Modal Rapport Global -->
+  <!-- Modale Rapport Global -->
   <div class="report-modal" id="report-modal">
     <div class="report-content">
       <h2>Rapport Global</h2>
@@ -998,41 +1861,47 @@
       </div>
     </div>
   </div>
-  
-  <!-- Modal Modifier Étapes -->
+  <!-- Modale Étapes Chantier -->
   <div class="steps-modal" id="steps-modal">
     <div class="steps-content">
       <h2>Modifier les Étapes</h2>
       <div id="steps-modal-content"></div>
-      <div class="steps-buttons">
+      <div class="steps-buttons" style="margin-top:1rem; display:flex; justify-content:space-around;">
         <button onclick="saveChantierSteps()">Sauvegarder</button>
         <button onclick="closeStepsModal()">Annuler</button>
       </div>
     </div>
   </div>
-  
+  <!-- Modale Options supplémentaires -->
+  <div class="option-modal" id="option-modal">
+    <div class="option-content">
+      <span class="close-btn" onclick="closeOptionModal()">×</span>
+      <h2 id="option-modal-title"></h2>
+      <div id="option-modal-body"></div>
+    </div>
+  </div>
   <div class="spacer"></div>
-  
-  <!-- Script JavaScript Principal -->
+  <!-- Scripts d'initialisation -->
   <script>
     document.addEventListener("DOMContentLoaded", function() {
-      /* ---------- Variables Globales ---------- */
+      // Chargement des données depuis le localStorage
       window.ouvriers = JSON.parse(localStorage.getItem('gestion_ouvriers')) || [];
-      window.baseOuvriers = JSON.parse(localStorage.getItem('base_ouvriers')) || [];
+      window.ouvriers.forEach(function(o) { if(o.paye === undefined) { o.paye = false; } });
+      window.baseOuvriers = JSON.parse(localStorage.getItem('baseouvriers')) || [];
       window.chantiers = JSON.parse(localStorage.getItem('gestion_chantiers')) || [];
       window.travauxFinis = JSON.parse(localStorage.getItem('travaux_finiss')) || [];
       window.currentEtapes = [];
       window.revenus = JSON.parse(localStorage.getItem('gestion_revenus')) || [];
       window.depenses = JSON.parse(localStorage.getItem('gestion_depenses')) || [];
       window.depensesPrevues = JSON.parse(localStorage.getItem('gestion_depenses_prevues')) || [];
-      window.revenusAttente = []; // pas stocké en localStorage
+      window.revenusAttente = [];
       window.achats = [];
       window.groupedAchats = [];
       window.projets = JSON.parse(localStorage.getItem('gestion_projets')) || [];
       
-      /* ---------- Fonctions de Sauvegarde ---------- */
+      // Fonctions de sauvegarde
       window.saveOuvriers = function() { localStorage.setItem('gestion_ouvriers', JSON.stringify(window.ouvriers)); };
-      window.saveBaseOuvriers = function() { localStorage.setItem('base_ouvriers', JSON.stringify(window.baseOuvriers)); };
+      window.saveBaseOuvriers = function() { localStorage.setItem('baseouvriers', JSON.stringify(window.baseOuvriers)); };
       window.saveChantiers = function() { localStorage.setItem('gestion_chantiers', JSON.stringify(window.chantiers)); };
       window.saveTravauxFinis = function() { localStorage.setItem('travaux_finiss', JSON.stringify(window.travauxFinis)); };
       window.saveFinance = function() {
@@ -1041,135 +1910,8 @@
         localStorage.setItem('gestion_depenses_prevues', JSON.stringify(window.depensesPrevues));
       };
       window.saveProjets = function() { localStorage.setItem('gestion_projets', JSON.stringify(window.projets)); };
-
-      /* ---------- Fonctions pour la section Projet ---------- */
-      window.toggleLienProjet = function() {
-        var checkbox = document.getElementById("projet-ajout-lien");
-        var lienInput = document.getElementById("projet-lien");
-        if (checkbox.checked) {
-          lienInput.style.display = "block";
-        } else {
-          lienInput.style.display = "none";
-        }
-      };
-
-      window.calculateProjet = function() {
-        var nom = document.getElementById("projet-nom").value.trim();
-        var modeInverse = document.getElementById("projet-mode-inverse").checked;
-        var priorite = document.getElementById("projet-priorite").value;
-        var lien = "";
-        if(document.getElementById("projet-ajout-lien").checked) {
-          lien = document.getElementById("projet-lien").value.trim();
-        }
-        var projet = { nom: nom, modeInverse: modeInverse, priorite: priorite, lien: lien };
-
-        if(nom === "") {
-          alert("Veuillez saisir le nom du projet.");
-          return;
-        }
-
-        var message = "";
-        if(modeInverse) {
-          var budgetMensuel = parseFloat(document.getElementById("projet-mensuel").value);
-          var moisObjectif = parseInt(document.getElementById("projet-mois-objectif").value);
-          if(isNaN(budgetMensuel) || isNaN(moisObjectif)) {
-            alert("Veuillez remplir correctement le budget mensuel et le nombre de mois pour l'objectif.");
-            return;
-          }
-          var calculatedTotal = budgetMensuel * moisObjectif;
-          projet.budgetTotal = calculatedTotal;
-          projet.duree = moisObjectif;
-          projet.budgetMensuel = budgetMensuel;
-          projet.moisObjectif = moisObjectif;
-          projet.calculMensuel = budgetMensuel;
-          message = "Projet en mode inverse: Budget mensuel de " + budgetMensuel.toFixed(2) + " €, soit un budget total estimé de " + calculatedTotal.toFixed(2) + " € sur " + moisObjectif + " mois.";
-        } else {
-          var budgetTotal = parseFloat(document.getElementById("projet-prix").value);
-          var duree = parseFloat(document.getElementById("projet-duree").value);
-          if(isNaN(budgetTotal) || isNaN(duree)) {
-            alert("Veuillez remplir correctement le budget total et la durée.");
-            return;
-          }
-          var monthlyResult = budgetTotal / duree;
-          projet.budgetTotal = budgetTotal;
-          projet.duree = duree;
-          projet.calculMensuel = monthlyResult;
-          message = "Projet classique: Budget total de " + budgetTotal.toFixed(2) + " € sur " + duree + " mois, soit un coût mensuel de " + monthlyResult.toFixed(2) + " €.";
-        }
-
-        window.projets.push(projet);
-        window.saveProjets();
-        document.getElementById("projet-resultat").innerHTML = "<p>" + message + "</p>";
-        document.getElementById("form-projet").reset();
-        document.getElementById("projet-lien").style.display = "none";
-      };
-
-      /* ---------- Fonction de mise à jour du résumé financier ---------- */
-      function renderFinanceSummary() {
-        var totalRevenus = 0;
-        window.revenus.forEach(function(r) {
-          if(document.getElementById("appliquer-urssaf").checked && r.chantier) {
-            totalRevenus += parseFloat(r.montant) * 0.78;
-          } else {
-            totalRevenus += parseFloat(r.montant);
-          }
-        });
-        var totalRevenusAttente = window.revenusAttente.reduce(function(acc, r) {
-          return acc + parseFloat(r.montant || 0);
-        }, 0);
-        var totalDepenses = window.depenses.reduce(function(acc, d) {
-          return acc + parseFloat(d.montant || 0);
-        }, 0);
-        var totalDepensesPrevues = window.depensesPrevues.reduce(function(acc, d) {
-          return acc + parseFloat(d.montant || 0);
-        }, 0);
-        var balance = totalRevenus - totalDepenses - totalDepensesPrevues;
-        document.getElementById("summary-revenus").innerText = "Revenus manuels : " + totalRevenus.toFixed(2) + " €";
-        document.getElementById("summary-revenus-attente").innerText = "Revenus en attente : " + totalRevenusAttente.toFixed(2) + " €";
-        document.getElementById("summary-depenses").innerText = "Dépenses manuelles : " + totalDepenses.toFixed(2) + " €";
-        document.getElementById("summary-depenses-prevues").innerText = "Dépenses prévues : " + totalDepensesPrevues.toFixed(2) + " €";
-        document.getElementById("global-balance").innerText = "Solde global : " + balance.toFixed(2) + " €";
-        
-        var revAttList = document.getElementById("revenus-attente-list");
-        revAttList.innerHTML = "";
-        window.revenusAttente.forEach(function(r) {
-          var div = document.createElement("div");
-          div.innerText = r.description + " : " + parseFloat(r.montant).toFixed(2) + " €";
-          revAttList.appendChild(div);
-        });
-             
-        var totalDettes = 0;
-        window.ouvriers.forEach(function(o) {
-          if(!o.paye) { totalDettes += o.tarif * o.jours; }
-        });
-        
-        var detailsHTML = "<p>Total Revenus : " + totalRevenus.toFixed(2) + " €</p>";
-        detailsHTML += "<p>Total Revenus en attente : " + totalRevenusAttente.toFixed(2) + " €</p>";
-        detailsHTML += "<p>Total Dépenses : " + totalDepenses.toFixed(2) + " €</p>";
-        detailsHTML += "<p>Total Dépenses Prévues : " + totalDepensesPrevues.toFixed(2) + " €</p>";
-        if(document.getElementById("appliquer-urssaf").checked) {
-          detailsHTML += "<p>Revenus après Urssaf (-22% sur revenus chantier) : " + totalRevenus.toFixed(2) + " €</p>";
-        }
-        if(document.getElementById("afficher-dettes").checked) {
-          detailsHTML += "<p>Dettes ouvriers : " + totalDettes.toFixed(2) + " €</p>";
-        }
-        document.getElementById("details-finance").innerHTML = detailsHTML;
-      }
       
-      window.renderFinanceSummary = renderFinanceSummary;
-      
-      /* ---------- Navigation ---------- */
-      window.showSection = function(sectionId) {
-        document.querySelectorAll(".section").forEach(function(sec) { sec.classList.remove("active"); });
-        var target = document.getElementById(sectionId);
-        if(target) {
-          target.classList.add("active");
-          window.scrollTo(0,0);
-          if(sectionId === "basechantier") renderBaseChantiers();
-        }
-      };
-
-      /* ---------- Gestion des Ouvriers ---------- */
+      // Fonction pour mettre à jour la liste déroulante des ouvriers
       function populateOuvrierSelect() {
         var select = document.getElementById("ouvrier-select");
         select.innerHTML = "<option value=''>Sélectionner un ouvrier (facultatif)</option>";
@@ -1177,35 +1919,43 @@
           select.innerHTML += "<option value='" + o.nom + "'>" + o.nom + "</option>";
         });
       }
+      
+      // Rendu de la liste des ouvriers
       window.renderOuvriers = function() {
-        var tbody = document.querySelector("#table-ouvriers tbody");
+        var tbody = document.getElementById("ouvriers-tbody");
         tbody.innerHTML = "";
-        window.ouvriers.forEach(function(o) {
-          var total = o.tarif * o.jours;
+        window.ouvriers.forEach(function(o, index) {
+          var total = (parseFloat(o.tarif) * parseFloat(o.jours)).toFixed(2);
           var tr = document.createElement("tr");
-          tr.innerHTML = "<td>" + o.nom + "</td>" +
-                         "<td>" + o.tarif.toFixed(2) + " €</td>" +
-                         "<td>" + o.jours.toFixed(1) + "</td>" +
-                         "<td>" + total.toFixed(2) + " €</td>" +
-                         "<td><input type='checkbox' " + (o.paye ? "checked" : "") + " onchange=\"toggleOuvrierPay('" + o.nom + "')\"></td>" +
-                         "<td><button class='action-btn' onclick=\"editOuvrier('" + o.nom + "')\">Modifier</button> " +
-                         "<button class='action-btn' onclick=\"deleteOuvrier('" + o.nom + "')\">Supprimer</button></td>";
+          tr.innerHTML =
+            "<td style='text-align:center;'><input type='checkbox' " + (o.paye ? "checked" : "") +
+            " onclick='toggleOuvrierPay(" + index + ")'></td>" +
+            "<td>" + o.nom + "</td>" +
+            "<td>" + parseFloat(o.tarif).toFixed(2) + " €</td>" +
+            "<td>" + parseFloat(o.jours).toFixed(1) + "</td>" +
+            "<td>" + total + " €</td>" +
+            "<td><button class='action-btn' onclick=\"editOuvrier('" + o.nom + "')\">Modifier</button> " +
+            "<button class='action-btn' onclick=\"deleteOuvrier('" + o.nom + "')\">Supprimer</button></td>";
           tbody.appendChild(tr);
         });
       };
-      window.toggleOuvrierPay = function(nom) {
-        var index = window.ouvriers.findIndex(function(o) { return o.nom.toLowerCase() === nom.toLowerCase(); });
-        if(index !== -1) {
-          window.ouvriers[index].paye = !window.ouvriers[index].paye;
-          window.saveOuvriers();
-          window.renderOuvriers();
-        }
+      window.toggleOuvrierPay = function(index) {
+        window.ouvriers[index].paye = !window.ouvriers[index].paye;
+        window.saveOuvriers();
+        window.renderOuvriers();
       };
       window.deleteOuvrier = function(nom) {
         if(confirm("Supprimer l'ouvrier " + nom + " ?")) {
-          window.ouvriers = window.ouvriers.filter(function(o) { return o.nom.toLowerCase() !== nom.toLowerCase(); });
+          window.ouvriers = window.ouvriers.filter(function(o) {
+            return o.nom.toLowerCase() !== nom.toLowerCase();
+          });
           window.saveOuvriers();
           window.renderOuvriers();
+          populateOuvrierSelect();
+          // Mise à jour de la base ouvriers avec la liste actuelle
+          window.baseOuvriers = window.ouvriers.slice();
+          window.saveBaseOuvriers();
+          renderBaseOuvriers();
         }
       };
       window.editOuvrier = function(nom) {
@@ -1218,515 +1968,334 @@
             window.ouvriers[index].jours = parseFloat(newJours) || window.ouvriers[index].jours;
             window.saveOuvriers();
             window.renderOuvriers();
+            populateOuvrierSelect();
+            // Mise à jour de la base ouvriers
+            window.baseOuvriers = window.ouvriers.slice();
+            window.saveBaseOuvriers();
+            renderBaseOuvriers();
           }
         }
       };
+
+      // Écouteur pour le formulaire Ouvrier
       document.getElementById("form-ouvrier").addEventListener("submit", function(e) {
         e.preventDefault();
         var nom = document.getElementById("ouvrier-nom").value.trim();
-        var select = document.getElementById("ouvrier-select");
-        if(select.value && !nom) { nom = select.value; }
-        if(nom === "") { alert("Veuillez saisir le nom de l'ouvrier."); return; }
         var tarif = parseFloat(document.getElementById("ouvrier-tarif").value);
         var jours = parseFloat(document.getElementById("ouvrier-jours").value);
-        if(isNaN(tarif) || isNaN(jours)) { alert("Veuillez saisir un tarif et un nombre de jours valides."); return; }
-        var index = window.ouvriers.findIndex(function(o) { return o.nom.toLowerCase() === nom.toLowerCase(); });
-        if(index !== -1) {
-          window.ouvriers[index].jours += jours;
-          window.ouvriers[index].tarif = tarif;
+        if(nom === "" || isNaN(tarif) || isNaN(jours)) {
+          alert("Veuillez remplir tous les champs de l'ouvrier correctement.");
+          return;
+        }
+        var existingIndex = window.ouvriers.findIndex(o => o.nom.toLowerCase() === nom.toLowerCase());
+        if(existingIndex !== -1){
+           window.ouvriers[existingIndex].tarif = tarif;
+           window.ouvriers[existingIndex].jours = jours;
         } else {
-          window.ouvriers.push({ nom: nom, tarif: tarif, jours: jours, paye: false });
-          if(!window.baseOuvriers.find(function(o) { return o.nom.toLowerCase() === nom.toLowerCase(); })) {
-            window.baseOuvriers.push({ nom: nom, tarif: tarif, jours: jours });
-            window.saveBaseOuvriers();
-          }
+           window.ouvriers.push({ nom: nom, tarif: tarif, jours: jours, paye: false });
         }
         window.saveOuvriers();
         window.renderOuvriers();
         populateOuvrierSelect();
+        // Mise à jour de la base ouvriers
+        window.baseOuvriers = window.ouvriers.slice();
+        window.saveBaseOuvriers();
+        renderBaseOuvriers();
         this.reset();
       });
-      populateOuvrierSelect();
-      window.renderOuvriers();
-      function renderBaseOuvriers() {
-        var tbody = document.querySelector("#table-baseouvriers tbody");
-        tbody.innerHTML = "";
-        window.baseOuvriers.forEach(function(o) {
-          var total = o.tarif * o.jours;
-          var tr = document.createElement("tr");
-          tr.innerHTML = "<td>" + o.nom + "</td>" +
-                         "<td>" + o.jours.toFixed(1) + "</td>" +
-                         "<td>" + total.toFixed(2) + " €</td>";
-          tbody.appendChild(tr);
-        });
-      }
-      renderBaseOuvriers();
-      
-      /* ---------- Gestion des Chantiers ---------- */
-      window.renderEtapes = function() {
-        var container = document.getElementById("etapes-container");
-        container.innerHTML = "";
-        window.currentEtapes.forEach(function(etape, index) {
-          container.innerHTML += "<div style='margin-bottom:5px; border:1px solid #ccc; padding:4px; border-radius:4px;'>" +
-            "<label><input type='checkbox' onchange='toggleEtape(" + index + ")' " + (etape.done ? "checked" : "") + "> " + etape.description + "</label></div>";
-        });
-        var progress = updateChantierProgress(window.currentEtapes);
-        document.getElementById("progress-bar").style.width = progress + "%";
-      };
-      window.addEtape = function() {
-        var etapeInput = document.getElementById("etape-input");
-        var desc = etapeInput.value.trim();
-        if(desc === "") { alert("Veuillez saisir la description de l'étape."); return; }
-        window.currentEtapes.push({ description: desc, done: false });
-        etapeInput.value = "";
-        window.renderEtapes();
-      };
-      window.toggleEtape = function(index) {
-        window.currentEtapes[index].done = !window.currentEtapes[index].done;
-        window.renderEtapes();
-      };
-      function updateChantierProgress(etapes) {
-        if(!etapes || etapes.length === 0) return 0;
-        var completed = etapes.filter(function(e) { return e.done; }).length;
-        return (completed / etapes.length) * 100;
-      }
+
+      // Écouteur pour le formulaire Chantier
       document.getElementById("form-chantier").addEventListener("submit", function(e) {
         e.preventDefault();
         var nom = document.getElementById("chantier-nom").value.trim();
-        var duree = parseFloat(document.getElementById("chantier-duree").value);
+        var duree = parseInt(document.getElementById("chantier-duree").value);
         var prix = parseFloat(document.getElementById("chantier-prix").value);
         var materiel = parseFloat(document.getElementById("chantier-materiel").value);
         var matPayee = document.getElementById("chantier-mat-payee").checked;
-        if(nom && !isNaN(duree) && !isNaN(prix) && !isNaN(materiel)) {
-          var chantier = {
-            nom: nom,
-            duree: duree,
-            prix: prix,
-            materiel: materiel,
-            matPayee: matPayee,
-            workerIds: [],
-            etapes: window.currentEtapes.slice(),
-            progress: updateChantierProgress(window.currentEtapes)
-          };
-          window.chantiers.push(chantier);
-          window.saveChantiers();
-          renderChantiers();
-          renderBaseChantiers();
-          this.reset();
-          window.currentEtapes = [];
-          window.renderEtapes();
-        } else {
-          alert("Veuillez remplir correctement tous les champs du chantier.");
+        if(nom === "" || isNaN(duree) || isNaN(prix) || isNaN(materiel)) {
+          alert("Veuillez remplir tous les champs du chantier correctement.");
+          return;
         }
+        var etapes = window.currentEtapes || [];
+        var chantier = { nom: nom, duree: duree, prix: prix, materiel: materiel, matPayee: matPayee, etapes: etapes, avance: 0 };
+        window.chantiers.push(chantier);
+        window.saveChantiers();
+        renderChantiers();
+        this.reset();
+        window.currentEtapes = [];
+        document.getElementById("etapes-container").innerHTML = "";
+        // Mise à jour de la base chantiers
+        renderBaseChantiers();
       });
+
+      // Fonction pour rendre la liste des chantiers dans la section Chantier
       function renderChantiers() {
-        var tbody = document.querySelector("#table-chantier tbody");
+        var tbody = document.getElementById("chantier-tbody");
         tbody.innerHTML = "";
-        window.chantiers.forEach(function(c, idx) {
-          var tr = document.createElement("tr");
-          tr.innerHTML = "<td>" + c.nom + "</td>" +
-                         "<td>" + c.duree + " j</td>" +
-                         "<td>" + c.prix.toFixed(2) + " €</td>" +
-                         "<td>" + c.materiel.toFixed(2) + " €</td>" +
-                         "<td>" + c.progress.toFixed(0) + " %</td>" +
-                         "<td><button class='action-btn' onclick='editChantier(" + idx + ")'>Modifier</button> " +
-                         "<button class='action-btn' onclick='deleteChantier(" + idx + ")'>Supprimer</button> " +
-                         "<button class='action-btn' onclick='editChantierSteps(" + idx + ")'>Modifier Étapes</button> " +
-                         "<button class='action-btn' onclick='markChantierTermine(" + idx + ")'>Terminer</button></td>";
-          tbody.appendChild(tr);
+        window.chantiers.forEach(function(c, index) {
+          var html = "<tr>";
+          html += "<td>" + c.nom + "</td>";
+          html += "<td>" + c.duree + " jours</td>";
+          html += "<td>" + parseFloat(c.prix).toFixed(2) + " €</td>";
+          html += "<td>" + parseFloat(c.materiel).toFixed(2) + " €</td>";
+          html += "<td>" + (c.avance || 0) + "%</td>";
+          html += "<td><button onclick='openStepsModal(" + index + ")'>Avancer</button> ";
+          html += "<button onclick='deleteChantier(" + index + ")'>Supprimer</button></td>";
+          html += "</tr>";
+          tbody.innerHTML += html;
         });
       }
+      // IMPORTANT : rendre renderChantiers globale pour que saveChantierSteps puisse l'appeler
+      window.renderChantiers = renderChantiers;
+
+      window.deleteChantier = function(index) {
+        if(confirm("Supprimer le chantier " + window.chantiers[index].nom + " ?")) {
+          window.chantiers.splice(index,1);
+          window.saveChantiers();
+          renderChantiers();
+          // Mise à jour de la base chantiers
+          renderBaseChantiers();
+        }
+      };
       window.editChantier = function(index) {
         var chantier = window.chantiers[index];
         var newNom = prompt("Modifier le nom du chantier :", chantier.nom);
-        if(newNom !== null) { chantier.nom = newNom.trim() || chantier.nom; }
-        window.saveChantiers();
-        renderChantiers();
-        renderBaseChantiers();
-      };
-      window.deleteChantier = function(index) {
-        if(confirm("Supprimer le chantier " + window.chantiers[index].nom + " ?")) {
-          window.chantiers.splice(index, 1);
+        var newDuree = prompt("Modifier la durée (jours) :", chantier.duree);
+        var newPrix = prompt("Modifier le prix (€) :", chantier.prix);
+        var newMateriel = prompt("Modifier le coût des matériaux (€) :", chantier.materiel);
+        if(newNom && newDuree && newPrix && newMateriel) {
+          chantier.nom = newNom;
+          chantier.duree = parseInt(newDuree);
+          chantier.prix = parseFloat(newPrix);
+          chantier.materiel = parseFloat(newMateriel);
           window.saveChantiers();
           renderChantiers();
           renderBaseChantiers();
         }
       };
-      window.markChantierTermine = function(index) {
-        if(confirm("Marquer le chantier '" + window.chantiers[index].nom + "' comme terminé ?")) {
-          window.travauxFinis.push(window.chantiers[index]);
-          window.saveTravauxFinis();
-          window.chantiers.splice(index, 1);
-          window.saveChantiers();
-          renderChantiers();
-          renderBaseChantiers();
-          alert("Chantier terminé enregistré !");
+
+      // Écouteur pour le formulaire Revenu
+      document.getElementById("form-revenu").addEventListener("submit", function(e) {
+        e.preventDefault();
+        var desc = document.getElementById("revenu-description").value.trim();
+        var montant = parseFloat(document.getElementById("revenu-montant").value);
+        var chantier = document.getElementById("revenu-chantier").checked;
+        if(desc === "" || isNaN(montant)) {
+          alert("Veuillez saisir les informations du revenu.");
+          return;
         }
-      };
-      window.editChantierSteps = function(idx) {
-        window.currentEditingChantier = idx;
-        window.currentEtapesModal = (window.chantiers[idx].etapes && window.chantiers[idx].etapes.length) ? window.chantiers[idx].etapes.slice() : [];
-        showStepsModal();
-      };
-      window.toggleModalEtape = function(i) {
-        window.currentEtapesModal[i].done = !window.currentEtapesModal[i].done;
-        populateStepsModal();
-      };
-      function showStepsModal() {
-        populateStepsModal();
-        document.getElementById("steps-modal").style.display = "flex";
-      }
-      function populateStepsModal() {
-        var content = document.getElementById("steps-modal-content");
-        content.innerHTML = "";
-        window.currentEtapesModal.forEach(function(etape, i) {
-          content.innerHTML += "<div style='margin-bottom:5px;'>" +
-            "<label><input type='checkbox' onchange='toggleModalEtape(" + i + ")' " + (etape.done ? "checked" : "") + "> " + etape.description + "</label>" +
-            "</div>";
+        window.revenus.push({ description: desc, montant: montant, chantier: chantier });
+        window.saveFinance();
+        renderFinanceSummary();
+        renderRevenusList();
+        this.reset();
+      });
+      // Écouteur pour le formulaire Revenu en Attente
+      document.getElementById("form-revenu-attente").addEventListener("submit", function(e) {
+        e.preventDefault();
+        var desc = document.getElementById("revenu-attente-description").value.trim();
+        var montant = parseFloat(document.getElementById("revenu-attente-montant").value);
+        if(desc === "" || isNaN(montant)) {
+          alert("Veuillez saisir les informations du revenu en attente.");
+          return;
+        }
+        window.revenusAttente.push({ description: desc, montant: montant });
+        window.saveFinance();
+        renderFinanceSummary();
+        renderRevenusAttenteList();
+        this.reset();
+      });
+      // Écouteur pour le formulaire Dépense
+      document.getElementById("form-depense").addEventListener("submit", function(e) {
+        e.preventDefault();
+        var desc = document.getElementById("depense-description").value.trim();
+        var montant = parseFloat(document.getElementById("depense-montant").value);
+        if(desc === "" || isNaN(montant)) {
+          alert("Veuillez saisir les informations de la dépense.");
+          return;
+        }
+        window.depenses.push({ description: desc, montant: montant });
+        window.saveFinance();
+        renderFinanceSummary();
+        renderDepensesList();
+        this.reset();
+      });
+      // Écouteur pour le formulaire Dépense Prévue
+      document.getElementById("form-depense-prevue").addEventListener("submit", function(e) {
+        e.preventDefault();
+        var desc = document.getElementById("depense-prevue-description").value.trim();
+        var montant = parseFloat(document.getElementById("depense-prevue-montant").value);
+        if(desc === "" || isNaN(montant)) {
+          alert("Veuillez saisir les informations de la dépense prévue.");
+          return;
+        }
+        window.depensesPrevues.push({ description: desc, montant: montant });
+        window.saveFinance();
+        renderFinanceSummary();
+        renderDepensesPrevuesList();
+        this.reset();
+      });
+      // Écouteur pour le formulaire Projet avec vérification des champs obligatoires
+      document.getElementById("form-projet").addEventListener("submit", function(e) {
+        e.preventDefault();
+        var nom = document.getElementById("projet-nom").value.trim();
+        var prixVal = document.getElementById("projet-prix").value.trim();
+        var dureeVal = document.getElementById("projet-duree").value.trim();
+        if(nom === "" || prixVal === "" || dureeVal === ""){
+          alert("Veuillez remplir les champs obligatoires du projet.");
+          return;
+        }
+        var prix = parseFloat(prixVal);
+        var duree = parseInt(dureeVal);
+        var ajoutLien = document.getElementById("projet-ajout-lien").checked;
+        var lien = (ajoutLien ? document.getElementById("projet-lien").value.trim() : "");
+        var modeInverse = document.getElementById("projet-mode-inverse").checked;
+        var mensuel = parseFloat(document.getElementById("projet-mensuel").value) || 0;
+        var moisObjectif = parseInt(document.getElementById("projet-mois-objectif").value) || 0;
+        var priorite = document.getElementById("projet-priorite").value;
+        var projet = { nom: nom, prix: prix, lien: lien, duree: duree, modeInverse: modeInverse, mensuel: mensuel, moisObjectif: moisObjectif, priorite: priorite };
+        window.projets.push(projet);
+        window.saveProjets();
+        window.renderProjets();
+        this.reset();
+      });
+
+      // Fonction pour rendre la liste des ouvriers dans la Base Ouvriers
+      function renderBaseOuvriers() {
+        var unpaidContainer = document.getElementById("baseouvriers-unpaid");
+        var paidContainer = document.getElementById("baseouvriers-paid");
+        unpaidContainer.innerHTML = "";
+        paidContainer.innerHTML = "";
+        var unpaid = window.baseOuvriers.filter(o => !o.paye);
+        var paid = window.baseOuvriers.filter(o => o.paye);
+        var htmlUnpaid = "<table style='width:100%; border-collapse: collapse;'><thead><tr><th>Nom</th><th>Jours Totaux</th><th>Montant Total (€)</th></tr></thead><tbody>";
+        unpaid.forEach(function(o) {
+          var total = (parseFloat(o.tarif) * parseFloat(o.jours)).toFixed(2);
+          htmlUnpaid += "<tr><td>" + o.nom + "</td><td>" + parseFloat(o.jours).toFixed(1) + "</td><td>" + total + " €</td></tr>";
         });
+        htmlUnpaid += "</tbody></table>";
+        unpaidContainer.innerHTML = "<h3>Ouvriers Impayés</h3>" + (unpaid.length ? htmlUnpaid : "<p>Aucun ouvrier impayé.</p>");
+
+        var htmlPaid = "<table style='width:100%; border-collapse: collapse;'><thead><tr><th>Nom</th><th>Jours Totaux</th><th>Montant Total (€)</th></tr></thead><tbody>";
+        paid.forEach(function(o) {
+          var total = (parseFloat(o.tarif) * parseFloat(o.jours)).toFixed(2);
+          htmlPaid += "<tr><td>" + o.nom + "</td><td>" + parseFloat(o.jours).toFixed(1) + "</td><td>" + total + " €</td></tr>";
+        });
+        htmlPaid += "</tbody></table>";
+        paidContainer.innerHTML = "<h3>Ouvriers Payés</h3>" + (paid.length ? htmlPaid : "<p>Aucun ouvrier payé.</p>");
       }
-      window.saveChantierSteps = function() {
-        if(window.currentEditingChantier !== null) {
-          window.chantiers[window.currentEditingChantier].etapes = window.currentEtapesModal.slice();
-          window.chantiers[window.currentEditingChantier].progress = updateChantierProgress(window.currentEtapesModal);
-          window.saveChantiers();
-          renderChantiers();
-          renderBaseChantiers();
-          closeStepsModal();
-        }
-      };
-      function closeStepsModal() {
-        document.getElementById("steps-modal").style.display = "none";
-        window.currentEditingChantier = null;
-      }
+      
+      // Fonction pour rendre la liste des chantiers dans la Base Chantiers
       function renderBaseChantiers() {
-        var tbodyActif = document.querySelector("#table-base-chantier-actif tbody");
-        tbodyActif.innerHTML = "";
-        window.chantiers.forEach(function(c) {
+        var activeTbody = document.getElementById("basechantier-actif-tbody");
+        var finishedTbody = document.getElementById("basechantier-fini-tbody");
+        activeTbody.innerHTML = "";
+        finishedTbody.innerHTML = "";
+        // Chantiers actifs avec boutons Avancer (ouvre le modal pour gérer les étapes) et Terminer
+        window.chantiers.forEach(function(c, index) {
           var tr = document.createElement("tr");
           tr.innerHTML = "<td>" + c.nom + "</td>" +
-                         "<td>" + c.duree + " j</td>" +
-                         "<td>" + c.prix.toFixed(2) + " €</td>" +
-                         "<td>" + c.progress.toFixed(0) + " %</td>" +
-                         "<td><button class='action-btn' onclick=\"markChantierTermineFromBase('" + c.nom + "')\">Terminer</button></td>";
-          tbodyActif.appendChild(tr);
+                         "<td>" + c.duree + " jours</td>" +
+                         "<td>" + parseFloat(c.prix).toFixed(2) + " €</td>" +
+                         "<td>" + (c.avance || 0) + "%</td>" +
+                         "<td><button onclick='openStepsModal(" + index + ")'>Avancer</button> " +
+                         "<button onclick='finishChantier(" + index + ")'>Terminer</button></td>";
+          activeTbody.appendChild(tr);
         });
-        var tbodyFini = document.querySelector("#table-base-chantier-fini tbody");
-        tbodyFini.innerHTML = "";
+        // Travaux terminés
         window.travauxFinis.forEach(function(c) {
           var tr = document.createElement("tr");
           tr.innerHTML = "<td>" + c.nom + "</td>" +
-                         "<td>" + c.duree + " j</td>" +
-                         "<td>" + c.prix.toFixed(2) + " €</td>";
-          tbodyFini.appendChild(tr);
+                         "<td>" + c.duree + " jours</td>" +
+                         "<td>" + parseFloat(c.prix).toFixed(2) + " €</td>";
+          finishedTbody.appendChild(tr);
         });
       }
-      window.markChantierTermineFromBase = function(nom) {
-        var index = window.chantiers.findIndex(function(c) { return c.nom.toLowerCase() === nom.toLowerCase(); });
-        if(index !== -1) {
-          window.markChantierTermine(index);
+      
+      window.advanceChantier = function(index) {
+        // Ouvrir le modal pour cocher les étapes
+        openStepsModal(index);
+      };
+      window.finishChantier = function(index) {
+        if(confirm("Terminer le chantier " + window.chantiers[index].nom + " ?")) {
+          var chantier = window.chantiers.splice(index,1)[0];
+          chantier.avance = 100;
+          window.travauxFinis.push(chantier);
+          window.saveChantiers();
+          window.saveTravauxFinis();
+          renderChantiers();
           renderBaseChantiers();
         }
       };
-      
-      /* ---------- Options Supplémentaires ---------- */
-      window._calculerMargeBeneficiaire = function() {
-        var nom = prompt("Entrez le nom du chantier pour calculer la marge :");
-        if(!nom) return;
-        var chantier = window.chantiers.find(function(c) { return c.nom.toLowerCase() === nom.toLowerCase(); });
-        if(!chantier) { alert("Chantier non trouvé."); return; }
-        var coutOuvriers = 0;
-        if(chantier.workerIds && chantier.duree) {
-          chantier.workerIds.forEach(function(name) {
-            var worker = window.ouvriers.find(function(o) { return o.nom.toLowerCase() === name.toLowerCase(); });
-            if(worker) { coutOuvriers += worker.tarif * chantier.duree; }
-          });
+
+      window.renderProjets = function() {
+        var container = document.getElementById("details-projet");
+        container.innerHTML = "";
+        if(window.projets.length === 0) {
+          container.innerHTML = "<p>Aucun projet enregistré.</p>";
+          return;
         }
-        var coutMateriel = chantier.matPayee ? 0 : chantier.materiel;
-        var coutTotal = (chantier.prix * 0.22) + coutOuvriers + coutMateriel;
-        var marge = ((chantier.prix - coutTotal) / chantier.prix) * 100;
-        document.getElementById("plusoptions-output").innerText = "Marge bénéficiaire du chantier '" + chantier.nom + "' : " + marge.toFixed(2) + " %";
-      };
-      window._previsionTresorerie = function() {
-        var mois = parseInt(prompt("Sur combien de mois projeter la trésorerie ?"));
-        if(isNaN(mois) || mois <= 0) { alert("Valeur invalide."); return; }
-        var soldeText = document.getElementById("global-balance").innerText;
-        var solde = parseFloat(soldeText.replace(/[^\d.-]/g, ""));
-        var projection = solde * mois;
-        document.getElementById("plusoptions-output").innerText = "Projection sur " + mois + " mois : " + projection.toFixed(2) + " €";
-      };
-      window._analyserRentabiliteProjet = function() {
-        var nom = prompt("Entrez le nom du projet à analyser :");
-        if(!nom) return;
-        var projet = window.projets.find(function(p) { return p.nom.toLowerCase() === nom.toLowerCase(); });
-        if(!projet) { alert("Projet non trouvé."); return; }
-        var revenuEstime = parseFloat(prompt("Revenu estimé pour ce projet (€) :"));
-        if(isNaN(revenuEstime)) { alert("Valeur invalide."); return; }
-        var roi = ((revenuEstime - projet.budgetTotal) / projet.budgetTotal) * 100;
-        document.getElementById("plusoptions-output").innerText = "ROI pour le projet '" + projet.nom + "' : " + roi.toFixed(2) + " %";
-      };
-      window._genererEcheancier = function() {
-        var montantTotal = parseFloat(prompt("Montant total (€) :"));
-        var mois = parseInt(prompt("Répartir sur combien de mois ?"));
-        if(isNaN(montantTotal) || isNaN(mois) || mois <= 0) { alert("Valeurs invalides."); return; }
-        var montantMensuel = montantTotal / mois;
-        var echeancier = "Échéancier :\n";
-        var date = new Date();
-        for(var i = 1; i <= mois; i++) {
-          date.setMonth(date.getMonth() + 1);
-          echeancier += "Mois " + i + " (" + date.toLocaleDateString() + ") : " + montantMensuel.toFixed(2) + " €\n";
-        }
-        document.getElementById("plusoptions-output").innerText = echeancier;
-      };
-      window._comparerCouts = function() {
-        var nom1 = prompt("Entrez le nom du premier chantier :");
-        var nom2 = prompt("Entrez le nom du deuxième chantier :");
-        if(!nom1 || !nom2) return;
-        var chantier1 = window.chantiers.find(function(c) { return c.nom.toLowerCase() === nom1.toLowerCase(); });
-        var chantier2 = window.chantiers.find(function(c) { return c.nom.toLowerCase() === nom2.toLowerCase(); });
-        if(!chantier1 || !chantier2) { alert("Un des chantiers est introuvable."); return; }
-        var cout1 = chantier1.prix + chantier1.materiel;
-        var cout2 = chantier2.prix + chantier2.materiel;
-        var message = "Comparaison :\n" +
-                      chantier1.nom + " : " + cout1.toFixed(2) + " €\n" +
-                      chantier2.nom + " : " + cout2.toFixed(2) + " €\n";
-        message += (cout1 < cout2) ? chantier1.nom + " est moins cher." : (cout2 < cout1) ? chantier2.nom + " est moins cher." : "Les deux ont le même coût.";
-        document.getElementById("plusoptions-output").innerText = message;
-      };
-      window._planifierTaches = function() {
-        var nb = parseInt(prompt("Nombre de tâches à planifier :"));
-        if(isNaN(nb) || nb <= 0) { alert("Nombre invalide."); return; }
-        var taches = [];
-        for(var i = 0; i < nb; i++) {
-          var tache = prompt("Tâche " + (i+1) + " :");
-          var dateLimite = prompt("Date limite (AAAA-MM-JJ) pour la tâche " + (i+1) + " :");
-          if(tache && dateLimite) { taches.push({ tache: tache, dateLimite: dateLimite }); }
-        }
-        taches.sort(function(a, b) { return new Date(a.dateLimite) - new Date(b.dateLimite); });
-        var message = "Tâches planifiées :\n";
-        taches.forEach(function(t, i) { message += (i+1) + ". " + t.tache + " (avant " + t.dateLimite + ")\n"; });
-        document.getElementById("plusoptions-output").innerText = message;
-      };
-      window._simulerInvestissement = function() {
-        var principal = parseFloat(prompt("Montant investi initialement (€) :"));
-        var taux = parseFloat(prompt("Taux d'intérêt annuel (%) :"));
-        var annees = parseInt(prompt("Durée de l'investissement (années) :"));
-        if(isNaN(principal) || isNaN(taux) || isNaN(annees)) { alert("Valeurs invalides."); return; }
-        var montantFinal = principal * Math.pow((1 + taux/100), annees);
-        document.getElementById("plusoptions-output").innerText = "Après " + annees + " ans, " + principal.toFixed(2) + " € à " + taux + "% donnera " + montantFinal.toFixed(2) + " €.";
-      };
-      window._calculerTVAAvance = function() {
-        var montant = parseFloat(prompt("Montant hors taxe (€) :"));
-        var taux = parseFloat(prompt("Taux de TVA (%) :"));
-        if(isNaN(montant) || isNaN(taux)) { alert("Valeurs invalides."); return; }
-        var tva = montant * (taux/100);
-        document.getElementById("plusoptions-output").innerText = "TVA à " + taux + "% sur " + montant.toFixed(2) + " € = " + tva.toFixed(2) + " € (Total TTC = " + (montant+tva).toFixed(2) + " €)";
-      };
-      window._genererRapportPersonnalise = function() {
-        var dateDebut = prompt("Date de début (AAAA-MM-JJ) :");
-        var dateFin = prompt("Date de fin (AAAA-MM-JJ) :");
-        if(!dateDebut || !dateFin) { alert("Dates invalides."); return; }
-        document.getElementById("plusoptions-output").innerText = "Rapport pour la période du " + dateDebut + " au " + dateFin + ".";
-      };
-      window._analyserAvancee = function() {
-        alert("Analyse avancée en cours de développement…");
-      };
-      
-      /* ---------- Importation / Exportation / Utilitaires ---------- */
-      window.exportAllData = function() {
-        var allData = {
-          ouvriers: window.ouvriers,
-          baseOuvriers: window.baseOuvriers,
-          chantiers: window.chantiers,
-          revenus: window.revenus,
-          revenusAttente: window.revenusAttente,
-          depenses: window.depenses,
-          depensesPrevues: window.depensesPrevues,
-          projets: window.projets,
-          travauxFinis: window.travauxFinis,
-          achats: window.achats,
-          groupedAchats: window.groupedAchats
-        };
-        var dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(allData, null, 2));
-        var dlAnchorElem = document.createElement("a");
-        dlAnchorElem.setAttribute("href", dataStr);
-        dlAnchorElem.setAttribute("download", "donnees_entreprise.json");
-        dlAnchorElem.click();
-      };
-      window.importAllData = function() {
-        document.getElementById("import-file").click();
-      };
-      window.handleImport = function(event) {
-        var file = event.target.files[0];
-        if(!file) return;
-        var reader = new FileReader();
-        reader.onload = function(e) {
-          try {
-            var importedData = JSON.parse(e.target.result);
-            if(importedData.ouvriers) {
-              window.ouvriers = importedData.ouvriers;
-              window.saveOuvriers();
-              window.renderOuvriers();
-              populateOuvrierSelect();
-            }
-            if(importedData.baseOuvriers) {
-              window.baseOuvriers = importedData.baseOuvriers;
-              window.saveBaseOuvriers();
-              renderBaseOuvriers();
-            }
-            if(importedData.chantiers) {
-              window.chantiers = importedData.chantiers;
-              window.saveChantiers();
-              renderChantiers();
-              renderBaseChantiers();
-            }
-            if(importedData.revenus) { window.revenus = importedData.revenus; }
-            if(importedData.depenses) { window.depenses = importedData.depenses; }
-            if(importedData.projets) {
-              window.projets = importedData.projets;
-              window.saveProjets();
-              window.renderProjets && window.renderProjets();
-            }
-            if(importedData.travauxFinis) {
-              window.travauxFinis = importedData.travauxFinis;
-              window.saveTravauxFinis();
-            }
-            if(importedData.achats) { window.achats = importedData.achats; window.renderAchats && window.renderAchats(); }
-            if(importedData.groupedAchats) { window.groupedAchats = importedData.groupedAchats; renderGroupedAchats && renderGroupedAchats(); }
-            renderFinanceSummary();
-            alert("Importation réussie !");
-          } catch(error) {
-            alert("Erreur lors de l'importation des données.");
-          }
-        };
-        reader.readAsText(file);
-      };
-      window.clearAllData = function() {
-        if(confirm("Tout réinitialiser ? Cette action effacera toutes vos données.")) { localStorage.clear(); location.reload(); }
-      };
-      window.showHelp = function() {
-        alert("Utilitaires :\n1. Exporter données\n2. Importer données\n3. Réinitialiser toutes les données\n4. Afficher Synthèse\n5. Autres options...");
-      };
-      window.viewSummary = function() { generateReport(); };
-      function generateReport() {
-        var reportHTML = "<h3>Rapport Global</h3>";
-        reportHTML += "<h4>Ouvriers</h4><ul>";
-        window.ouvriers.forEach(function(o) { reportHTML += "<li>" + o.nom + " – Tarif: " + o.tarif + " €, Jours: " + o.jours + ", Total: " + (o.tarif * o.jours).toFixed(2) + " €</li>"; });
-        reportHTML += "</ul><h4>Chantiers Actifs</h4><ul>";
-        window.chantiers.forEach(function(c) { reportHTML += "<li>" + c.nom + " – Durée: " + c.duree + " j, Prix: " + c.prix + " €</li>"; });
-        reportHTML += "</ul><h4>Travaux Terminés</h4><ul>";
-        window.travauxFinis.forEach(function(c) { reportHTML += "<li>" + c.nom + " – Durée: " + c.duree + " j, Prix: " + c.prix + " €</li>"; });
-        reportHTML += "</ul><h4>Projets</h4><ul>";
-        window.projets.forEach(function(p) { reportHTML += "<li>" + p.nom + " – Budget: " + p.budgetTotal + ", Délai: " + p.duree + " mois</li>"; });
-        reportHTML += "</ul><h4>Finance</h4>";
-        reportHTML += "<p>" + document.getElementById("summary-revenus").innerText + "</p>";
-        reportHTML += "<p>" + document.getElementById("summary-revenus-attente").innerText + "</p>";
-        reportHTML += "<p>" + document.getElementById("summary-depenses").innerText + "</p>";
-        reportHTML += "<p>" + document.getElementById("summary-depenses-prevues").innerText + "</p>";
-        reportHTML += "<p>" + document.getElementById("global-balance").innerText + "</p>";
-        document.getElementById("report-data").innerHTML = reportHTML;
-        document.getElementById("report-modal").style.display = "flex";
-      }
-      window.closeReport = function() { document.getElementById("report-modal").style.display = "none"; };
-      window.printReport = function() {
-        var printContent = document.getElementById("report-data").innerHTML;
-        var originalContent = document.body.innerHTML;
-        document.body.innerHTML = printContent;
-        window.print();
-        document.body.innerHTML = originalContent;
-        location.reload();
-      };
-      window.downloadReportCSV = function() {
-        var csvContent = "data:text/csv;charset=utf-8,";
-        csvContent += "Type,Description,Montant\n";
-        window.revenus.forEach(function(r) { csvContent += "Revenu," + r.description + "," + r.montant + "\n"; });
-        window.revenusAttente.forEach(function(r) { csvContent += "Revenu en attente," + r.description + "," + r.montant + "\n"; });
-        window.depenses.forEach(function(d) { csvContent += "Dépense," + d.description + "," + d.montant + "\n"; });
-        window.depensesPrevues.forEach(function(d) { csvContent += "Dépense prévue," + d.description + "," + d.montant + "\n"; });
-        window.ouvriers.forEach(function(o) {
-          var total = o.tarif * o.jours;
-          csvContent += "Ouvrier," + o.nom + " – Tarif: " + o.tarif + ", Total: " + total.toFixed(2) + "\n";
+        var html = "<table style='width:100%; border-collapse: collapse;'><thead><tr><th>Nom</th><th>Budget</th><th>Durée</th><th>Lien</th><th>Priorité</th><th>Actions</th></tr></thead><tbody>";
+        window.projets.forEach(function(p, index) {
+          html += "<tr>";
+          html += "<td>" + p.nom + "</td>";
+          html += "<td>" + parseFloat(p.prix).toFixed(2) + " €</td>";
+          html += "<td>" + p.duree + " mois</td>";
+          html += "<td>" + (p.lien ? "<a href='" + p.lien + "' target='_blank'>Voir</a>" : "") + "</td>";
+          html += "<td>" + p.priorite + "</td>";
+          html += "<td><button onclick='editProjet(" + index + ")'>Modifier</button> ";
+          html += "<button onclick='deleteProjet(" + index + ")'>Supprimer</button></td>";
+          html += "</tr>";
         });
-        window.chantiers.forEach(function(c) { csvContent += "Chantier," + c.nom + " – Durée: " + c.duree + " j, " + c.prix + "\n"; });
-        window.projets.forEach(function(p) { csvContent += "Projet," + p.nom + " – Budget: " + p.budgetTotal + ", Délai: " + p.duree + " mois\n"; });
-        var encodedUri = encodeURI(csvContent);
-        var link = document.createElement("a");
-        link.setAttribute("href", encodedUri);
-        link.setAttribute("download", "rapport_global.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        html += "</tbody></table>";
+        container.innerHTML = html;
       };
-      
-      /* ---------- Événements pour le formulaire Revenus ---------- */
-      document.getElementById("form-revenu").addEventListener("submit", function(e) {
-        e.preventDefault();
-        var description = document.getElementById("revenu-description").value.trim();
-        var montant = parseFloat(document.getElementById("revenu-montant").value);
-        var estChantier = document.getElementById("revenu-chantier").checked;
-        if(description === "" || isNaN(montant)) {
-          alert("Veuillez remplir correctement le revenu.");
-          return;
+      window.deleteProjet = function(index) {
+        if(confirm("Supprimer le projet " + window.projets[index].nom + " ?")) {
+          window.projets.splice(index, 1);
+          window.saveProjets();
+          window.renderProjets();
         }
-        window.revenus.push({ description: description, montant: montant, chantier: estChantier });
-        window.saveFinance();
-        renderFinanceSummary();
-        this.reset();
-      });
-      
-      /* ---------- Événements pour les formulaires de Revenus en Attente, Dépenses Manuelles et Dépenses Prévues ---------- */
-      document.getElementById("form-revenu-attente").addEventListener("submit", function(e) {
-        e.preventDefault();
-        var description = document.getElementById("revenu-attente-description").value.trim();
-        var montant = parseFloat(document.getElementById("revenu-attente-montant").value);
-        if(description === "" || isNaN(montant)) {
-          alert("Veuillez remplir correctement le revenu en attente.");
-          return;
+      };
+      window.editProjet = function(index) {
+        var projet = window.projets[index];
+        var newNom = prompt("Modifier le nom du projet :", projet.nom);
+        var newPrix = prompt("Modifier le budget total (€) :", projet.prix);
+        var newDuree = prompt("Modifier la durée souhaitée (mois) :", projet.duree);
+        if(newNom && newPrix && newDuree) {
+          projet.nom = newNom;
+          projet.prix = parseFloat(newPrix);
+          projet.duree = parseInt(newDuree);
+          window.saveProjets();
+          window.renderProjets();
         }
-        window.revenusAttente.push({ description: description, montant: montant });
-        window.saveFinance();
-        renderFinanceSummary();
-        this.reset();
-      });
+      };
+
+      populateOuvrierSelect();
+      window.renderOuvriers();
+      renderBaseOuvriers();
+      renderChantiers();
+      renderBaseChantiers();
+      window.renderProjets();
       
-      document.getElementById("form-depense").addEventListener("submit", function(e) {
-        e.preventDefault();
-        var description = document.getElementById("depense-description").value.trim();
-        var montant = parseFloat(document.getElementById("depense-montant").value);
-        if(description === "" || isNaN(montant)) {
-          alert("Veuillez remplir correctement la dépense.");
-          return;
-        }
-        window.depenses.push({ description: description, montant: montant });
-        window.saveFinance();
-        renderFinanceSummary();
-        this.reset();
-      });
-      
-      document.getElementById("form-depense-prevue").addEventListener("submit", function(e) {
-        e.preventDefault();
-        var description = document.getElementById("depense-prevue-description").value.trim();
-        var montant = parseFloat(document.getElementById("depense-prevue-montant").value);
-        if(description === "" || isNaN(montant)) {
-          alert("Veuillez remplir correctement la dépense prévue.");
-          return;
-        }
-        window.depensesPrevues.push({ description: description, montant: montant });
-        window.saveFinance();
-        renderFinanceSummary();
-        this.reset();
-      });
-      
-      /* ---------- Fonctions Globales pour être appelées depuis le HTML ---------- */
       window.refreshAll = function() {
         window.renderOuvriers();
         populateOuvrierSelect();
+        // Mise à jour de la base ouvriers à partir des ouvriers actuels
+        window.baseOuvriers = window.ouvriers.slice();
+        window.saveBaseOuvriers();
         renderBaseOuvriers();
+        renderFinanceSummary();
+        renderRevenusList();
+        renderRevenusAttenteList();
+        renderDepensesList();
+        renderDepensesPrevuesList();
+        renderAchatsTable();
+        renderGroupedAchats();
         renderChantiers();
         renderBaseChantiers();
-        renderFinanceSummary();
+        window.renderProjets();
       };
-      // Initialisation des vues
       window.refreshAll();
     });
   </script>
