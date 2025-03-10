@@ -1074,7 +1074,7 @@
       htmlPaid += "</tbody></table>";
       paidContainer.innerHTML = "<h3>Ouvriers Payés</h3>" + (paid.length ? htmlPaid : "<p>Aucun ouvrier payé.</p>");
     }
-
+      
     // Fonctions spécifiques pour la Base Chantiers : ajout des boutons Avancer et Terminer
     function renderBaseChantiers() {
       var activeTbody = document.getElementById("basechantier-actif-tbody");
@@ -1102,59 +1102,187 @@
       });
     }
       
-    // Remplacement de "advanceChantier" par l'ouverture du modal pour gérer les étapes
-    function openStepsModal(index) {
-      window.currentChantierIndex = index;
-      var chantier = window.chantiers[index];
-      // Initialisation de completedSteps pour le chantier, si nécessaire
-      if(!chantier.completedSteps || chantier.completedSteps.length !== chantier.etapes.length) {
-        chantier.completedSteps = [];
-        for(var i = 0; i < chantier.etapes.length; i++){
-          chantier.completedSteps.push(false);
-        }
-      }
-      var content = "<h3>Étapes du chantier : " + chantier.nom + "</h3>";
-      content += "<ul style='list-style:none; padding:0;'>";
-      chantier.etapes.forEach(function(step, i) {
-        content += "<li style='margin:5px 0;'><label><input type='checkbox' onchange='updateChantierStep(" + i + ", this.checked)' " + (chantier.completedSteps[i] ? "checked" : "") + "> " + step + "</label></li>";
-      });
-      content += "</ul>";
-      content += "<p>Le pourcentage d'avancement sera calculé en fonction du nombre d'étapes cochées.</p>";
-      document.getElementById("steps-modal-content").innerHTML = content;
-      document.getElementById("steps-modal").style.display = "flex";
-    }
-    function updateChantierStep(stepIndex, checked) {
-      var index = window.currentChantierIndex;
-      var chantier = window.chantiers[index];
-      chantier.completedSteps[stepIndex] = checked;
-    }
-    function saveChantierSteps() {
-      var index = window.currentChantierIndex;
-      var chantier = window.chantiers[index];
-      var totalSteps = chantier.etapes.length;
-      var completedCount = chantier.completedSteps.filter(x => x).length;
-      chantier.avance = totalSteps > 0 ? Math.round((completedCount / totalSteps) * 100) : 0;
-      window.saveChantiers();
-      window.renderChantiers();
-      renderBaseChantiers();
-      closeStepsModal();
-    }
-    function closeStepsModal() {
-      document.getElementById("steps-modal").style.display = "none";
-    }
-    function finishChantier(index) {
+    window.advanceChantier = function(index) {
+      // Ouvrir le modal pour cocher les étapes
+      openStepsModal(index);
+    };
+    window.finishChantier = function(index) {
       if(confirm("Terminer le chantier " + window.chantiers[index].nom + " ?")) {
         var chantier = window.chantiers.splice(index,1)[0];
         chantier.avance = 100;
         window.travauxFinis.push(chantier);
         window.saveChantiers();
         window.saveTravauxFinis();
-        window.renderChantiers();
+        renderChantiers();
         renderBaseChantiers();
       }
-    }
+    };
 
-    // Pour rendre la liste des chantiers dans la section "Chantiers"
+    window.renderProjets = function() {
+      var container = document.getElementById("details-projet");
+      container.innerHTML = "";
+      if(window.projets.length === 0) {
+        container.innerHTML = "<p>Aucun projet enregistré.</p>";
+        return;
+      }
+      var html = "<table style='width:100%; border-collapse: collapse;'><thead><tr><th>Nom</th><th>Budget</th><th>Durée</th><th>Lien</th><th>Priorité</th><th>Actions</th></tr></thead><tbody>";
+      window.projets.forEach(function(p, index) {
+        html += "<tr>";
+        html += "<td>" + p.nom + "</td>";
+        html += "<td>" + parseFloat(p.prix).toFixed(2) + " €</td>";
+        html += "<td>" + p.duree + " mois</td>";
+        html += "<td>" + (p.lien ? "<a href='" + p.lien + "' target='_blank'>Voir</a>" : "") + "</td>";
+        html += "<td>" + p.priorite + "</td>";
+        html += "<td><button onclick='editProjet(" + index + ")'>Modifier</button> ";
+        html += "<button onclick='deleteProjet(" + index + ")'>Supprimer</button></td>";
+        html += "</tr>";
+      });
+      html += "</tbody></table>";
+      container.innerHTML = html;
+    };
+    window.deleteProjet = function(index) {
+      if(confirm("Supprimer le projet " + window.projets[index].nom + " ?")) {
+        window.projets.splice(index, 1);
+        window.saveProjets();
+        window.renderProjets();
+      }
+    };
+    window.editProjet = function(index) {
+      var projet = window.projets[index];
+      var newNom = prompt("Modifier le nom du projet :", projet.nom);
+      var newPrix = prompt("Modifier le budget total (€) :", projet.prix);
+      var newDuree = prompt("Modifier la durée souhaitée (mois) :", projet.duree);
+      if(newNom && newPrix && newDuree) {
+        projet.nom = newNom;
+        projet.prix = parseFloat(newPrix);
+        projet.duree = parseInt(newDuree);
+        window.saveProjets();
+        window.renderProjets();
+      }
+    };
+
+    // MODIFICATION : mise à jour de la fonction toggleOuvrierPay
+    window.toggleOuvrierPay = function(index) {
+      window.ouvriers[index].paye = !window.ouvriers[index].paye;
+      window.saveOuvriers();
+      window.renderOuvriers();
+      // MAJ de la base ouvriers pour refléter le changement
+      window.baseOuvriers = window.ouvriers.slice();
+      window.saveBaseOuvriers();
+      renderBaseOuvriers();
+    };
+
+    function populateOuvrierSelect() {
+      var select = document.getElementById("ouvrier-select");
+      select.innerHTML = "<option value=''>Sélectionner un ouvrier (facultatif)</option>";
+      window.ouvriers.forEach(function(o) {
+        select.innerHTML += "<option value='" + o.nom + "'>" + o.nom + "</option>";
+      });
+    }
+    window.renderOuvriers = function() {
+      var tbody = document.getElementById("ouvriers-tbody");
+      tbody.innerHTML = "";
+      window.ouvriers.forEach(function(o, index) {
+        var total = (parseFloat(o.tarif) * parseFloat(o.jours)).toFixed(2);
+        var tr = document.createElement("tr");
+        tr.innerHTML =
+          "<td style='text-align:center;'><input type='checkbox' " + (o.paye ? "checked" : "") +
+          " onclick='toggleOuvrierPay(" + index + ")'></td>" +
+          "<td>" + o.nom + "</td>" +
+          "<td>" + parseFloat(o.tarif).toFixed(2) + " €</td>" +
+          "<td>" + parseFloat(o.jours).toFixed(1) + "</td>" +
+          "<td>" + total + " €</td>" +
+          "<td><button class='action-btn' onclick=\"editOuvrier('" + o.nom + "')\">Modifier</button> " +
+          "<button class='action-btn' onclick=\"deleteOuvrier('" + o.nom + "')\">Supprimer</button></td>";
+        tbody.appendChild(tr);
+      });
+    };
+
+    window.deleteOuvrier = function(nom) {
+      if(confirm("Supprimer l'ouvrier " + nom + " ?")) {
+        window.ouvriers = window.ouvriers.filter(function(o) {
+          return o.nom.toLowerCase() !== nom.toLowerCase();
+        });
+        window.saveOuvriers();
+        window.renderOuvriers();
+        populateOuvrierSelect();
+        // MAJ de la base ouvriers avec la liste actuelle
+        window.baseOuvriers = window.ouvriers.slice();
+        window.saveBaseOuvriers();
+        renderBaseOuvriers();
+      }
+    };
+    window.editOuvrier = function(nom) {
+      var index = window.ouvriers.findIndex(function(o) { return o.nom.toLowerCase() === nom.toLowerCase(); });
+      if(index !== -1) {
+        var newTarif = prompt("Modifier le tarif pour " + nom + " :", window.ouvriers[index].tarif);
+        var newJours = prompt("Modifier le nombre de jours pour " + nom + " :", window.ouvriers[index].jours);
+        if(newTarif !== null && newJours !== null) {
+          window.ouvriers[index].tarif = parseFloat(newTarif) || window.ouvriers[index].tarif;
+          window.ouvriers[index].jours = parseFloat(newJours) || window.ouvriers[index].jours;
+          window.saveOuvriers();
+          window.renderOuvriers();
+          populateOuvrierSelect();
+          // MAJ de la base ouvriers
+          window.baseOuvriers = window.ouvriers.slice();
+          window.saveBaseOuvriers();
+          renderBaseOuvriers();
+        }
+      }
+    };
+
+    // Écouteur pour le formulaire Ouvrier
+    document.getElementById("form-ouvrier").addEventListener("submit", function(e) {
+      e.preventDefault();
+      var nom = document.getElementById("ouvrier-nom").value.trim();
+      var tarif = parseFloat(document.getElementById("ouvrier-tarif").value);
+      var jours = parseFloat(document.getElementById("ouvrier-jours").value);
+      if(nom === "" || isNaN(tarif) || isNaN(jours)) {
+        alert("Veuillez remplir tous les champs de l'ouvrier correctement.");
+        return;
+      }
+      var existingIndex = window.ouvriers.findIndex(o => o.nom.toLowerCase() === nom.toLowerCase());
+      if(existingIndex !== -1){
+         window.ouvriers[existingIndex].tarif = tarif;
+         window.ouvriers[existingIndex].jours = jours;
+      } else {
+         window.ouvriers.push({ nom: nom, tarif: tarif, jours: jours, paye: false });
+      }
+      window.saveOuvriers();
+      window.renderOuvriers();
+      populateOuvrierSelect();
+      // MAJ de la base ouvriers
+      window.baseOuvriers = window.ouvriers.slice();
+      window.saveBaseOuvriers();
+      renderBaseOuvriers();
+      this.reset();
+    });
+
+    // Écouteur pour le formulaire Chantier
+    document.getElementById("form-chantier").addEventListener("submit", function(e) {
+      e.preventDefault();
+      var nom = document.getElementById("chantier-nom").value.trim();
+      var duree = parseInt(document.getElementById("chantier-duree").value);
+      var prix = parseFloat(document.getElementById("chantier-prix").value);
+      var materiel = parseFloat(document.getElementById("chantier-materiel").value);
+      var matPayee = document.getElementById("chantier-mat-payee").checked;
+      if(nom === "" || isNaN(duree) || isNaN(prix) || isNaN(materiel)) {
+        alert("Veuillez remplir tous les champs du chantier correctement.");
+        return;
+      }
+      var etapes = window.currentEtapes || [];
+      var chantier = { nom: nom, duree: duree, prix: prix, materiel: materiel, matPayee: matPayee, etapes: etapes, avance: 0 };
+      window.chantiers.push(chantier);
+      window.saveChantiers();
+      renderChantiers();
+      this.reset();
+      window.currentEtapes = [];
+      document.getElementById("etapes-container").innerHTML = "";
+      // MAJ de la base chantiers
+      renderBaseChantiers();
+    });
+
+    // Fonction pour rendre la liste des chantiers dans la section Chantier
     function renderChantiers() {
       var tbody = document.getElementById("chantier-tbody");
       tbody.innerHTML = "";
@@ -1179,7 +1307,7 @@
         window.chantiers.splice(index,1);
         window.saveChantiers();
         renderChantiers();
-        // Mise à jour de la base chantiers
+        // MAJ de la base chantiers
         renderBaseChantiers();
       }
     };
@@ -1943,6 +2071,10 @@
         window.ouvriers[index].paye = !window.ouvriers[index].paye;
         window.saveOuvriers();
         window.renderOuvriers();
+        // Mise à jour de la base ouvriers pour refléter le changement
+        window.baseOuvriers = window.ouvriers.slice();
+        window.saveBaseOuvriers();
+        renderBaseOuvriers();
       };
       window.deleteOuvrier = function(nom) {
         if(confirm("Supprimer l'ouvrier " + nom + " ?")) {
@@ -2135,7 +2267,7 @@
         renderDepensesPrevuesList();
         this.reset();
       });
-      // Écouteur pour le formulaire Projet avec vérification des champs obligatoires
+      // Écouteur pour le formulaire Projet
       document.getElementById("form-projet").addEventListener("submit", function(e) {
         e.preventDefault();
         var nom = document.getElementById("projet-nom").value.trim();
@@ -2159,117 +2291,6 @@
         window.renderProjets();
         this.reset();
       });
-
-      // Fonction pour rendre la liste des ouvriers dans la Base Ouvriers
-      function renderBaseOuvriers() {
-        var unpaidContainer = document.getElementById("baseouvriers-unpaid");
-        var paidContainer = document.getElementById("baseouvriers-paid");
-        unpaidContainer.innerHTML = "";
-        paidContainer.innerHTML = "";
-        var unpaid = window.baseOuvriers.filter(o => !o.paye);
-        var paid = window.baseOuvriers.filter(o => o.paye);
-        var htmlUnpaid = "<table style='width:100%; border-collapse: collapse;'><thead><tr><th>Nom</th><th>Jours Totaux</th><th>Montant Total (€)</th></tr></thead><tbody>";
-        unpaid.forEach(function(o) {
-          var total = (parseFloat(o.tarif) * parseFloat(o.jours)).toFixed(2);
-          htmlUnpaid += "<tr><td>" + o.nom + "</td><td>" + parseFloat(o.jours).toFixed(1) + "</td><td>" + total + " €</td></tr>";
-        });
-        htmlUnpaid += "</tbody></table>";
-        unpaidContainer.innerHTML = "<h3>Ouvriers Impayés</h3>" + (unpaid.length ? htmlUnpaid : "<p>Aucun ouvrier impayé.</p>");
-
-        var htmlPaid = "<table style='width:100%; border-collapse: collapse;'><thead><tr><th>Nom</th><th>Jours Totaux</th><th>Montant Total (€)</th></tr></thead><tbody>";
-        paid.forEach(function(o) {
-          var total = (parseFloat(o.tarif) * parseFloat(o.jours)).toFixed(2);
-          htmlPaid += "<tr><td>" + o.nom + "</td><td>" + parseFloat(o.jours).toFixed(1) + "</td><td>" + total + " €</td></tr>";
-        });
-        htmlPaid += "</tbody></table>";
-        paidContainer.innerHTML = "<h3>Ouvriers Payés</h3>" + (paid.length ? htmlPaid : "<p>Aucun ouvrier payé.</p>");
-      }
-      
-      // Fonction pour rendre la liste des chantiers dans la Base Chantiers
-      function renderBaseChantiers() {
-        var activeTbody = document.getElementById("basechantier-actif-tbody");
-        var finishedTbody = document.getElementById("basechantier-fini-tbody");
-        activeTbody.innerHTML = "";
-        finishedTbody.innerHTML = "";
-        // Chantiers actifs avec boutons Avancer (ouvre le modal pour gérer les étapes) et Terminer
-        window.chantiers.forEach(function(c, index) {
-          var tr = document.createElement("tr");
-          tr.innerHTML = "<td>" + c.nom + "</td>" +
-                         "<td>" + c.duree + " jours</td>" +
-                         "<td>" + parseFloat(c.prix).toFixed(2) + " €</td>" +
-                         "<td>" + (c.avance || 0) + "%</td>" +
-                         "<td><button onclick='openStepsModal(" + index + ")'>Avancer</button> " +
-                         "<button onclick='finishChantier(" + index + ")'>Terminer</button></td>";
-          activeTbody.appendChild(tr);
-        });
-        // Travaux terminés
-        window.travauxFinis.forEach(function(c) {
-          var tr = document.createElement("tr");
-          tr.innerHTML = "<td>" + c.nom + "</td>" +
-                         "<td>" + c.duree + " jours</td>" +
-                         "<td>" + parseFloat(c.prix).toFixed(2) + " €</td>";
-          finishedTbody.appendChild(tr);
-        });
-      }
-      
-      window.advanceChantier = function(index) {
-        // Ouvrir le modal pour cocher les étapes
-        openStepsModal(index);
-      };
-      window.finishChantier = function(index) {
-        if(confirm("Terminer le chantier " + window.chantiers[index].nom + " ?")) {
-          var chantier = window.chantiers.splice(index,1)[0];
-          chantier.avance = 100;
-          window.travauxFinis.push(chantier);
-          window.saveChantiers();
-          window.saveTravauxFinis();
-          renderChantiers();
-          renderBaseChantiers();
-        }
-      };
-
-      window.renderProjets = function() {
-        var container = document.getElementById("details-projet");
-        container.innerHTML = "";
-        if(window.projets.length === 0) {
-          container.innerHTML = "<p>Aucun projet enregistré.</p>";
-          return;
-        }
-        var html = "<table style='width:100%; border-collapse: collapse;'><thead><tr><th>Nom</th><th>Budget</th><th>Durée</th><th>Lien</th><th>Priorité</th><th>Actions</th></tr></thead><tbody>";
-        window.projets.forEach(function(p, index) {
-          html += "<tr>";
-          html += "<td>" + p.nom + "</td>";
-          html += "<td>" + parseFloat(p.prix).toFixed(2) + " €</td>";
-          html += "<td>" + p.duree + " mois</td>";
-          html += "<td>" + (p.lien ? "<a href='" + p.lien + "' target='_blank'>Voir</a>" : "") + "</td>";
-          html += "<td>" + p.priorite + "</td>";
-          html += "<td><button onclick='editProjet(" + index + ")'>Modifier</button> ";
-          html += "<button onclick='deleteProjet(" + index + ")'>Supprimer</button></td>";
-          html += "</tr>";
-        });
-        html += "</tbody></table>";
-        container.innerHTML = html;
-      };
-      window.deleteProjet = function(index) {
-        if(confirm("Supprimer le projet " + window.projets[index].nom + " ?")) {
-          window.projets.splice(index, 1);
-          window.saveProjets();
-          window.renderProjets();
-        }
-      };
-      window.editProjet = function(index) {
-        var projet = window.projets[index];
-        var newNom = prompt("Modifier le nom du projet :", projet.nom);
-        var newPrix = prompt("Modifier le budget total (€) :", projet.prix);
-        var newDuree = prompt("Modifier la durée souhaitée (mois) :", projet.duree);
-        if(newNom && newPrix && newDuree) {
-          projet.nom = newNom;
-          projet.prix = parseFloat(newPrix);
-          projet.duree = parseInt(newDuree);
-          window.saveProjets();
-          window.renderProjets();
-        }
-      };
 
       populateOuvrierSelect();
       window.renderOuvriers();
