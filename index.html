@@ -416,9 +416,55 @@
         <button class="toggle-section-btn" onclick="toggleSection('comptebancaire')">Masquer</button>
       </div>
       <p>Gérez vos comptes. Vous pouvez créer de nouveaux comptes, faire des virements ou des dépenses.</p>
-      <div id="bank-notification" style="display:none; text-align:center; padding:10px; margin-top:10px; border-radius:5px; background:#ffcc00; color:#333; margin-bottom:10px;"></div>
+      
+    
+    
+    <div class="accounts-container" id="accounts-grid"></div>
+    
+    <!-- Formulaire de création de compte bancaire -->
+    <p>Créer un nouveau compte bancaire (principal ou secondaire) :</p>
+    <form id="form-new-account">
+      <input id="new-account-name" placeholder="Nom du compte" required type="text"/>
+      <select id="new-account-type">
+        <option value="principal">Principal</option>
+        <option value="secondaire">Secondaire</option>
+      </select>
+      <button type="submit">Créer ce compte</button>
+    </form>
+     <!-- Les cartes bancaires -->
+    
+    <button id="adjust-finance-btn" onclick="openAdjustModal()" 
+    style="display:block; margin: 10px auto; padding:10px; background:#0071e3; color:#fff; 
+    border:none; border-radius:5px; cursor:pointer; font-size: 16px; width: 200px;">
+    Ajuster</button>
+    
+    <div id="bank-notification-container" style="text-align: center; margin-top: 15px;">
+    
+      <span id="bank-notification-icon" style="cursor: pointer; font-size: 28px; color: #0071e3; display: block;">❓</span>
+      
+    <div id="bank-notification" style="display: none;
+     background: #ffcc00; padding: 10px; border-radius: 5px; color: #333; width: 80%; margin: auto; text-align: center;">
+    
+      <span id="bank-notification-icon" style="cursor: pointer; font-size: 24px; color: #0071e3;">❓</span>
+      
+    <div id="bank-notification" style="display: none;
+     position: absolute; top: 30px; left: 0; background: #ffcc00; padding: 10px; border-radius: 5px; color: #333; width: 250px;">
+     style="display:none; text-align:center; padding:10px; margin-top:10px; border-radius:5px; background:#ffcc00; color:#333; margin-bottom:10px;"></div>
       <button id="adjust-finance-btn" onclick="openAdjustModal()" style="display:none; padding:8px; margin-bottom:10px; background:#0071e3; color:#fff; border:none; border-radius:5px; cursor:pointer;">Ajuster</button>
-      <div class="accounts-container" id="accounts-grid"></div>
+      
+    <div class="accounts-container" id="accounts-grid"></div>
+    
+    <!-- Formulaire de création de compte bancaire -->
+    <p>Créer un nouveau compte bancaire (principal ou secondaire) :</p>
+    <form id="form-new-account">
+      <input id="new-account-name" placeholder="Nom du compte" required type="text"/>
+      <select id="new-account-type">
+        <option value="principal">Principal</option>
+        <option value="secondaire">Secondaire</option>
+      </select>
+      <button type="submit">Créer ce compte</button>
+    </form>
+    
       <p>Créer un nouveau compte bancaire (principal ou secondaire) :</p>
       <form id="form-new-account">
         <input id="new-account-name" placeholder="Nom du compte" required type="text"/>
@@ -740,8 +786,11 @@
       <div class="modal-buttons">
         <button id="btnPrintReport" onclick="printReport()">Imprimer Rapport</button>
         <button id="btnCloseReport" onclick="closeReport()">Fermer</button>
-      </div>
+      
     </div>
+    <button id="adjust-finance-btn" onclick="openAdjustModal()" style="display:block; margin-top:10px; padding:8px; background:#0071e3; color:#fff; border:none; border-radius:5px; cursor:pointer;">Ajuster</button>
+    </div>
+    
   </div>
 
   <!-- MODALE ÉTAPES (pour les chantiers) -->
@@ -759,8 +808,11 @@
           renderBaseChantiers(); 
         })()">Sauvegarder</button>
         <button id="btnCloseStepsModal" onclick="closeStepsModal()">Annuler</button>
-      </div>
+      
     </div>
+    <button id="adjust-finance-btn" onclick="openAdjustModal()" style="display:block; margin-top:10px; padding:8px; background:#0071e3; color:#fff; border:none; border-radius:5px; cursor:pointer;">Ajuster</button>
+    </div>
+    
   </div>
 
   <!-- MODALE OPTIONS -->
@@ -768,8 +820,11 @@
     <div class="option-content">
       <span class="close-btn" id="option-close-btn" onclick="document.getElementById('option-modal').style.display='none'">×</span>
       <h2 id="option-modal-title"></h2>
-      <div id="option-modal-body"></div>
+      <div id="option-modal-body">
     </div>
+    <button id="adjust-finance-btn" onclick="openAdjustModal()" style="display:block; margin-top:10px; padding:8px; background:#0071e3; color:#fff; border:none; border-radius:5px; cursor:pointer;">Ajuster</button>
+    </div>
+    
   </div>
 
   <div class="spacer"></div>
@@ -784,8 +839,11 @@
       <div class="adjustment-buttons" style="display:flex; justify-content:space-around; margin-top:15px;">
         <button class="save-btn" onclick="applyAdjustment()" style="padding:10px 15px; background:#0071e3; color:#fff; border:none; border-radius:5px; cursor:pointer;">Sauvegarder</button>
         <button class="cancel-btn" onclick="closeAdjustModal()" style="padding:10px 15px; background:#ccc; border:none; border-radius:5px; cursor:pointer;">Annuler</button>
-      </div>
+      
     </div>
+    <button id="adjust-finance-btn" onclick="openAdjustModal()" style="display:block; margin-top:10px; padding:8px; background:#0071e3; color:#fff; border:none; border-radius:5px; cursor:pointer;">Ajuster</button>
+    </div>
+    
   </div>
 
   <script>
@@ -896,7 +954,7 @@
     window.projets = [];
     window.achats = [];
     window.groupedAchats = [];
-    window.collaborations = [];
+    window.collaborations = {};
     window.oldResultFinal = 0;
     window.currentEtapes = [];
   </script>
@@ -2217,7 +2275,7 @@
         let bRemove = document.createElement("button");
         bRemove.type = "button";
         bRemove.textContent = "Supprimer";
-        bRemove.onclick = function () { c.removeChild(d); };
+        bRemove.onclick = function () { c.removeChild(d); CollaborationModule.calculate(); };
         d.append(iName, iDays, bRemove);
         c.appendChild(d);
       },
@@ -2255,13 +2313,6 @@
           }
         }
         this.calculate();
-        let collabData = {
-          chantier: document.getElementById("collab-chantier").value,
-          moi: parseFloat(document.getElementById("collab-moi").value) || 0,
-          collaborators: this.getCollaboratorsData()
-        };
-        window.collaborations = collabData;
-        localStorage.setItem("gestion_collaborations", JSON.stringify(collabData));
       },
       calculate: function () {
         let s = document.getElementById("collab-chantier");
@@ -2280,6 +2331,7 @@
         let results = [];
         results.push({ name: "Moi", days: mesJours, share: (mesJours / totalDays) * profit });
         this.collaborators.forEach(c => { results.push({ name: c.name, days: c.days, share: (c.days / totalDays) * profit }); });
+        // Sauvegarde des données de collaboration
         let collabData = {
           chantier: s.value,
           moi: mesJours,
@@ -2315,6 +2367,43 @@
         applyPaginationToTable("collab-result-tbody");
       }
     };
+
+    // Fonction de chargement des données de collaboration depuis le localStorage
+    function loadCollaborations() {
+      let collabDataStr = localStorage.getItem("gestion_collaborations");
+      if (collabDataStr) {
+        let collabData = JSON.parse(collabDataStr);
+        document.getElementById("collab-moi").value = collabData.moi || 0;
+        let collabList = document.getElementById("collab-list");
+        collabList.innerHTML = "";
+        if (collabData.collaborators && Array.isArray(collabData.collaborators)) {
+          collabData.collaborators.forEach(collab => {
+            let d = document.createElement("div");
+            d.style.marginBottom = "8px";
+            let iName = document.createElement("input");
+            iName.type = "text";
+            iName.placeholder = "Nom du collaborateur";
+            iName.required = true;
+            iName.style.marginRight = "8px";
+            iName.value = collab.name;
+            let iDays = document.createElement("input");
+            iDays.type = "number";
+            iDays.placeholder = "Jours travaillés";
+            iDays.step = "0.1";
+            iDays.required = true;
+            iDays.style.marginRight = "8px";
+            iDays.value = collab.days;
+            let bRemove = document.createElement("button");
+            bRemove.type = "button";
+            bRemove.textContent = "Supprimer";
+            bRemove.onclick = function () { collabList.removeChild(d); CollaborationModule.calculate(); };
+            d.append(iName, iDays, bRemove);
+            collabList.appendChild(d);
+          });
+        }
+        CollaborationModule.calculate();
+      }
+    }
   </script>
 
   <script>
@@ -2337,6 +2426,7 @@
       renderAchatsTable();
       renderGroupedAchats();
       CollaborationModule.loadChantiers();
+      loadCollaborations(); // Chargement des données de collaboration
       checkFinanceBalance();
     }
     document.addEventListener("DOMContentLoaded", function () {
