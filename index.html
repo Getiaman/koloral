@@ -238,7 +238,7 @@
     .card-front .account-name { font-size: 1.0rem; font-weight: bold; margin-bottom: 5px; }
     .card-front .balance { font-size: 0.9rem; font-weight: 600; }
     .card-front .type-label { font-size: 0.75rem; opacity: 0.9; margin-top: 3px; }
-    .card-back button { display: none; }
+    .card-back button { display: inline-block; padding: 5px 8px; margin: 5px; font-size: 0.8rem; cursor: pointer; }
     footer {
       background: var(--bg-color);
       color: var(--subtext-color);
@@ -928,7 +928,23 @@
         cardFront.append(h3, bal, lbl);
         let cardBack = document.createElement("div");
         cardBack.classList.add("card-back");
-        // Pour simplifier, aucun bouton sur le verso (les actions se font via d'autres interfaces)
+        // Ajout des boutons "Virement" et "Dépense" sur le verso
+        let btnVirement = document.createElement("button");
+        btnVirement.textContent = "Virement";
+        btnVirement.style.margin = "5px";
+        btnVirement.onclick = function(e) {
+          e.stopPropagation();
+          handleVirement(ac.id);
+        };
+        let btnDepense = document.createElement("button");
+        btnDepense.textContent = "Dépense";
+        btnDepense.style.margin = "5px";
+        btnDepense.onclick = function(e) {
+          e.stopPropagation();
+          handleDepense(ac.id);
+        };
+        cardBack.appendChild(btnVirement);
+        cardBack.appendChild(btnDepense);
         cardInner.append(cardFront, cardBack);
         card.appendChild(cardInner);
         card.addEventListener("click", () => { card.classList.toggle("flip"); });
