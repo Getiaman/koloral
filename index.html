@@ -621,6 +621,7 @@
                 <th>Nom</th>
                 <th>Jours</th>
                 <th>Part (€)</th>
+                <th>Actions</th>
               </tr>
             </thead>
             <tbody id="collab-result-tbody"></tbody>
@@ -1194,24 +1195,44 @@
       html += "</table>";
       html += "<button id='toggle-finance-summary' onclick='toggleFinanceSummary()'>Afficher détails ↓</button>";
       document.getElementById("finance-summary").innerHTML = html;
-      // Notification si changement de ±100€
+      
+      // Notification si une différence existe
       let diff = resultatFinal - window.oldResultFinal;
-      if (Math.abs(diff) >= 100) {
-        let notif = document.getElementById("bank-notification");
-        if(notif) {
-          notif.style.display = "block";
-          let btn = document.createElement("button");
-          btn.textContent = "Ajuster";
-          btn.style.marginLeft = "10px";
-          btn.style.fontSize = "0.8rem";
-          btn.onclick = function() { openAdjustFromNotification(diff); };
-          if (diff > 0) {
-            notif.innerHTML = `Le résultat final a augmenté de +${diff.toFixed(2)} €.`;
-          } else {
-            notif.innerHTML = `Le résultat final a diminué de ${diff.toFixed(2)} €.`;
-          }
-          notif.appendChild(btn);
+      let notif = document.getElementById("bank-notification");
+      if (diff !== 0) {
+        notif.style.display = "block";
+        if (diff > 0) {
+          notif.innerHTML = `Le résultat final a augmenté de +${diff.toFixed(2)} €.`;
+        } else {
+          notif.innerHTML = `Le résultat final a diminué de ${diff.toFixed(2)} €.`;
         }
+        // Bouton "Ajuster"
+        let btn = document.createElement("button");
+        btn.textContent = "Ajuster";
+        btn.style.marginLeft = "10px";
+        btn.style.fontSize = "0.8rem";
+        btn.onclick = function() { openAdjustFromNotification(diff); };
+        notif.appendChild(btn);
+        // Bouton "0€" pour réinitialiser la différence
+        let btnReset = document.createElement("button");
+        btnReset.textContent = "0€";
+        btnReset.style.marginLeft = "10px";
+        btnReset.style.fontSize = "0.8rem";
+        btnReset.onclick = function() {
+            window.oldResultFinal = resultatFinal;
+            notif.innerHTML = "";
+            notif.style.display = "none";
+        };
+        notif.appendChild(btnReset);
+        // Bouton "Recalculer" pour recalculer la différence
+        let btnRecalc = document.createElement("button");
+        btnRecalc.textContent = "Recalculer";
+        btnRecalc.style.marginLeft = "10px";
+        btnRecalc.style.fontSize = "0.8rem";
+        btnRecalc.onclick = function() { checkFinanceBalance(); };
+        notif.appendChild(btnRecalc);
+      } else {
+        notif.style.display = "none";
       }
       window.oldResultFinal = resultatFinal;
     }
@@ -2213,6 +2234,35 @@
         });
         return arr;
       },
+      adjustDays: function(index, delta) {
+        if (index === 0) {
+          let inputMoi = document.getElementById("collab-moi");
+          let current = parseFloat(inputMoi.value) || 0;
+          let newVal = current + delta;
+          if (newVal < 0) newVal = 0;
+          inputMoi.value = newVal;
+        } else {
+          let collabList = document.getElementById("collab-list");
+          let childIndex = index - 1;
+          if (collabList.children[childIndex]) {
+            let inputs = collabList.children[childIndex].getElementsByTagName("input");
+            if (inputs.length >= 2) {
+              let current = parseFloat(inputs[1].value) || 0;
+              let newVal = current + delta;
+              if (newVal < 0) newVal = 0;
+              inputs[1].value = newVal;
+            }
+          }
+        }
+        this.calculate();
+        let collabData = {
+          chantier: document.getElementById("collab-chantier").value,
+          moi: parseFloat(document.getElementById("collab-moi").value) || 0,
+          collaborators: this.getCollaboratorsData()
+        };
+        window.collaborations = collabData;
+        localStorage.setItem("gestion_collaborations", JSON.stringify(collabData));
+      },
       calculate: function () {
         let s = document.getElementById("collab-chantier");
         let idx = s.value;
@@ -2226,18 +2276,41 @@
         this.collaborators = this.getCollaboratorsData();
         let totalDays = mesJours;
         this.collaborators.forEach(c => { totalDays += c.days; });
-        if (totalDays === 0) { alert("Total jours=0."); return; }
+        if (totalDays === 0) { alert("Total jours = 0."); return; }
         let results = [];
         results.push({ name: "Moi", days: mesJours, share: (mesJours / totalDays) * profit });
         this.collaborators.forEach(c => { results.push({ name: c.name, days: c.days, share: (c.days / totalDays) * profit }); });
+        let collabData = {
+          chantier: s.value,
+          moi: mesJours,
+          collaborators: this.collaborators
+        };
+        window.collaborations = collabData;
+        localStorage.setItem("gestion_collaborations", JSON.stringify(collabData));
         let tbody = document.getElementById("collab-result-tbody");
         tbody.innerHTML = "";
-        results.forEach(r => {
-          tbody.innerHTML += `<tr>
-            <td>${r.name}</td>
-            <td>${r.days.toFixed(1)}</td>
-            <td>${r.share.toFixed(2)} €</td>
-          </tr>`;
+        results.forEach(function(r, i) {
+          let tr = document.createElement("tr");
+          let tdName = document.createElement("td");
+          tdName.textContent = r.name;
+          let tdDays = document.createElement("td");
+          tdDays.textContent = r.days.toFixed(1);
+          let tdShare = document.createElement("td");
+          tdShare.textContent = r.share.toFixed(2) + " €";
+          let tdActions = document.createElement("td");
+          let btnPlus = document.createElement("button");
+          btnPlus.textContent = "+";
+          btnPlus.onclick = function() { CollaborationModule.adjustDays(i, 1); };
+          let btnMinus = document.createElement("button");
+          btnMinus.textContent = "-";
+          btnMinus.onclick = function() { CollaborationModule.adjustDays(i, -1); };
+          tdActions.appendChild(btnPlus);
+          tdActions.appendChild(btnMinus);
+          tr.appendChild(tdName);
+          tr.appendChild(tdDays);
+          tr.appendChild(tdShare);
+          tr.appendChild(tdActions);
+          tbody.appendChild(tr);
         });
         applyPaginationToTable("collab-result-tbody");
       }
