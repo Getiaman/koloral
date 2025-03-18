@@ -2736,41 +2736,43 @@
   }
 
   function showResetSectionModal() {
-    let section = prompt("Quelle section voulez-vous réinitialiser ? (finance, ouvriers, chantiers, projets)");
-    if (section && window[section]) {
-      // Vider la variable globale
-      window[section] = [];
-      // Supprimer les données enregistrées dans le localStorage en fonction de la section
-      switch (section) {
-        case "finance":
-          localStorage.removeItem("gestion_revenus");
-          localStorage.removeItem("gestion_depenses");
-          localStorage.removeItem("gestion_depenses_prevues");
-          break;
-        case "ouvriers":
-          localStorage.removeItem("gestion_ouvriers");
-          localStorage.removeItem("baseouvriers");
-          break;
-        case "chantiers":
-          localStorage.removeItem("gestion_chantiers");
-          localStorage.removeItem("travaux_finiss");
-          break;
-        case "projets":
-          localStorage.removeItem("gestion_projets");
-          break;
-        default:
-          alert("Section invalide !");
-          return;
-      }
-      alert("Section réinitialisée !");
-      // Rafraîchit l'affichage si une fonction refreshAll() existe
-      if (typeof refreshAll === "function") {
-        refreshAll();
-      }
-    } else {
-      alert("Section invalide !");
+  let section = prompt("Quelle section voulez-vous réinitialiser ? (finance, ouvriers, chantiers, projets)");
+  if (section && window[section]) {
+    // Vider la variable globale
+    window[section] = [];
+    // Supprimer les données enregistrées dans le localStorage selon la section
+    switch (section) {
+      case "finance":
+        localStorage.removeItem("gestion_revenus");
+        localStorage.removeItem("gestion_depenses");
+        localStorage.removeItem("gestion_depenses_prevues");
+        break;
+      case "ouvriers":
+        localStorage.removeItem("gestion_ouvriers");
+        localStorage.removeItem("baseouvriers");
+        break;
+      case "chantiers":
+        localStorage.removeItem("gestion_chantiers");
+        localStorage.removeItem("travaux_finiss");
+        break;
+      case "projets":
+        localStorage.removeItem("gestion_projets");
+        break;
+      default:
+        alert("Section invalide !");
+        return;
     }
+    alert("Section réinitialisée !");
+    // Option 1 : Rafraîchir l'affichage via votre fonction refreshAll() si elle est bien définie
+    if (typeof refreshAll === "function") {
+      refreshAll();
+    }
+    // Option 2 (alternatif) : Recharger complètement la page pour être certain que les anciennes données ne s'affichent plus
+    location.reload();
+  } else {
+    alert("Section invalide !");
   }
+}
 
   function toggleBackupList() {
     let listContainer = document.getElementById("backups-list");
@@ -2832,5 +2834,6 @@
     }
   }
 </script>
+
 
 
