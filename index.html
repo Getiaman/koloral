@@ -2738,8 +2738,35 @@
   function showResetSectionModal() {
     let section = prompt("Quelle section voulez-vous réinitialiser ? (finance, ouvriers, chantiers, projets)");
     if (section && window[section]) {
+      // Vider la variable globale
       window[section] = [];
+      // Supprimer les données enregistrées dans le localStorage en fonction de la section
+      switch (section) {
+        case "finance":
+          localStorage.removeItem("gestion_revenus");
+          localStorage.removeItem("gestion_depenses");
+          localStorage.removeItem("gestion_depenses_prevues");
+          break;
+        case "ouvriers":
+          localStorage.removeItem("gestion_ouvriers");
+          localStorage.removeItem("baseouvriers");
+          break;
+        case "chantiers":
+          localStorage.removeItem("gestion_chantiers");
+          localStorage.removeItem("travaux_finiss");
+          break;
+        case "projets":
+          localStorage.removeItem("gestion_projets");
+          break;
+        default:
+          alert("Section invalide !");
+          return;
+      }
       alert("Section réinitialisée !");
+      // Rafraîchit l'affichage si une fonction refreshAll() existe
+      if (typeof refreshAll === "function") {
+        refreshAll();
+      }
     } else {
       alert("Section invalide !");
     }
@@ -2805,4 +2832,5 @@
     }
   }
 </script>
+
 
