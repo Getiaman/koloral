@@ -984,7 +984,16 @@
       tbody.parentNode.insertBefore(paginationDiv, tbody.nextSibling);
       showPage(1);
     }
-  </script>
+  
+function resetBankAccounts() {
+    localStorage.removeItem("bankAccounts");
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+</script>
 
   <script>
     /* ------------------------------
@@ -1009,13 +1018,23 @@
       "<button onclick='ajusterFinance(-100)'>-100 €</button>" +
       "<button onclick='ajusterFinance(50)'>+50 €</button>" +
       "<button onclick='ajusterFinance(100)'>+100 €</button>";
-  </script>
+  
+function resetBankAccounts() {
+    localStorage.removeItem("bankAccounts");
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+</script>
 
   <script>
     /* ------------------------------
        Variables Globales
     ------------------------------ */
-    window.bankAccounts = [
+    localStorage.removeItem("bankAccounts");
+window.bankAccounts = [
       { id: "creditAgricole", name: "Crédit Agricole", balance: 0, type: "principal" },
       { id: "shine", name: "Shine", balance: 0, type: "principal" },
       { id: "liquide", name: "Liquide", balance: 0, type: "principal" },
@@ -1038,7 +1057,16 @@
     window.collaborations = {};
     window.oldResultFinal = 0;
     window.currentEtapes = [];
-  </script>
+  
+function resetBankAccounts() {
+    localStorage.removeItem("bankAccounts");
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+</script>
 
   <script>
     /* ------------------------------
@@ -1154,7 +1182,16 @@
       let stored = localStorage.getItem("bankAccounts");
       if (stored) { window.bankAccounts = JSON.parse(stored); }
     }
-  </script>
+  
+function resetBankAccounts() {
+    localStorage.removeItem("bankAccounts");
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+</script>
 
   <script>
     /* ------------------------------
@@ -1297,7 +1334,16 @@
       let predicted = revTotal - (depTotal + totalPrev + gains);
       container.innerHTML = "<strong>Fortune prévisionnelle : " + predicted.toFixed(2) + " €</strong>";
     }
-  </script>
+  
+function resetBankAccounts() {
+    localStorage.removeItem("bankAccounts");
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+</script>
 
   <script>
     /* ------------------------------
@@ -1434,7 +1480,16 @@
       localStorage.setItem("gestion_depenses", JSON.stringify(window.depenses));
       localStorage.setItem("gestion_depenses_prevues", JSON.stringify(window.depensesPrevues));
     }
-  </script>
+  
+function resetBankAccounts() {
+    localStorage.removeItem("bankAccounts");
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+</script>
 
   <script>
     /* ------------------------------
@@ -1566,7 +1621,16 @@
       paidContainer.innerHTML = htmlPaid;
       applyPaginationToTable("baseouvriers-paid-tbody");
     }
-  </script>
+  
+function resetBankAccounts() {
+    localStorage.removeItem("bankAccounts");
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+</script>
 
   <script>
     /* ------------------------------
@@ -1715,7 +1779,16 @@
       renderEtapesList();
       renderBaseChantiers();
     });
-  </script>
+  
+function resetBankAccounts() {
+    localStorage.removeItem("bankAccounts");
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+</script>
 
   <script>
     /* ------------------------------
@@ -1818,7 +1891,16 @@
       renderProjets();
       this.reset();
     });
-  </script>
+  
+function resetBankAccounts() {
+    localStorage.removeItem("bankAccounts");
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+</script>
 
   <script>
     /* ------------------------------
@@ -1877,7 +1959,16 @@
       closeAllProjectsRecap();
       renderProjets();
     }
-  </script>
+  
+function resetBankAccounts() {
+    localStorage.removeItem("bankAccounts");
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+</script>
 
   <script>
     /* ------------------------------
@@ -1965,7 +2056,16 @@
       let percent = Math.round((doneCount / total) * 100);
       document.getElementById("achats-progress-text").textContent = "Progression de la liste d'achats : " + percent + "%";
     }
-  </script>
+  
+function resetBankAccounts() {
+    localStorage.removeItem("bankAccounts");
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+</script>
 
   <script>
     /* ------------------------------
@@ -2116,7 +2216,16 @@
       document.getElementById("option-modal").style.display = "flex";
     }
     document.getElementById("option-close-btn").onclick = function () { document.getElementById("option-modal").style.display = "none"; };
-  </script>
+  
+function resetBankAccounts() {
+    localStorage.removeItem("bankAccounts");
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+</script>
 
   <script>
     /* ------------------------------
@@ -2249,7 +2358,16 @@
       document.getElementById("option-modal").style.display = "flex";
     }
     function closeOptionModal() { document.getElementById("option-modal").style.display = "none"; }
-  </script>
+  
+function resetBankAccounts() {
+    localStorage.removeItem("bankAccounts");
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+</script>
 
   <script>
     /* ------------------------------
@@ -2307,7 +2425,16 @@
       renderBankAccounts();
       checkFinanceBalance();
     }
-  </script>
+  
+function resetBankAccounts() {
+    localStorage.removeItem("bankAccounts");
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+</script>
 
   <script>
     /* ------------------------------
@@ -2485,7 +2612,16 @@
         CollaborationModule.calculate();
       }
     }
-  </script>
+  
+function resetBankAccounts() {
+    localStorage.removeItem("bankAccounts");
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+</script>
 
   <script>
     /* ------------------------------
@@ -2632,7 +2768,16 @@
       
       refreshAll();
     });
-  </script>
+  
+function resetBankAccounts() {
+    localStorage.removeItem("bankAccounts");
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+</script>
 
   <script>
     /* ------------------------------
@@ -2689,7 +2834,16 @@
       setupConversion("convert-revenue", "revenus-attente-list", "revenus-list");
       setupConversion("convert-expense", "depenses-prevues-list", "depenses-list");
     });
-  </script>
+  
+function resetBankAccounts() {
+    localStorage.removeItem("bankAccounts");
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+</script>
 </body>
 </html>
 <script>
@@ -2833,8 +2987,16 @@
       alert("Toutes les données ont été réinitialisées !");
     }
   }
-</script>
 
+function resetBankAccounts() {
+    localStorage.removeItem("bankAccounts");
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+</script>
 
 
 
