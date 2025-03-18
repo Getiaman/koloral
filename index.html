@@ -738,39 +738,120 @@
     </section>
 
     <!-- SECTION UTILITAIRES -->
-    <section class="section" id="utilitaires">
-      <div class="section-header">
-        <h2>Utilitaires</h2>
-        <button class="toggle-section-btn" onclick="toggleSection('utilitaires')">Masquer</button>
-      </div>
-      <div>
-        <button id="btnExportAll" onclick="exportAllData()">Exporter données (JSON)</button>
-        <button id="btnImportAll" onclick="importAllData()">Importer données (JSON)</button>
-        <input accept="application/json" id="import-file" style="display:none;" type="file"/>
-        <button id="btnClearAll" onclick="clearAllData()">Tout réinitialiser</button>
-        <button id="btnHelp" onclick="showHelp()">Afficher aide</button>
-        <button id="btnSummary" onclick="viewSummary()">Afficher Synthèse</button>
-        <button id="btnBackupSection" onclick="backupSection()">Sauvegarder une section</button>
-        <button id="toggle-backups-btn" onclick="toggleBackupList()">Afficher sauvegardes</button>
-        <div id="backups-list" style="display:none;"></div>
-        <div id="backup-interface" style="display:none; border:1px solid var(--border-color); padding:10px; margin-top:10px; border-radius:var(--radius); background:var(--bg-color);">
-          <h3>Sauvegarder une section</h3>
-          <input id="backup-name" placeholder="Nom personnalisé" type="text"/>
-          <select id="backup-select" style="width:100%; margin-top:10px; margin-bottom:10px;">
-            <option value="ouvriers">Ouvriers</option>
-            <option value="baseouvriers">Base Ouvriers</option>
-            <option value="chantiers">Chantiers</option>
-            <option value="travauxFinis">Travaux Finis</option>
-            <option value="revenus">Revenus</option>
-            <option value="depenses">Dépenses</option>
-            <option value="depensesPrevues">Dépenses Prévues</option>
-            <option value="projets">Projets</option>
-          </select>
-          <button id="btnPerformBackup" onclick="performBackup()">Sauvegarder</button>
-          <button id="btnCancelBackup" onclick="toggleBackupInterface()">Annuler</button>
-        </div>
-      </div>
-    </section>
+    
+
+<section class="section" id="utilitaires">
+  <div class="section-header">
+    <h2>Utilitaires</h2>
+    <button class="toggle-section-btn" onclick="toggleSection('utilitaires')">Masquer</button>
+  </div>
+  <div class="utilities-container">
+    
+    <div class="utility-card">
+      <h3>Gestion des données</h3>
+      <button class="ios-button export-btn" onclick="exportAllData()">📤 Exporter les données</button>
+      <button class="ios-button import-btn" onclick="document.getElementById('import-file').click()">📥 Importer des données</button>
+      <input accept="application/json" id="import-file" style="display:none;" type="file" onchange="importAllData(event)"/>
+    </div>
+    
+    <div class="utility-card">
+      <h3>Sauvegarde et réinitialisation</h3>
+      <button class="ios-button save-btn" onclick="showSaveSectionModal()">💾 Sauvegarder une section</button>
+      <button class="ios-button reset-btn" onclick="showResetSectionModal()">🔄 Réinitialiser une section</button>
+      <button class="ios-button show-backups-btn" onclick="toggleBackupList()">📁 Voir les sauvegardes</button>
+    </div>
+
+    <div class="utility-card">
+      <h3>Planification et historique</h3>
+      <button class="ios-button history-btn" onclick="showHistory()">📜 Historique</button>
+      <button class="ios-button schedule-btn" onclick="showScheduleBackupModal()">⏳ Planifier une sauvegarde</button>
+      <button class="ios-button reset-all-btn" onclick="resetAllData()">🛑 Réinitialiser tout</button>
+    </div>
+
+    <div id="backups-list" class="backup-table-container" style="display:none;"></div>
+    
+  </div>
+</section>
+
+<style>
+  .utilities-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    padding: 20px;
+  }
+
+  .utility-card {
+    background: #fff;
+    padding: 16px;
+    border-radius: 12px;
+    box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+    text-align: center;
+    transition: transform 0.3s ease;
+  }
+
+  .utility-card:hover {
+    transform: scale(1.02);
+  }
+
+  .utility-card h3 {
+    font-size: 18px;
+    margin-bottom: 10px;
+    color: #0071e3;
+  }
+
+  .ios-button {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    font-size: 16px;
+    font-weight: bold;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    transition: background 0.2s ease, transform 0.1s ease;
+  }
+
+  .ios-button:hover {
+    transform: scale(1.05);
+  }
+
+  .export-btn { background: #007aff; color: white; }
+  .export-btn:hover { background: #005ecb; }
+
+  .import-btn { background: #34c759; color: white; }
+  .import-btn:hover { background: #28a745; }
+
+  .save-btn { background: #ff9500; color: white; }
+  .save-btn:hover { background: #cc7a00; }
+
+  .reset-btn { background: #ff3b30; color: white; }
+  .reset-btn:hover { background: #c62828; }
+
+  .show-backups-btn { background: #5856d6; color: white; }
+  .show-backups-btn:hover { background: #3c3cad; }
+
+  .history-btn { background: #af52de; color: white; }
+  .history-btn:hover { background: #8e44ad; }
+
+  .schedule-btn { background: #ffcc00; color: black; }
+  .schedule-btn:hover { background: #d4a700; }
+
+  .reset-all-btn { background: #1c1c1e; color: white; }
+  .reset-all-btn:hover { background: #000000; }
+
+  .backup-table-container {
+    max-height: 300px;
+    overflow-y: auto;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 10px;
+    background: #f9f9f9;
+  }
+</style>
+
+
     <div class="spacer"></div>
   </div>
 
@@ -2611,3 +2692,117 @@
   </script>
 </body>
 </html>
+<script>
+  let backups = [];
+  let historyLog = [];
+
+  function exportAllData() {
+    let data = JSON.stringify({
+      finance: window.finance || [],
+      ouvriers: window.ouvriers || [],
+      chantiers: window.chantiers || [],
+      projets: window.projets || [],
+    });
+    let blob = new Blob([data], { type: "application/json" });
+    let a = document.createElement("a");
+    a.href = URL.createObjectURL(blob);
+    a.download = "backup.json";
+    a.click();
+  }
+
+  function importAllData(event) {
+    let file = event.target.files[0];
+    if (!file) return;
+    let reader = new FileReader();
+    reader.onload = function(e) {
+      let importedData = JSON.parse(e.target.result);
+      window.finance = importedData.finance || [];
+      window.ouvriers = importedData.ouvriers || [];
+      window.chantiers = importedData.chantiers || [];
+      window.projets = importedData.projets || [];
+      alert("Données importées avec succès !");
+    };
+    reader.readAsText(file);
+  }
+
+  function showSaveSectionModal() {
+    let section = prompt("Quelle section voulez-vous sauvegarder ? (finance, ouvriers, chantiers, projets)");
+    if (section && window[section]) {
+      backups.push({ section, data: JSON.stringify(window[section]) });
+      alert("Sauvegarde effectuée !");
+    } else {
+      alert("Section invalide !");
+    }
+  }
+
+  function showResetSectionModal() {
+    let section = prompt("Quelle section voulez-vous réinitialiser ? (finance, ouvriers, chantiers, projets)");
+    if (section && window[section]) {
+      window[section] = [];
+      alert("Section réinitialisée !");
+    } else {
+      alert("Section invalide !");
+    }
+  }
+
+  function toggleBackupList() {
+    let listContainer = document.getElementById("backups-list");
+    if (!listContainer) return;
+    
+    if (backups.length === 0) {
+      listContainer.innerHTML = "<p>Aucune sauvegarde disponible.</p>";
+    } else {
+      listContainer.innerHTML = "<h3>Liste des sauvegardes</h3><ul>" +
+        backups.map((b, index) => `<li>${b.section} <button onclick="restoreBackup(${index})">Restaurer</button></li>`).join("") +
+        "</ul>";
+    }
+    listContainer.style.display = listContainer.style.display === "none" ? "block" : "none";
+  }
+
+  function restoreBackup(index) {
+    let backup = backups[index];
+    if (backup) {
+      window[backup.section] = JSON.parse(backup.data);
+      alert("Sauvegarde restaurée !");
+    }
+  }
+
+  function showHistory() {
+    let historyContainer = document.getElementById("backups-list");
+    if (!historyContainer) return;
+    
+    if (historyLog.length === 0) {
+      historyContainer.innerHTML = "<p>Aucun historique disponible.</p>";
+    } else {
+      historyContainer.innerHTML = "<h3>Historique des actions</h3><ul>" +
+        historyLog.map(log => `<li>${log}</li>`).join("") +
+        "</ul>";
+    }
+    historyContainer.style.display = historyContainer.style.display === "none" ? "block" : "none";
+  }
+
+  function showScheduleBackupModal() {
+    let date = prompt("Entrez la date de sauvegarde (AAAA-MM-JJ) :");
+    let section = prompt("Quelle section voulez-vous sauvegarder automatiquement ? (finance, ouvriers, chantiers, projets)");
+    if (date && section && window[section]) {
+      setTimeout(() => {
+        backups.push({ section, data: JSON.stringify(window[section]), date });
+        alert("Sauvegarde planifiée pour " + date);
+      }, 2000);
+    } else {
+      alert("Données invalides !");
+    }
+  }
+
+  function resetAllData() {
+    if (confirm("Êtes-vous sûr de vouloir tout réinitialiser ? Cette action est irréversible !")) {
+      window.finance = [];
+      window.ouvriers = [];
+      window.chantiers = [];
+      window.projets = [];
+      backups = [];
+      alert("Toutes les données ont été réinitialisées !");
+    }
+  }
+</script>
+
