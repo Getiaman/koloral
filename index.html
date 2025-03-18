@@ -475,7 +475,8 @@
         <button type="submit">Créer ce compte</button>
       </form>
       <button style="margin-top:10px; padding:10px; background:#ff3b30; color:#fff; border:none; border-radius:5px; cursor:pointer; width:100%;" onclick="deleteBankAccount()">Supprimer un compte</button>
-    </section>
+    
+</section>
 
     <!-- SECTION FINANCE -->
     <section class="section" id="finance">
@@ -746,6 +747,14 @@
     <button class="toggle-section-btn" onclick="toggleSection('utilitaires')">Masquer</button>
   </div>
   <div class="utilities-container">
+<div class="utility-card" id="bank-management">
+    <h3>Gestion des Comptes Bancaires</h3>
+    <button class="ios-button reset-btn" onclick="resetAllBankAccounts()">🔄 Réinitialiser toutes les cartes</button>
+    <button class="ios-button reset-btn" onclick="resetSpecificBankAccount()">🔄 Réinitialiser une carte précise</button>
+    <button class="ios-button reset-btn" onclick="resetBankingSection()">🔄 Réinitialiser toute la section</button>
+    <button class="ios-button reset-btn" onclick="deleteSpecificBankAccount()">🗑️ Supprimer une carte</button>
+</div>
+
     
     <div class="utility-card">
       <h3>Gestion des données</h3>
@@ -756,6 +765,23 @@
     
     <div class="utility-card">
       <h3>Sauvegarde et réinitialisation</h3>
+<div class="utility-card">
+    <h3 onclick="toggleBankSettings()" style="cursor:pointer;">⚙️ Paramètres Bancaires ▼</h3>
+    <div id="bank-settings" style="display:none;">
+        <button class="ios-button reset-btn" onclick="resetAllBankAccounts()">🔄 Réinitialiser toutes les cartes</button>
+        <button class="ios-button reset-btn" onclick="resetSpecificBankAccount()">🔄 Réinitialiser une carte précise</button>
+        <button class="ios-button reset-btn" onclick="resetBankingSection()">🔄 Réinitialiser toute la section</button>
+        <button class="ios-button reset-btn" onclick="deleteSpecificBankAccount()">🗑️ Supprimer une carte</button>
+    </div>
+</div>
+
+<script>
+function toggleBankSettings() {
+    var settings = document.getElementById("bank-settings");
+    settings.style.display = (settings.style.display === "none") ? "block" : "none";
+}
+</script>
+
       <button class="ios-button save-btn" onclick="showSaveSectionModal()">💾 Sauvegarder une section</button>
       <button class="ios-button reset-btn" onclick="showResetSectionModal()">🔄 Réinitialiser une section</button>
       <button class="ios-button show-backups-btn" onclick="toggleBackupList()">📁 Voir les sauvegardes</button>
@@ -993,6 +1019,71 @@ function resetBankAccounts() {
     alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
 }
 
+
+function resetBankAccounts() {
+    // Suppression complète du stockage local
+    localStorage.removeItem("bankAccounts");
+
+    // Remettre à zéro tous les comptes existants
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+
+    // Sauvegarde de l'état réinitialisé
+    saveBankAccounts();
+
+    // Rafraîchir l'affichage des comptes
+    renderBankAccounts();
+
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€ et la mémoire locale a été nettoyée.");
+}
+
+// Appliquer la suppression des vieilles sauvegardes à l'initialisation
+
+
+function resetAllBankAccounts() {
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Toutes les cartes bancaires ont été réinitialisées à 0€.");
+}
+
+function resetSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à réinitialiser :");
+    let account = window.bankAccounts.find(acc => acc.id === accountId);
+    if (account) {
+        account.balance = 0;
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Le compte " + account.name + " a été réinitialisé à 0€.");
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
+function resetBankingSection() {
+    if (confirm("Voulez-vous vraiment réinitialiser toute la section bancaire ? Cette action est irréversible.")) {
+        localStorage.removeItem("bankAccounts");
+        window.bankAccounts = [];
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Toute la section bancaire a été réinitialisée.");
+    }
+}
+
+function deleteSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à supprimer :");
+    let index = window.bankAccounts.findIndex(acc => acc.id === accountId);
+    if (index !== -1) {
+        if (confirm("Voulez-vous vraiment supprimer " + window.bankAccounts[index].name + " ?")) {
+            window.bankAccounts.splice(index, 1);
+            saveBankAccounts();
+            renderBankAccounts();
+            alert("Compte supprimé avec succès.");
+        }
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
 </script>
 
   <script>
@@ -1025,6 +1116,71 @@ function resetBankAccounts() {
     saveBankAccounts();
     renderBankAccounts();
     alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+
+function resetBankAccounts() {
+    // Suppression complète du stockage local
+    localStorage.removeItem("bankAccounts");
+
+    // Remettre à zéro tous les comptes existants
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+
+    // Sauvegarde de l'état réinitialisé
+    saveBankAccounts();
+
+    // Rafraîchir l'affichage des comptes
+    renderBankAccounts();
+
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€ et la mémoire locale a été nettoyée.");
+}
+
+// Appliquer la suppression des vieilles sauvegardes à l'initialisation
+
+
+function resetAllBankAccounts() {
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Toutes les cartes bancaires ont été réinitialisées à 0€.");
+}
+
+function resetSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à réinitialiser :");
+    let account = window.bankAccounts.find(acc => acc.id === accountId);
+    if (account) {
+        account.balance = 0;
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Le compte " + account.name + " a été réinitialisé à 0€.");
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
+function resetBankingSection() {
+    if (confirm("Voulez-vous vraiment réinitialiser toute la section bancaire ? Cette action est irréversible.")) {
+        localStorage.removeItem("bankAccounts");
+        window.bankAccounts = [];
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Toute la section bancaire a été réinitialisée.");
+    }
+}
+
+function deleteSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à supprimer :");
+    let index = window.bankAccounts.findIndex(acc => acc.id === accountId);
+    if (index !== -1) {
+        if (confirm("Voulez-vous vraiment supprimer " + window.bankAccounts[index].name + " ?")) {
+            window.bankAccounts.splice(index, 1);
+            saveBankAccounts();
+            renderBankAccounts();
+            alert("Compte supprimé avec succès.");
+        }
+    } else {
+        alert("Compte introuvable.");
+    }
 }
 
 </script>
@@ -1064,6 +1220,71 @@ function resetBankAccounts() {
     saveBankAccounts();
     renderBankAccounts();
     alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+
+function resetBankAccounts() {
+    // Suppression complète du stockage local
+    localStorage.removeItem("bankAccounts");
+
+    // Remettre à zéro tous les comptes existants
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+
+    // Sauvegarde de l'état réinitialisé
+    saveBankAccounts();
+
+    // Rafraîchir l'affichage des comptes
+    renderBankAccounts();
+
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€ et la mémoire locale a été nettoyée.");
+}
+
+// Appliquer la suppression des vieilles sauvegardes à l'initialisation
+
+
+function resetAllBankAccounts() {
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Toutes les cartes bancaires ont été réinitialisées à 0€.");
+}
+
+function resetSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à réinitialiser :");
+    let account = window.bankAccounts.find(acc => acc.id === accountId);
+    if (account) {
+        account.balance = 0;
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Le compte " + account.name + " a été réinitialisé à 0€.");
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
+function resetBankingSection() {
+    if (confirm("Voulez-vous vraiment réinitialiser toute la section bancaire ? Cette action est irréversible.")) {
+        localStorage.removeItem("bankAccounts");
+        window.bankAccounts = [];
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Toute la section bancaire a été réinitialisée.");
+    }
+}
+
+function deleteSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à supprimer :");
+    let index = window.bankAccounts.findIndex(acc => acc.id === accountId);
+    if (index !== -1) {
+        if (confirm("Voulez-vous vraiment supprimer " + window.bankAccounts[index].name + " ?")) {
+            window.bankAccounts.splice(index, 1);
+            saveBankAccounts();
+            renderBankAccounts();
+            alert("Compte supprimé avec succès.");
+        }
+    } else {
+        alert("Compte introuvable.");
+    }
 }
 
 </script>
@@ -1189,6 +1410,71 @@ function resetBankAccounts() {
     saveBankAccounts();
     renderBankAccounts();
     alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+
+function resetBankAccounts() {
+    // Suppression complète du stockage local
+    localStorage.removeItem("bankAccounts");
+
+    // Remettre à zéro tous les comptes existants
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+
+    // Sauvegarde de l'état réinitialisé
+    saveBankAccounts();
+
+    // Rafraîchir l'affichage des comptes
+    renderBankAccounts();
+
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€ et la mémoire locale a été nettoyée.");
+}
+
+// Appliquer la suppression des vieilles sauvegardes à l'initialisation
+
+
+function resetAllBankAccounts() {
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Toutes les cartes bancaires ont été réinitialisées à 0€.");
+}
+
+function resetSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à réinitialiser :");
+    let account = window.bankAccounts.find(acc => acc.id === accountId);
+    if (account) {
+        account.balance = 0;
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Le compte " + account.name + " a été réinitialisé à 0€.");
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
+function resetBankingSection() {
+    if (confirm("Voulez-vous vraiment réinitialiser toute la section bancaire ? Cette action est irréversible.")) {
+        localStorage.removeItem("bankAccounts");
+        window.bankAccounts = [];
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Toute la section bancaire a été réinitialisée.");
+    }
+}
+
+function deleteSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à supprimer :");
+    let index = window.bankAccounts.findIndex(acc => acc.id === accountId);
+    if (index !== -1) {
+        if (confirm("Voulez-vous vraiment supprimer " + window.bankAccounts[index].name + " ?")) {
+            window.bankAccounts.splice(index, 1);
+            saveBankAccounts();
+            renderBankAccounts();
+            alert("Compte supprimé avec succès.");
+        }
+    } else {
+        alert("Compte introuvable.");
+    }
 }
 
 </script>
@@ -1343,6 +1629,71 @@ function resetBankAccounts() {
     alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
 }
 
+
+function resetBankAccounts() {
+    // Suppression complète du stockage local
+    localStorage.removeItem("bankAccounts");
+
+    // Remettre à zéro tous les comptes existants
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+
+    // Sauvegarde de l'état réinitialisé
+    saveBankAccounts();
+
+    // Rafraîchir l'affichage des comptes
+    renderBankAccounts();
+
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€ et la mémoire locale a été nettoyée.");
+}
+
+// Appliquer la suppression des vieilles sauvegardes à l'initialisation
+
+
+function resetAllBankAccounts() {
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Toutes les cartes bancaires ont été réinitialisées à 0€.");
+}
+
+function resetSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à réinitialiser :");
+    let account = window.bankAccounts.find(acc => acc.id === accountId);
+    if (account) {
+        account.balance = 0;
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Le compte " + account.name + " a été réinitialisé à 0€.");
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
+function resetBankingSection() {
+    if (confirm("Voulez-vous vraiment réinitialiser toute la section bancaire ? Cette action est irréversible.")) {
+        localStorage.removeItem("bankAccounts");
+        window.bankAccounts = [];
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Toute la section bancaire a été réinitialisée.");
+    }
+}
+
+function deleteSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à supprimer :");
+    let index = window.bankAccounts.findIndex(acc => acc.id === accountId);
+    if (index !== -1) {
+        if (confirm("Voulez-vous vraiment supprimer " + window.bankAccounts[index].name + " ?")) {
+            window.bankAccounts.splice(index, 1);
+            saveBankAccounts();
+            renderBankAccounts();
+            alert("Compte supprimé avec succès.");
+        }
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
 </script>
 
   <script>
@@ -1489,6 +1840,71 @@ function resetBankAccounts() {
     alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
 }
 
+
+function resetBankAccounts() {
+    // Suppression complète du stockage local
+    localStorage.removeItem("bankAccounts");
+
+    // Remettre à zéro tous les comptes existants
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+
+    // Sauvegarde de l'état réinitialisé
+    saveBankAccounts();
+
+    // Rafraîchir l'affichage des comptes
+    renderBankAccounts();
+
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€ et la mémoire locale a été nettoyée.");
+}
+
+// Appliquer la suppression des vieilles sauvegardes à l'initialisation
+
+
+function resetAllBankAccounts() {
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Toutes les cartes bancaires ont été réinitialisées à 0€.");
+}
+
+function resetSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à réinitialiser :");
+    let account = window.bankAccounts.find(acc => acc.id === accountId);
+    if (account) {
+        account.balance = 0;
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Le compte " + account.name + " a été réinitialisé à 0€.");
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
+function resetBankingSection() {
+    if (confirm("Voulez-vous vraiment réinitialiser toute la section bancaire ? Cette action est irréversible.")) {
+        localStorage.removeItem("bankAccounts");
+        window.bankAccounts = [];
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Toute la section bancaire a été réinitialisée.");
+    }
+}
+
+function deleteSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à supprimer :");
+    let index = window.bankAccounts.findIndex(acc => acc.id === accountId);
+    if (index !== -1) {
+        if (confirm("Voulez-vous vraiment supprimer " + window.bankAccounts[index].name + " ?")) {
+            window.bankAccounts.splice(index, 1);
+            saveBankAccounts();
+            renderBankAccounts();
+            alert("Compte supprimé avec succès.");
+        }
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
 </script>
 
   <script>
@@ -1628,6 +2044,71 @@ function resetBankAccounts() {
     saveBankAccounts();
     renderBankAccounts();
     alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+
+function resetBankAccounts() {
+    // Suppression complète du stockage local
+    localStorage.removeItem("bankAccounts");
+
+    // Remettre à zéro tous les comptes existants
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+
+    // Sauvegarde de l'état réinitialisé
+    saveBankAccounts();
+
+    // Rafraîchir l'affichage des comptes
+    renderBankAccounts();
+
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€ et la mémoire locale a été nettoyée.");
+}
+
+// Appliquer la suppression des vieilles sauvegardes à l'initialisation
+
+
+function resetAllBankAccounts() {
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Toutes les cartes bancaires ont été réinitialisées à 0€.");
+}
+
+function resetSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à réinitialiser :");
+    let account = window.bankAccounts.find(acc => acc.id === accountId);
+    if (account) {
+        account.balance = 0;
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Le compte " + account.name + " a été réinitialisé à 0€.");
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
+function resetBankingSection() {
+    if (confirm("Voulez-vous vraiment réinitialiser toute la section bancaire ? Cette action est irréversible.")) {
+        localStorage.removeItem("bankAccounts");
+        window.bankAccounts = [];
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Toute la section bancaire a été réinitialisée.");
+    }
+}
+
+function deleteSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à supprimer :");
+    let index = window.bankAccounts.findIndex(acc => acc.id === accountId);
+    if (index !== -1) {
+        if (confirm("Voulez-vous vraiment supprimer " + window.bankAccounts[index].name + " ?")) {
+            window.bankAccounts.splice(index, 1);
+            saveBankAccounts();
+            renderBankAccounts();
+            alert("Compte supprimé avec succès.");
+        }
+    } else {
+        alert("Compte introuvable.");
+    }
 }
 
 </script>
@@ -1788,6 +2269,71 @@ function resetBankAccounts() {
     alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
 }
 
+
+function resetBankAccounts() {
+    // Suppression complète du stockage local
+    localStorage.removeItem("bankAccounts");
+
+    // Remettre à zéro tous les comptes existants
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+
+    // Sauvegarde de l'état réinitialisé
+    saveBankAccounts();
+
+    // Rafraîchir l'affichage des comptes
+    renderBankAccounts();
+
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€ et la mémoire locale a été nettoyée.");
+}
+
+// Appliquer la suppression des vieilles sauvegardes à l'initialisation
+
+
+function resetAllBankAccounts() {
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Toutes les cartes bancaires ont été réinitialisées à 0€.");
+}
+
+function resetSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à réinitialiser :");
+    let account = window.bankAccounts.find(acc => acc.id === accountId);
+    if (account) {
+        account.balance = 0;
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Le compte " + account.name + " a été réinitialisé à 0€.");
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
+function resetBankingSection() {
+    if (confirm("Voulez-vous vraiment réinitialiser toute la section bancaire ? Cette action est irréversible.")) {
+        localStorage.removeItem("bankAccounts");
+        window.bankAccounts = [];
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Toute la section bancaire a été réinitialisée.");
+    }
+}
+
+function deleteSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à supprimer :");
+    let index = window.bankAccounts.findIndex(acc => acc.id === accountId);
+    if (index !== -1) {
+        if (confirm("Voulez-vous vraiment supprimer " + window.bankAccounts[index].name + " ?")) {
+            window.bankAccounts.splice(index, 1);
+            saveBankAccounts();
+            renderBankAccounts();
+            alert("Compte supprimé avec succès.");
+        }
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
 </script>
 
   <script>
@@ -1900,6 +2446,71 @@ function resetBankAccounts() {
     alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
 }
 
+
+function resetBankAccounts() {
+    // Suppression complète du stockage local
+    localStorage.removeItem("bankAccounts");
+
+    // Remettre à zéro tous les comptes existants
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+
+    // Sauvegarde de l'état réinitialisé
+    saveBankAccounts();
+
+    // Rafraîchir l'affichage des comptes
+    renderBankAccounts();
+
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€ et la mémoire locale a été nettoyée.");
+}
+
+// Appliquer la suppression des vieilles sauvegardes à l'initialisation
+
+
+function resetAllBankAccounts() {
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Toutes les cartes bancaires ont été réinitialisées à 0€.");
+}
+
+function resetSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à réinitialiser :");
+    let account = window.bankAccounts.find(acc => acc.id === accountId);
+    if (account) {
+        account.balance = 0;
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Le compte " + account.name + " a été réinitialisé à 0€.");
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
+function resetBankingSection() {
+    if (confirm("Voulez-vous vraiment réinitialiser toute la section bancaire ? Cette action est irréversible.")) {
+        localStorage.removeItem("bankAccounts");
+        window.bankAccounts = [];
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Toute la section bancaire a été réinitialisée.");
+    }
+}
+
+function deleteSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à supprimer :");
+    let index = window.bankAccounts.findIndex(acc => acc.id === accountId);
+    if (index !== -1) {
+        if (confirm("Voulez-vous vraiment supprimer " + window.bankAccounts[index].name + " ?")) {
+            window.bankAccounts.splice(index, 1);
+            saveBankAccounts();
+            renderBankAccounts();
+            alert("Compte supprimé avec succès.");
+        }
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
 </script>
 
   <script>
@@ -1966,6 +2577,71 @@ function resetBankAccounts() {
     saveBankAccounts();
     renderBankAccounts();
     alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+
+function resetBankAccounts() {
+    // Suppression complète du stockage local
+    localStorage.removeItem("bankAccounts");
+
+    // Remettre à zéro tous les comptes existants
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+
+    // Sauvegarde de l'état réinitialisé
+    saveBankAccounts();
+
+    // Rafraîchir l'affichage des comptes
+    renderBankAccounts();
+
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€ et la mémoire locale a été nettoyée.");
+}
+
+// Appliquer la suppression des vieilles sauvegardes à l'initialisation
+
+
+function resetAllBankAccounts() {
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Toutes les cartes bancaires ont été réinitialisées à 0€.");
+}
+
+function resetSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à réinitialiser :");
+    let account = window.bankAccounts.find(acc => acc.id === accountId);
+    if (account) {
+        account.balance = 0;
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Le compte " + account.name + " a été réinitialisé à 0€.");
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
+function resetBankingSection() {
+    if (confirm("Voulez-vous vraiment réinitialiser toute la section bancaire ? Cette action est irréversible.")) {
+        localStorage.removeItem("bankAccounts");
+        window.bankAccounts = [];
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Toute la section bancaire a été réinitialisée.");
+    }
+}
+
+function deleteSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à supprimer :");
+    let index = window.bankAccounts.findIndex(acc => acc.id === accountId);
+    if (index !== -1) {
+        if (confirm("Voulez-vous vraiment supprimer " + window.bankAccounts[index].name + " ?")) {
+            window.bankAccounts.splice(index, 1);
+            saveBankAccounts();
+            renderBankAccounts();
+            alert("Compte supprimé avec succès.");
+        }
+    } else {
+        alert("Compte introuvable.");
+    }
 }
 
 </script>
@@ -2063,6 +2739,71 @@ function resetBankAccounts() {
     saveBankAccounts();
     renderBankAccounts();
     alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+
+function resetBankAccounts() {
+    // Suppression complète du stockage local
+    localStorage.removeItem("bankAccounts");
+
+    // Remettre à zéro tous les comptes existants
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+
+    // Sauvegarde de l'état réinitialisé
+    saveBankAccounts();
+
+    // Rafraîchir l'affichage des comptes
+    renderBankAccounts();
+
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€ et la mémoire locale a été nettoyée.");
+}
+
+// Appliquer la suppression des vieilles sauvegardes à l'initialisation
+
+
+function resetAllBankAccounts() {
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Toutes les cartes bancaires ont été réinitialisées à 0€.");
+}
+
+function resetSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à réinitialiser :");
+    let account = window.bankAccounts.find(acc => acc.id === accountId);
+    if (account) {
+        account.balance = 0;
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Le compte " + account.name + " a été réinitialisé à 0€.");
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
+function resetBankingSection() {
+    if (confirm("Voulez-vous vraiment réinitialiser toute la section bancaire ? Cette action est irréversible.")) {
+        localStorage.removeItem("bankAccounts");
+        window.bankAccounts = [];
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Toute la section bancaire a été réinitialisée.");
+    }
+}
+
+function deleteSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à supprimer :");
+    let index = window.bankAccounts.findIndex(acc => acc.id === accountId);
+    if (index !== -1) {
+        if (confirm("Voulez-vous vraiment supprimer " + window.bankAccounts[index].name + " ?")) {
+            window.bankAccounts.splice(index, 1);
+            saveBankAccounts();
+            renderBankAccounts();
+            alert("Compte supprimé avec succès.");
+        }
+    } else {
+        alert("Compte introuvable.");
+    }
 }
 
 </script>
@@ -2225,6 +2966,71 @@ function resetBankAccounts() {
     alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
 }
 
+
+function resetBankAccounts() {
+    // Suppression complète du stockage local
+    localStorage.removeItem("bankAccounts");
+
+    // Remettre à zéro tous les comptes existants
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+
+    // Sauvegarde de l'état réinitialisé
+    saveBankAccounts();
+
+    // Rafraîchir l'affichage des comptes
+    renderBankAccounts();
+
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€ et la mémoire locale a été nettoyée.");
+}
+
+// Appliquer la suppression des vieilles sauvegardes à l'initialisation
+
+
+function resetAllBankAccounts() {
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Toutes les cartes bancaires ont été réinitialisées à 0€.");
+}
+
+function resetSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à réinitialiser :");
+    let account = window.bankAccounts.find(acc => acc.id === accountId);
+    if (account) {
+        account.balance = 0;
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Le compte " + account.name + " a été réinitialisé à 0€.");
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
+function resetBankingSection() {
+    if (confirm("Voulez-vous vraiment réinitialiser toute la section bancaire ? Cette action est irréversible.")) {
+        localStorage.removeItem("bankAccounts");
+        window.bankAccounts = [];
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Toute la section bancaire a été réinitialisée.");
+    }
+}
+
+function deleteSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à supprimer :");
+    let index = window.bankAccounts.findIndex(acc => acc.id === accountId);
+    if (index !== -1) {
+        if (confirm("Voulez-vous vraiment supprimer " + window.bankAccounts[index].name + " ?")) {
+            window.bankAccounts.splice(index, 1);
+            saveBankAccounts();
+            renderBankAccounts();
+            alert("Compte supprimé avec succès.");
+        }
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
 </script>
 
   <script>
@@ -2367,6 +3173,71 @@ function resetBankAccounts() {
     alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
 }
 
+
+function resetBankAccounts() {
+    // Suppression complète du stockage local
+    localStorage.removeItem("bankAccounts");
+
+    // Remettre à zéro tous les comptes existants
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+
+    // Sauvegarde de l'état réinitialisé
+    saveBankAccounts();
+
+    // Rafraîchir l'affichage des comptes
+    renderBankAccounts();
+
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€ et la mémoire locale a été nettoyée.");
+}
+
+// Appliquer la suppression des vieilles sauvegardes à l'initialisation
+
+
+function resetAllBankAccounts() {
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Toutes les cartes bancaires ont été réinitialisées à 0€.");
+}
+
+function resetSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à réinitialiser :");
+    let account = window.bankAccounts.find(acc => acc.id === accountId);
+    if (account) {
+        account.balance = 0;
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Le compte " + account.name + " a été réinitialisé à 0€.");
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
+function resetBankingSection() {
+    if (confirm("Voulez-vous vraiment réinitialiser toute la section bancaire ? Cette action est irréversible.")) {
+        localStorage.removeItem("bankAccounts");
+        window.bankAccounts = [];
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Toute la section bancaire a été réinitialisée.");
+    }
+}
+
+function deleteSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à supprimer :");
+    let index = window.bankAccounts.findIndex(acc => acc.id === accountId);
+    if (index !== -1) {
+        if (confirm("Voulez-vous vraiment supprimer " + window.bankAccounts[index].name + " ?")) {
+            window.bankAccounts.splice(index, 1);
+            saveBankAccounts();
+            renderBankAccounts();
+            alert("Compte supprimé avec succès.");
+        }
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
 </script>
 
   <script>
@@ -2432,6 +3303,71 @@ function resetBankAccounts() {
     saveBankAccounts();
     renderBankAccounts();
     alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+
+function resetBankAccounts() {
+    // Suppression complète du stockage local
+    localStorage.removeItem("bankAccounts");
+
+    // Remettre à zéro tous les comptes existants
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+
+    // Sauvegarde de l'état réinitialisé
+    saveBankAccounts();
+
+    // Rafraîchir l'affichage des comptes
+    renderBankAccounts();
+
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€ et la mémoire locale a été nettoyée.");
+}
+
+// Appliquer la suppression des vieilles sauvegardes à l'initialisation
+
+
+function resetAllBankAccounts() {
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Toutes les cartes bancaires ont été réinitialisées à 0€.");
+}
+
+function resetSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à réinitialiser :");
+    let account = window.bankAccounts.find(acc => acc.id === accountId);
+    if (account) {
+        account.balance = 0;
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Le compte " + account.name + " a été réinitialisé à 0€.");
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
+function resetBankingSection() {
+    if (confirm("Voulez-vous vraiment réinitialiser toute la section bancaire ? Cette action est irréversible.")) {
+        localStorage.removeItem("bankAccounts");
+        window.bankAccounts = [];
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Toute la section bancaire a été réinitialisée.");
+    }
+}
+
+function deleteSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à supprimer :");
+    let index = window.bankAccounts.findIndex(acc => acc.id === accountId);
+    if (index !== -1) {
+        if (confirm("Voulez-vous vraiment supprimer " + window.bankAccounts[index].name + " ?")) {
+            window.bankAccounts.splice(index, 1);
+            saveBankAccounts();
+            renderBankAccounts();
+            alert("Compte supprimé avec succès.");
+        }
+    } else {
+        alert("Compte introuvable.");
+    }
 }
 
 </script>
@@ -2621,6 +3557,71 @@ function resetBankAccounts() {
     alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
 }
 
+
+function resetBankAccounts() {
+    // Suppression complète du stockage local
+    localStorage.removeItem("bankAccounts");
+
+    // Remettre à zéro tous les comptes existants
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+
+    // Sauvegarde de l'état réinitialisé
+    saveBankAccounts();
+
+    // Rafraîchir l'affichage des comptes
+    renderBankAccounts();
+
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€ et la mémoire locale a été nettoyée.");
+}
+
+// Appliquer la suppression des vieilles sauvegardes à l'initialisation
+
+
+function resetAllBankAccounts() {
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Toutes les cartes bancaires ont été réinitialisées à 0€.");
+}
+
+function resetSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à réinitialiser :");
+    let account = window.bankAccounts.find(acc => acc.id === accountId);
+    if (account) {
+        account.balance = 0;
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Le compte " + account.name + " a été réinitialisé à 0€.");
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
+function resetBankingSection() {
+    if (confirm("Voulez-vous vraiment réinitialiser toute la section bancaire ? Cette action est irréversible.")) {
+        localStorage.removeItem("bankAccounts");
+        window.bankAccounts = [];
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Toute la section bancaire a été réinitialisée.");
+    }
+}
+
+function deleteSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à supprimer :");
+    let index = window.bankAccounts.findIndex(acc => acc.id === accountId);
+    if (index !== -1) {
+        if (confirm("Voulez-vous vraiment supprimer " + window.bankAccounts[index].name + " ?")) {
+            window.bankAccounts.splice(index, 1);
+            saveBankAccounts();
+            renderBankAccounts();
+            alert("Compte supprimé avec succès.");
+        }
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
 </script>
 
   <script>
@@ -2777,6 +3778,71 @@ function resetBankAccounts() {
     alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
 }
 
+
+function resetBankAccounts() {
+    // Suppression complète du stockage local
+    localStorage.removeItem("bankAccounts");
+
+    // Remettre à zéro tous les comptes existants
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+
+    // Sauvegarde de l'état réinitialisé
+    saveBankAccounts();
+
+    // Rafraîchir l'affichage des comptes
+    renderBankAccounts();
+
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€ et la mémoire locale a été nettoyée.");
+}
+
+// Appliquer la suppression des vieilles sauvegardes à l'initialisation
+
+
+function resetAllBankAccounts() {
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Toutes les cartes bancaires ont été réinitialisées à 0€.");
+}
+
+function resetSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à réinitialiser :");
+    let account = window.bankAccounts.find(acc => acc.id === accountId);
+    if (account) {
+        account.balance = 0;
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Le compte " + account.name + " a été réinitialisé à 0€.");
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
+function resetBankingSection() {
+    if (confirm("Voulez-vous vraiment réinitialiser toute la section bancaire ? Cette action est irréversible.")) {
+        localStorage.removeItem("bankAccounts");
+        window.bankAccounts = [];
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Toute la section bancaire a été réinitialisée.");
+    }
+}
+
+function deleteSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à supprimer :");
+    let index = window.bankAccounts.findIndex(acc => acc.id === accountId);
+    if (index !== -1) {
+        if (confirm("Voulez-vous vraiment supprimer " + window.bankAccounts[index].name + " ?")) {
+            window.bankAccounts.splice(index, 1);
+            saveBankAccounts();
+            renderBankAccounts();
+            alert("Compte supprimé avec succès.");
+        }
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
 </script>
 
   <script>
@@ -2841,6 +3907,71 @@ function resetBankAccounts() {
     saveBankAccounts();
     renderBankAccounts();
     alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
+}
+
+
+function resetBankAccounts() {
+    // Suppression complète du stockage local
+    localStorage.removeItem("bankAccounts");
+
+    // Remettre à zéro tous les comptes existants
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+
+    // Sauvegarde de l'état réinitialisé
+    saveBankAccounts();
+
+    // Rafraîchir l'affichage des comptes
+    renderBankAccounts();
+
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€ et la mémoire locale a été nettoyée.");
+}
+
+// Appliquer la suppression des vieilles sauvegardes à l'initialisation
+
+
+function resetAllBankAccounts() {
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Toutes les cartes bancaires ont été réinitialisées à 0€.");
+}
+
+function resetSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à réinitialiser :");
+    let account = window.bankAccounts.find(acc => acc.id === accountId);
+    if (account) {
+        account.balance = 0;
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Le compte " + account.name + " a été réinitialisé à 0€.");
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
+function resetBankingSection() {
+    if (confirm("Voulez-vous vraiment réinitialiser toute la section bancaire ? Cette action est irréversible.")) {
+        localStorage.removeItem("bankAccounts");
+        window.bankAccounts = [];
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Toute la section bancaire a été réinitialisée.");
+    }
+}
+
+function deleteSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à supprimer :");
+    let index = window.bankAccounts.findIndex(acc => acc.id === accountId);
+    if (index !== -1) {
+        if (confirm("Voulez-vous vraiment supprimer " + window.bankAccounts[index].name + " ?")) {
+            window.bankAccounts.splice(index, 1);
+            saveBankAccounts();
+            renderBankAccounts();
+            alert("Compte supprimé avec succès.");
+        }
+    } else {
+        alert("Compte introuvable.");
+    }
 }
 
 </script>
@@ -2996,7 +4127,73 @@ function resetBankAccounts() {
     alert("Tous les comptes bancaires ont été réinitialisés à 0€.");
 }
 
+
+function resetBankAccounts() {
+    // Suppression complète du stockage local
+    localStorage.removeItem("bankAccounts");
+
+    // Remettre à zéro tous les comptes existants
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+
+    // Sauvegarde de l'état réinitialisé
+    saveBankAccounts();
+
+    // Rafraîchir l'affichage des comptes
+    renderBankAccounts();
+
+    alert("Tous les comptes bancaires ont été réinitialisés à 0€ et la mémoire locale a été nettoyée.");
+}
+
+// Appliquer la suppression des vieilles sauvegardes à l'initialisation
+
+
+function resetAllBankAccounts() {
+    window.bankAccounts.forEach(acc => acc.balance = 0);
+    saveBankAccounts();
+    renderBankAccounts();
+    alert("Toutes les cartes bancaires ont été réinitialisées à 0€.");
+}
+
+function resetSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à réinitialiser :");
+    let account = window.bankAccounts.find(acc => acc.id === accountId);
+    if (account) {
+        account.balance = 0;
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Le compte " + account.name + " a été réinitialisé à 0€.");
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
+function resetBankingSection() {
+    if (confirm("Voulez-vous vraiment réinitialiser toute la section bancaire ? Cette action est irréversible.")) {
+        localStorage.removeItem("bankAccounts");
+        window.bankAccounts = [];
+        saveBankAccounts();
+        renderBankAccounts();
+        alert("Toute la section bancaire a été réinitialisée.");
+    }
+}
+
+function deleteSpecificBankAccount() {
+    let accountId = prompt("Entrez l'ID du compte à supprimer :");
+    let index = window.bankAccounts.findIndex(acc => acc.id === accountId);
+    if (index !== -1) {
+        if (confirm("Voulez-vous vraiment supprimer " + window.bankAccounts[index].name + " ?")) {
+            window.bankAccounts.splice(index, 1);
+            saveBankAccounts();
+            renderBankAccounts();
+            alert("Compte supprimé avec succès.");
+        }
+    } else {
+        alert("Compte introuvable.");
+    }
+}
+
 </script>
+
 
 
 
