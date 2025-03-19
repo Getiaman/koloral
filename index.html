@@ -442,7 +442,7 @@
     style="display:block; margin: 10px auto; padding:10px; background:#28a745; color:#fff; 
     border:none; border-radius:5px; cursor:pointer; font-size: 16px; width: 200px;">
     Calculer</button>
-<button id="adjust-finance-btn" style="display:none;" onclick="openAdjustModal()" 
+<button id="adjust-finance-btn" onclick="openAdjustModal()" 
     style="display:block; margin: 10px auto; padding:10px; background:#0071e3; color:#fff; 
     border:none; border-radius:5px; cursor:pointer; font-size: 16px; width: 200px;">
     Ajuster</button>
@@ -451,7 +451,7 @@
     
       <span id="bank-notification-icon" style="cursor: pointer; font-size: 28px; color: #0071e3; display: block;">❓</span>
       
-    <div id="bank-notification" style="display:none;" style="display: none;
+    <div id="bank-notification" style="display: none;
      background: #ffcc00; padding: 10px; border-radius: 5px; color: #333; width: 80%; margin: auto; text-align: center;">
     
       <span id="bank-notification-icon" style="cursor: pointer; font-size: 24px; color: #0071e3;">❓</span>
@@ -531,7 +531,11 @@
         <div id="depenses-prevues-list"></div>
         <button class="voir-plus-btn" onclick="convertCheckedDepensesPrevuesToManuelles()">Convertir dépenses cochées en manuelles</button>
         <div id="predicted-fortune"></div>
-        <div id="finance-summary"></div>
+        
+<div id="finance-summary">
+    <strong>Résultat final :</strong> <span id="final-result">0.00</span> €
+</div>
+</div>
         <div id="finance-options">
           <label><input id="appliquer-urssaf" onchange="renderFinanceSummary()" type="checkbox"/> Appliquer -22% Urssaf sur revenus chantier</label>
         </div>
@@ -4365,91 +4369,59 @@ function forceCalculateDifference() {
 </script>
 
 
+<style>
+/* Nouvelle notification légère et moderne */
+#notification-container {
+    display: none;
+    padding: 12px;
+    background: #ffcc00;
+    color: black;
+    font-weight: bold;
+    border-radius: 6px;
+    text-align: center;
+    margin-top: 10px;
+    box-shadow: 0px 4px 6px rgba(0,0,0,0.1);
+}
+</style>
+
 <script>
 document.addEventListener("DOMContentLoaded", function () {
     function forceCalculateDifference() {
-        try {
-            // Vérifier et exécuter la fonction de recalcul si elle existe
-            if (typeof checkFinanceBalance === "function") {
-                checkFinanceBalance();
-            } else {
-                console.warn("La fonction checkFinanceBalance n'existe pas.");
-            }
+        console.log("🔍 Début du recalcul forcé...");
 
-            // Récupérer la somme totale des soldes des comptes bancaires
-            let totalBankBalance = window.bankAccounts.reduce((sum, acc) => sum + acc.balance, 0);
+        // Récupération du total des banques
+        let totalBankBalance = window.bankAccounts?.reduce((sum, acc) => sum + acc.balance, 0) || 0;
 
-            // Vérifier si l'élément contenant le Résultat Final existe
-            let resultFinalElement = document.getElementById("finance-summary");
-            if (!resultFinalElement) {
-                console.error("Erreur : L'élément 'finance-summary' est introuvable.");
-                alert("Erreur : Impossible de récupérer le Résultat Final.");
-                return;
-            }
+        // Extraction fiable du Résultat Final
+        let resultFinalElement = document.getElementById("final-result");
+        let resultFinal = resultFinalElement ? parseFloat(resultFinalElement.textContent) : NaN;
 
-            // Extraire uniquement la valeur numérique du "Résultat Final"
-            let resultFinalText = resultFinalElement.textContent.match(/([\d.,]+)/);
-            let resultFinal = resultFinalText ? parseFloat(resultFinalText[1].replace(",", ".")) : NaN;
+        console.log("💰 Solde des banques:", totalBankBalance);
+        console.log("📊 Résultat Final extrait:", resultFinal);
 
-            // Vérification des valeurs récupérées
-            console.log("Total Bank Balance:", totalBankBalance);
-            console.log("Résultat Final extrait:", resultFinal);
+        if (isNaN(resultFinal)) {
+            alert("❌ Erreur : Valeur du Résultat Final introuvable.");
+            return;
+        }
 
-            // Vérifier si la valeur du résultat final est un nombre
-            if (isNaN(resultFinal)) {
-                console.error("Erreur : Résultat final non valide.");
-                alert("Erreur : Impossible d'obtenir une valeur correcte pour le Résultat Final.");
-                return;
-            }
+        let notification = document.getElementById("notification-container");
 
-            // Vérifier si la balance bancaire correspond au résultat final
-            if (totalBankBalance !== resultFinal) {
-                alert("⚠️ Déséquilibre détecté ! Le solde des banques ne correspond pas au résultat final.");
-
-                // Mettre à jour et afficher la notification
-                let notif = document.getElementById("bank-notification");
-                if (notif) {
-                    notif.style.display = "block";
-                    notif.textContent = "⚠️ Un ajustement est nécessaire : Différence détectée.";
-                }
-
-                // Rendre visible et cliquable le bouton "Ajuster"
-                let adjustBtn = document.getElementById("adjust-finance-btn");
-                if (adjustBtn) {
-                    adjustBtn.style.display = "block";
-                    adjustBtn.style.background = "#ffcc00"; // Couleur d'alerte
-                    adjustBtn.style.color = "#000";
-                    adjustBtn.style.border = "2px solid #ff0000"; // Bordure rouge
-                    adjustBtn.style.fontWeight = "bold";
-                    adjustBtn.style.transform = "scale(1.1)";
-                    setTimeout(() => {
-                        adjustBtn.style.transform = "scale(1.0)";
-                    }, 1000);
-
-                    // S'assurer que la fonction est bien attachée au bouton
-                    adjustBtn.onclick = function () {
-                        console.log("Bouton Ajuster cliqué !");
-                        if (typeof openAdjustModal === "function") {
-                            openAdjustModal();
-                        } else {
-                            alert("⚠️ La fonction d'ajustement est introuvable !");
-                            console.error("Erreur : La fonction openAdjustModal() n'existe pas.");
-                        }
-                    };
-                }
-            } else {
-                alert("✅ Le calcul a été forcé et la balance est correcte.");
-            }
-        } catch (error) {
-            console.error("Erreur lors du calcul forcé :", error);
-            alert("❌ Une erreur est survenue lors du calcul.");
+        // Affichage de la notification seulement en cas de déséquilibre
+        if (totalBankBalance !== resultFinal) {
+            notification.style.display = "block";
+            notification.textContent = "⚠️ Alerte : Le solde ne correspond pas au Résultat Final.";
+        } else {
+            notification.style.display = "none";
+            alert("✅ Balance correcte.");
         }
     }
 
-    // Attacher la fonction au bouton Calculer au chargement de la page
     let calculateBtn = document.getElementById("calculate-difference-btn");
     if (calculateBtn) {
         calculateBtn.onclick = forceCalculateDifference;
+        console.log("🔹 Bouton Calculer activé.");
+    } else {
+        console.warn("⚠️ Bouton 'Calculer' introuvable.");
     }
 });
 </script>
@@ -4672,6 +4644,7 @@ function deleteSpecificBankAccount() {
 }
 
 </script>
+
 
 
 
