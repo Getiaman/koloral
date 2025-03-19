@@ -4171,6 +4171,41 @@ function forceCalculateDifference() {
 }
 </script>
 
+
+<script>
+function forceCalculateDifference() {
+    try {
+        // Vérifier si la fonction de calcul existe et l'exécuter
+        if (typeof checkFinanceBalance === "function") {
+            checkFinanceBalance();
+        }
+
+        // Récupérer la somme totale des soldes des comptes bancaires
+        let totalBankBalance = window.bankAccounts.reduce((sum, acc) => sum + acc.balance, 0);
+
+        // Récupérer la valeur du "résultat final"
+        let resultFinal = parseFloat(document.getElementById("finance-summary").innerText.replace("€", "").trim());
+
+        // Vérifier si la différence est non nulle
+        if (!isNaN(resultFinal) && totalBankBalance !== resultFinal) {
+            alert("Attention : La balance des banques ne correspond pas au résultat final !");
+            
+            // Afficher la notification d'ajustement
+            let notif = document.getElementById("bank-notification");
+            if (notif) {
+                notif.style.display = "block";
+                notif.textContent = "Un ajustement est nécessaire : Différence détectée.";
+            }
+        } else {
+            alert("Le calcul a été forcé et aucune différence n'a été détectée.");
+        }
+    } catch (error) {
+        console.error("Erreur lors du calcul forcé :", error);
+        alert("Une erreur est survenue lors du calcul.");
+    }
+}
+</script>
+
 </body>
 </html>
 <script>
