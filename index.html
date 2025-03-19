@@ -4424,6 +4424,17 @@ function forceCalculateDifference() {
                 setTimeout(() => {
                     adjustBtn.style.transform = "scale(1.0)"; // Retour normal après 1s
                 }, 1000);
+
+                // Vérifier si une fonction est associée au bouton
+                if (typeof openAdjustModal === "function") {
+                    adjustBtn.onclick = function() {
+                        console.log("Bouton Ajuster cliqué !");
+                        openAdjustModal(); // Ouvre la fenêtre de correction
+                    };
+                } else {
+                    console.error("La fonction openAdjustModal() n'existe pas !");
+                    alert("Erreur : La fonction d'ajustement est introuvable.");
+                }
             }
 
         } else {
@@ -4654,6 +4665,8 @@ function deleteSpecificBankAccount() {
 }
 
 </script>
+
+
 
 
 
