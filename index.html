@@ -451,7 +451,7 @@
     
       <span id="bank-notification-icon" style="cursor: pointer; font-size: 28px; color: #0071e3; display: block;">❓</span>
       
-    <div id="bank-notification" style="display: none;
+    <div id="bank-notification" style="display:none;" style="display: none;
      background: #ffcc00; padding: 10px; border-radius: 5px; color: #333; width: 80%; margin: auto; text-align: center;">
     
       <span id="bank-notification-icon" style="cursor: pointer; font-size: 24px; color: #0071e3;">❓</span>
@@ -4387,7 +4387,7 @@ function forceCalculateDifference() {
         }
 
         // Extraire uniquement la valeur numérique du "Résultat Final" avec une expression régulière
-        let resultFinalMatch = resultFinalElement.textContent.match(/Résultat final\s*([\d.,]+)/);
+        let resultFinalMatch = resultFinalElement.textContent.match(/([\d.,]+)/);
         let resultFinal = resultFinalMatch ? parseFloat(resultFinalMatch[1].replace(",", ".")) : NaN;
 
         // Vérification des valeurs récupérées
@@ -4403,46 +4403,46 @@ function forceCalculateDifference() {
 
         // Vérifier si la balance bancaire correspond au résultat final
         if (totalBankBalance !== resultFinal) {
-            alert("Déséquilibre détecté ! Le solde des banques ne correspond pas au résultat final.");
+            alert("⚠️ Déséquilibre détecté ! Le solde des banques ne correspond pas au résultat final.");
             
             // Afficher la notification d'ajustement
             let notif = document.getElementById("bank-notification");
             if (notif) {
                 notif.style.display = "block";
-                notif.textContent = "Un ajustement est nécessaire : Différence détectée.";
+                notif.textContent = "⚠️ Un ajustement est nécessaire : Différence détectée.";
             }
 
-            // Afficher et animer le bouton "Ajuster"
+            // Vérifier et rendre visible le bouton "Ajuster"
             let adjustBtn = document.getElementById("adjust-finance-btn");
             if (adjustBtn) {
                 adjustBtn.style.display = "block";
-                adjustBtn.style.background = "#ffcc00"; // Couleur jaune d'alerte
+                adjustBtn.style.background = "#ffcc00"; // Couleur jaune pour attirer l'attention
                 adjustBtn.style.color = "#000";
                 adjustBtn.style.border = "2px solid #ff0000"; // Bordure rouge
                 adjustBtn.style.fontWeight = "bold";
-                adjustBtn.style.transform = "scale(1.1)"; // Animation d'attention
+                adjustBtn.style.transform = "scale(1.1)";
                 setTimeout(() => {
-                    adjustBtn.style.transform = "scale(1.0)"; // Retour normal après 1s
+                    adjustBtn.style.transform = "scale(1.0)";
                 }, 1000);
 
-                // Vérifier si une fonction est associée au bouton
-                if (typeof openAdjustModal === "function") {
-                    adjustBtn.onclick = function() {
-                        console.log("Bouton Ajuster cliqué !");
-                        openAdjustModal(); // Ouvre la fenêtre de correction
-                    };
-                } else {
-                    console.error("La fonction openAdjustModal() n'existe pas !");
-                    alert("Erreur : La fonction d'ajustement est introuvable.");
-                }
+                // Ajouter un écouteur d'événement pour s'assurer que le bouton fonctionne
+                adjustBtn.onclick = function() {
+                    console.log("Bouton Ajuster cliqué !");
+                    if (typeof openAdjustModal === "function") {
+                        openAdjustModal();
+                    } else {
+                        alert("⚠️ La fonction d'ajustement est introuvable !");
+                        console.error("Erreur : La fonction openAdjustModal() n'existe pas.");
+                    }
+                };
             }
 
         } else {
-            alert("Le calcul a été forcé et la balance est correcte.");
+            alert("✅ Le calcul a été forcé et la balance est correcte.");
         }
     } catch (error) {
         console.error("Erreur lors du calcul forcé :", error);
-        alert("Une erreur est survenue lors du calcul.");
+        alert("❌ Une erreur est survenue lors du calcul.");
     }
 }
 </script>
@@ -4665,9 +4665,6 @@ function deleteSpecificBankAccount() {
 }
 
 </script>
-
-
-
 
 
 
