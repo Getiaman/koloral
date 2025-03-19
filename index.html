@@ -4206,6 +4206,164 @@ function forceCalculateDifference() {
 }
 </script>
 
+
+<script>
+function forceCalculateDifference() {
+    try {
+        // Vérifier et exécuter la fonction de recalcul si elle existe
+        if (typeof checkFinanceBalance === "function") {
+            checkFinanceBalance();
+        } else {
+            console.warn("La fonction checkFinanceBalance n'existe pas.");
+        }
+
+        // Récupérer la somme totale des soldes des comptes bancaires
+        let totalBankBalance = window.bankAccounts.reduce((sum, acc) => sum + acc.balance, 0);
+
+        // Récupérer la valeur du "Résultat final" et la convertir en nombre
+        let resultFinalElement = document.getElementById("finance-summary");
+        let resultFinalText = resultFinalElement ? resultFinalElement.innerText.replace("€", "").trim() : "0";
+        let resultFinal = parseFloat(resultFinalText);
+
+        // Vérification que les valeurs sont bien récupérées
+        console.log("Total Bank Balance:", totalBankBalance);
+        console.log("Résultat Final:", resultFinal);
+
+        // Si la différence existe, afficher une notification
+        if (!isNaN(resultFinal) && totalBankBalance !== resultFinal) {
+            alert("Déséquilibre détecté ! Le solde des banques ne correspond pas au résultat final.");
+            
+            // Affichage de la notification d'ajustement
+            let notif = document.getElementById("bank-notification");
+            if (notif) {
+                notif.style.display = "block";
+                notif.textContent = "Un ajustement est nécessaire : Différence détectée.";
+            }
+        } else {
+            alert("Le calcul a été forcé et la balance est correcte.");
+        }
+    } catch (error) {
+        console.error("Erreur lors du calcul forcé :", error);
+        alert("Une erreur est survenue lors du calcul.");
+    }
+}
+</script>
+
+
+<script>
+function forceCalculateDifference() {
+    try {
+        // Vérifier et exécuter la fonction de recalcul si elle existe
+        if (typeof checkFinanceBalance === "function") {
+            checkFinanceBalance();
+        } else {
+            console.warn("La fonction checkFinanceBalance n'existe pas.");
+        }
+
+        // Récupérer la somme totale des soldes des comptes bancaires
+        let totalBankBalance = window.bankAccounts.reduce((sum, acc) => sum + acc.balance, 0);
+
+        // Vérifier si l'élément "finance-summary" existe
+        let resultFinalElement = document.getElementById("finance-summary");
+        if (!resultFinalElement) {
+            console.error("Erreur : L'élément 'finance-summary' est introuvable.");
+            alert("Erreur : Impossible de récupérer le Résultat Final.");
+            return;
+        }
+
+        // Récupérer et nettoyer la valeur du "Résultat final"
+        let resultFinalText = resultFinalElement.textContent.replace("€", "").trim();
+        let resultFinal = parseFloat(resultFinalText);
+
+        // Vérification des valeurs récupérées
+        console.log("Total Bank Balance:", totalBankBalance);
+        console.log("Résultat Final récupéré:", resultFinalText);
+        console.log("Résultat Final (converti):", resultFinal);
+
+        // Si la valeur du résultat final n'est pas un nombre, afficher une alerte
+        if (isNaN(resultFinal)) {
+            console.error("Erreur : Résultat final non valide.");
+            alert("Erreur : Impossible d'obtenir une valeur correcte pour le Résultat Final.");
+            return;
+        }
+
+        // Vérifier si la balance bancaire correspond au résultat final
+        if (totalBankBalance !== resultFinal) {
+            alert("Déséquilibre détecté ! Le solde des banques ne correspond pas au résultat final.");
+            
+            // Afficher la notification d'ajustement
+            let notif = document.getElementById("bank-notification");
+            if (notif) {
+                notif.style.display = "block";
+                notif.textContent = "Un ajustement est nécessaire : Différence détectée.";
+            }
+        } else {
+            alert("Le calcul a été forcé et la balance est correcte.");
+        }
+    } catch (error) {
+        console.error("Erreur lors du calcul forcé :", error);
+        alert("Une erreur est survenue lors du calcul.");
+    }
+}
+</script>
+
+
+<script>
+function forceCalculateDifference() {
+    try {
+        // Vérifier et exécuter la fonction de recalcul si elle existe
+        if (typeof checkFinanceBalance === "function") {
+            checkFinanceBalance();
+        } else {
+            console.warn("La fonction checkFinanceBalance n'existe pas.");
+        }
+
+        // Récupérer la somme totale des soldes des comptes bancaires
+        let totalBankBalance = window.bankAccounts.reduce((sum, acc) => sum + acc.balance, 0);
+
+        // Vérifier si l'élément contenant le Résultat Final existe
+        let resultFinalElement = document.getElementById("finance-summary");
+        if (!resultFinalElement) {
+            console.error("Erreur : L'élément 'finance-summary' est introuvable.");
+            alert("Erreur : Impossible de récupérer le Résultat Final.");
+            return;
+        }
+
+        // Extraire uniquement la valeur numérique du "Résultat Final" avec une expression régulière
+        let resultFinalMatch = resultFinalElement.textContent.match(/Résultat final\s*([\d.,]+)/);
+        let resultFinal = resultFinalMatch ? parseFloat(resultFinalMatch[1].replace(",", ".")) : NaN;
+
+        // Vérification des valeurs récupérées
+        console.log("Total Bank Balance:", totalBankBalance);
+        console.log("Résultat Final extrait:", resultFinal);
+
+        // Si la valeur du résultat final n'est pas un nombre, afficher une alerte
+        if (isNaN(resultFinal)) {
+            console.error("Erreur : Résultat final non valide.");
+            alert("Erreur : Impossible d'obtenir une valeur correcte pour le Résultat Final.");
+            return;
+        }
+
+        // Vérifier si la balance bancaire correspond au résultat final
+        if (totalBankBalance !== resultFinal) {
+            alert("Déséquilibre détecté ! Le solde des banques ne correspond pas au résultat final.");
+            
+            // Afficher la notification d'ajustement
+            let notif = document.getElementById("bank-notification");
+            if (notif) {
+                notif.style.display = "block";
+                notif.textContent = "Un ajustement est nécessaire : Différence détectée.";
+            }
+        } else {
+            alert("Le calcul a été forcé et la balance est correcte.");
+        }
+    } catch (error) {
+        console.error("Erreur lors du calcul forcé :", error);
+        alert("Une erreur est survenue lors du calcul.");
+    }
+}
+</script>
+
 </body>
 </html>
 <script>
